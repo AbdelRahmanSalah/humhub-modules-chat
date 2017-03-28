@@ -1,0 +1,10 @@
+{
+    "id": "chat",
+    "name": "Chat",
+    "description": "chat.",
+    "keywords": ["chat", "chat-rooms"],
+    "version": "0.1.0",
+    "humhub": {
+        "minVersion": "1.0"
+    }
+}
