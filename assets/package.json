@@ -1,0 +1,16 @@
+{
+  "name": "elm",
+  "version": "1.0.0",
+  "description": "",
+  "main": "elm-mail.js",
+  "dependencies": {
+    "clear": "0.0.1",
+    "gulp": "^3.9.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
