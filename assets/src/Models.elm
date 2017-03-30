@@ -1,6 +1,6 @@
 module Models exposing (..)
 
-import RemoteData exposing (WebData)
+import RemoteData exposing (..)
 
 type alias Model = 
   {
@@ -22,12 +22,35 @@ type alias ChatRoomModel =
   , chatInput : Maybe String
   }
 
+setChatEntries: Maybe (WebData(List ChatEntry)) -> ChatRoomModel -> ChatRoomModel 
+setChatEntries chatEntries chatRoomModel = 
+  { chatRoomModel | chatEntries = chatEntries }
+
+setChatEntryInList: Maybe (WebData ChatEntry) -> ChatRoomModel -> ChatRoomModel 
+setChatEntryInList chatEntry chatRoomModel = 
+  { chatRoomModel | 
+    chatEntries = Maybe.map2 (\a b ->
+      case a of
+        Success sChatEntries ->
+          case b of
+            Success chatEntry -> Success (sChatEntries ++ [chatEntry])
+            _ -> a 
+        _ -> a
+    ) chatRoomModel.chatEntries chatEntry  
+  }
+      
+
+
 type alias ChatRoom = 
   {
       guid : ChatRoomGuid 
   ,   title : String
   ,   lastEntry : ChatEntry
   }
+
+setLastEntry: ChatEntry -> ChatRoom -> ChatRoom
+setLastEntry chatEntry chatRoom = 
+  { chatRoom | lastEntry = chatEntry }
 
 type alias User = 
   {
