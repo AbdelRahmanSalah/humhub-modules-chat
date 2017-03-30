@@ -1,6 +1,7 @@
 module Models exposing (..)
 
 import RemoteData exposing (..)
+import Uuid exposing (..)
 
 type alias Model = 
   {
@@ -48,6 +49,8 @@ type alias ChatRoom =
   ,   lastEntry : ChatEntry
   }
 
+type alias ChatRoomGuid = Uuid
+
 setLastEntry: ChatEntry -> ChatRoom -> ChatRoom
 setLastEntry chatEntry chatRoom = 
   { chatRoom | lastEntry = chatEntry }
@@ -55,11 +58,12 @@ setLastEntry chatEntry chatRoom =
 type alias User = 
   {
       name : String
+  ,   guid : UserGuid
   ,   profileImg : String
   ,   profileLink : String
   }
 
-type alias ChatRoomGuid = String
+type alias UserGuid = Uuid
 
 type alias ChatEntryModel = 
   {
@@ -75,4 +79,4 @@ type alias ChatEntry =
   ,   chatRoomGuid : ChatRoomGuid
   }
 
-type alias ChatEntryGuid = String
+type alias ChatEntryGuid = Uuid
