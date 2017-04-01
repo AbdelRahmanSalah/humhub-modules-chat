@@ -17,19 +17,21 @@ class IndexController extends Controller
         ];
     }
 
-    public function actionGetMessages()
+    public function actionGetRooms()
     {
         Yii::$app->response->format = 'json';
 
+        $offset = (int) Yii::$app->response->get('offset', 0);
         $query = UserChatRoom::find();
         $query->join(ChatRoom);
         $query->where([UserChatRoom::tableName() . '.user_id' => Yii::$app->user->id]);
         $query->orderBy(ChatRoom::tableName() . '.updated_at DESC');
+        
+        if($offset > 0)
+            $query->offset($offset)->limit(20);
+        else 
+            $query->limit(20);
 
-        $countQuery = clone $query;
-        $roomCount = $countQuery->count();
-        $pagination = new \yii\data\Pagination(['totalCount' => $roomCount, 'pageSize' => 25]);
-        $query->offset($pagination->offset)->limit($pagination->limit);
         $userRooms = $query->all();
         $Rooms = [];
         $results = [];
