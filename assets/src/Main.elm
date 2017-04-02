@@ -23,3 +23,7 @@ main =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     newChatEntry Msgs.NewPubNubEntry
+
+
+-- useful when upload files
+-- https://www.paramander.com/blog/using-ports-to-deal-with-files-in-elm-0-17
