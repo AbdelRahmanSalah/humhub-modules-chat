@@ -1,4 +1,3 @@
-
 module Commands exposing (..)
 
 import RemoteData exposing (..)
@@ -9,15 +8,22 @@ import Http
 import Json.Decode as Decode
 import Json.Decode.Pipeline exposing (decode, required, hardcoded)
 
+
 fetchMessagesList : Int -> Cmd Msg
-fetchMessagesList offset = 
-    Http.get (allRoomsUrl offset) chatRoomsDecoder
+fetchMessagesList offset =
+    Http.get (allRoomsUrl offset) chatRoomsModelDecoder
         |> RemoteData.sendRequest
-        |> Cmd.map OnFetchChatRooms 
+        |> Cmd.map OnFetchChatRooms
+
 
 chatRoomsDecoder : Decode.Decoder (List ChatRoom)
 chatRoomsDecoder =
     Decode.list chatRoomDecoder
+
+
+chatRoomsModelDecoder : Decode.Decoder (List ChatRoomModel)
+chatRoomsModelDecoder =
+    Decode.list chatRoomModelDecoder
 
 
 chatRoomDecoder : Decode.Decoder ChatRoom
@@ -27,23 +33,26 @@ chatRoomDecoder =
         |> required "title" Decode.string
         |> hardcoded Nothing
 
+
 chatEntryDecoder : Decode.Decoder ChatEntry
-chatEntryDecoder = 
+chatEntryDecoder =
     decode ChatEntry
         |> required "guid" Decode.string
         |> required "message" Decode.string
         |> required "createdAt" Decode.string
 
+
 userDecoder : Decode.Decoder User
-userDecoder = 
+userDecoder =
     decode User
-        |> required "name" Decode.string 
-        |> required "guid" Decode.string 
+        |> required "name" Decode.string
+        |> required "guid" Decode.string
         |> required "profileImg" Decode.string
         |> required "profileLink" Decode.string
 
+
 chatRoomModelDecoder : Decode.Decoder ChatRoomModel
-chatRoomModelDecoder = 
+chatRoomModelDecoder =
     decode ChatRoomModel
         |> required "chatRoom" chatRoomDecoder
         |> hardcoded Nothing

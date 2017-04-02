@@ -3,9 +3,10 @@ module Msgs exposing (..)
 import Models exposing (..)
 import RemoteData exposing (..)
 
-type Msg = 
-    Send ChatRoom ChatEntry
+
+type Msg
+    = Send ChatEntryModel
     | LoadChatEntries ChatRoom
-    | OnFetchChatRooms (WebData (List ChatRoom))
+    | OnFetchChatRooms (WebData (List ChatRoomModel))
     | OnFetchChatEntries (WebData (List ChatEntry))
     | NewPubNubEntry ChatEntry

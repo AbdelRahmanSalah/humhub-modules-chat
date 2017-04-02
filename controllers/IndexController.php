@@ -2,6 +2,7 @@
 
 namespace humhub\modules\chat\controllers;
 
+use Yii;
 use humhub\components\Controller;
 use humhub\modules\chat\models\ChatRoom;
 use humhub\modules\chat\models\UserChatRoom;
@@ -17,15 +18,21 @@ class IndexController extends Controller
         ];
     }
 
+    public function actionIndex()
+    {
+        return $this->render('index', []);
+    }
+
     public function actionGetRooms()
     {
         Yii::$app->response->format = 'json';
 
-        $offset = (int) Yii::$app->response->get('offset', 0);
+        $offset = (int) Yii::$app->request->get('offset', 0);
+        
         $query = UserChatRoom::find();
-        $query->join(ChatRoom);
-        $query->where([UserChatRoom::tableName() . '.user_id' => Yii::$app->user->id]);
-        $query->orderBy(ChatRoom::tableName() . '.updated_at DESC');
+        $query->leftJoin('chat_room', 'chat_room_id = chat_room.id');
+        $query->where(["user_chat_room.user_id" => Yii::$app->user->id]);
+        $query->orderBy('chat_room.updated_at DESC');
         
         if($offset > 0)
             $query->offset($offset)->limit(20);
@@ -37,19 +44,32 @@ class IndexController extends Controller
         $results = [];
         foreach ($userRooms as $userRoom) {
             $chatRoom = $userRoom->chatRoom;
-            $lastEntry = $chatRoom->getLastEntry();
-            $lastEntryUser = $lastEntry->user;
-            $results []= 
-                array_merge(ArrayHelper::toArray($chatRoom)
-                                , ["lastEntry" => array_merge(ArrayHelper::toArray($lastEntry) , ["user" => [
-                            "name" => $lastEntryUser->displayName
-                        ,   "profileImg" => $lastEntryUser->getProfileImage()->getUrl()
-                        ,   "profileLink" => $lastEntryUser->url
-                    ]])]
-                )
-            ; 
+            $results []= ArrayHelper::toArray($chatRoom);
         }
         return $results;
+    }
+
+    public function actionCreateChatRoom()
+    {
+        Yii::$app->response->format = 'json';
+
+        $title = Yii::$app->request->get("title", null);
+        $userGuids = Yii::$app->request->get("userGuids", null);
+        if($userGuids == null)
+            return [
+                "error" => true
+            ,   "result" => "Sorry, You cann't create empty chat room"
+            ];
+        $chatRoom = new ChatRoom();
+        $chatRoom->title = $title;
+        if($chatRoom->validate() && $chatRoom->save()) {
+
+        } else {
+            return [
+                "error" => true
+            ,   "result" => $chatRoom->errors    
+            ];
+        }
     } 
 
 }

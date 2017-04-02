@@ -8,6 +8,7 @@ class m170329_053705_init_chat_module extends Migration
     {
         $this->createTable('chat_room', [
             'id' => 'pk',
+            'guid' => 'varchar(45) NOT NULL',
             'title' => 'varchar(255) DEFAULT NULL',
             'created_at' => 'datetime NOT NULL',
             'created_by' => 'int(11) NOT NULL',

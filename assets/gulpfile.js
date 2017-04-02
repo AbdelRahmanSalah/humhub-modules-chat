@@ -9,7 +9,7 @@ var gulp = require('gulp'),
   clean = require('gulp-rimraf'),
   counter = 0;
 
-var cmd = 'elm make ./src/Main.elm --output ./elm-mail.js';
+var cmd = 'elm make ./src/Main.elm --output ./chat.js';
 clear();
 gulp.task('default', ['watch', 'elm']);
 

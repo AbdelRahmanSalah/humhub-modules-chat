@@ -5837,6 +5837,28 @@ var _NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required = F3(
 			decoder);
 	});
 
+var _elm_lang$core$Native_Bitwise = function() {
+
+return {
+	and: F2(function and(a, b) { return a & b; }),
+	or: F2(function or(a, b) { return a | b; }),
+	xor: F2(function xor(a, b) { return a ^ b; }),
+	complement: function complement(a) { return ~a; },
+	shiftLeftBy: F2(function(offset, a) { return a << offset; }),
+	shiftRightBy: F2(function(offset, a) { return a >> offset; }),
+	shiftRightZfBy: F2(function(offset, a) { return a >>> offset; })
+};
+
+}();
+
+var _elm_lang$core$Bitwise$shiftRightZfBy = _elm_lang$core$Native_Bitwise.shiftRightZfBy;
+var _elm_lang$core$Bitwise$shiftRightBy = _elm_lang$core$Native_Bitwise.shiftRightBy;
+var _elm_lang$core$Bitwise$shiftLeftBy = _elm_lang$core$Native_Bitwise.shiftLeftBy;
+var _elm_lang$core$Bitwise$complement = _elm_lang$core$Native_Bitwise.complement;
+var _elm_lang$core$Bitwise$xor = _elm_lang$core$Native_Bitwise.xor;
+var _elm_lang$core$Bitwise$or = _elm_lang$core$Native_Bitwise.or;
+var _elm_lang$core$Bitwise$and = _elm_lang$core$Native_Bitwise.and;
+
 var _elm_lang$core$Task$onError = _elm_lang$core$Native_Scheduler.onError;
 var _elm_lang$core$Task$andThen = _elm_lang$core$Native_Scheduler.andThen;
 var _elm_lang$core$Task$spawnCmd = F2(
@@ -6248,6 +6270,847 @@ var _elm_lang$core$Time$subMap = F2(
 			});
 	});
 _elm_lang$core$Native_Platform.effectManagers['Time'] = {pkg: 'elm-lang/core', init: _elm_lang$core$Time$init, onEffects: _elm_lang$core$Time$onEffects, onSelfMsg: _elm_lang$core$Time$onSelfMsg, tag: 'sub', subMap: _elm_lang$core$Time$subMap};
+
+var _mgold$elm_random_pcg$Random_Pcg$toJson = function (_p0) {
+	var _p1 = _p0;
+	return _elm_lang$core$Json_Encode$list(
+		{
+			ctor: '::',
+			_0: _elm_lang$core$Json_Encode$int(_p1._0),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$core$Json_Encode$int(_p1._1),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _mgold$elm_random_pcg$Random_Pcg$mul32 = F2(
+	function (a, b) {
+		var bl = b & 65535;
+		var bh = 65535 & (b >>> 16);
+		var al = a & 65535;
+		var ah = 65535 & (a >>> 16);
+		return 0 | ((al * bl) + ((((ah * bl) + (al * bh)) << 16) >>> 0));
+	});
+var _mgold$elm_random_pcg$Random_Pcg$listHelp = F4(
+	function (list, n, generate, seed) {
+		listHelp:
+		while (true) {
+			if (_elm_lang$core$Native_Utils.cmp(n, 1) < 0) {
+				return {ctor: '_Tuple2', _0: list, _1: seed};
+			} else {
+				var _p2 = generate(seed);
+				var value = _p2._0;
+				var newSeed = _p2._1;
+				var _v1 = {ctor: '::', _0: value, _1: list},
+					_v2 = n - 1,
+					_v3 = generate,
+					_v4 = newSeed;
+				list = _v1;
+				n = _v2;
+				generate = _v3;
+				seed = _v4;
+				continue listHelp;
+			}
+		}
+	});
+var _mgold$elm_random_pcg$Random_Pcg$minInt = -2147483648;
+var _mgold$elm_random_pcg$Random_Pcg$maxInt = 2147483647;
+var _mgold$elm_random_pcg$Random_Pcg$bit27 = 1.34217728e8;
+var _mgold$elm_random_pcg$Random_Pcg$bit53 = 9.007199254740992e15;
+var _mgold$elm_random_pcg$Random_Pcg$peel = function (_p3) {
+	var _p4 = _p3;
+	var _p5 = _p4._0;
+	var word = (_p5 ^ (_p5 >>> ((_p5 >>> 28) + 4))) * 277803737;
+	return ((word >>> 22) ^ word) >>> 0;
+};
+var _mgold$elm_random_pcg$Random_Pcg$step = F2(
+	function (_p6, seed) {
+		var _p7 = _p6;
+		return _p7._0(seed);
+	});
+var _mgold$elm_random_pcg$Random_Pcg$retry = F3(
+	function (generator, predicate, seed) {
+		retry:
+		while (true) {
+			var _p8 = A2(_mgold$elm_random_pcg$Random_Pcg$step, generator, seed);
+			var candidate = _p8._0;
+			var newSeed = _p8._1;
+			if (predicate(candidate)) {
+				return {ctor: '_Tuple2', _0: candidate, _1: newSeed};
+			} else {
+				var _v7 = generator,
+					_v8 = predicate,
+					_v9 = newSeed;
+				generator = _v7;
+				predicate = _v8;
+				seed = _v9;
+				continue retry;
+			}
+		}
+	});
+var _mgold$elm_random_pcg$Random_Pcg$Generator = function (a) {
+	return {ctor: 'Generator', _0: a};
+};
+var _mgold$elm_random_pcg$Random_Pcg$list = F2(
+	function (n, _p9) {
+		var _p10 = _p9;
+		return _mgold$elm_random_pcg$Random_Pcg$Generator(
+			function (seed) {
+				return A4(
+					_mgold$elm_random_pcg$Random_Pcg$listHelp,
+					{ctor: '[]'},
+					n,
+					_p10._0,
+					seed);
+			});
+	});
+var _mgold$elm_random_pcg$Random_Pcg$constant = function (value) {
+	return _mgold$elm_random_pcg$Random_Pcg$Generator(
+		function (seed) {
+			return {ctor: '_Tuple2', _0: value, _1: seed};
+		});
+};
+var _mgold$elm_random_pcg$Random_Pcg$map = F2(
+	function (func, _p11) {
+		var _p12 = _p11;
+		return _mgold$elm_random_pcg$Random_Pcg$Generator(
+			function (seed0) {
+				var _p13 = _p12._0(seed0);
+				var a = _p13._0;
+				var seed1 = _p13._1;
+				return {
+					ctor: '_Tuple2',
+					_0: func(a),
+					_1: seed1
+				};
+			});
+	});
+var _mgold$elm_random_pcg$Random_Pcg$map2 = F3(
+	function (func, _p15, _p14) {
+		var _p16 = _p15;
+		var _p17 = _p14;
+		return _mgold$elm_random_pcg$Random_Pcg$Generator(
+			function (seed0) {
+				var _p18 = _p16._0(seed0);
+				var a = _p18._0;
+				var seed1 = _p18._1;
+				var _p19 = _p17._0(seed1);
+				var b = _p19._0;
+				var seed2 = _p19._1;
+				return {
+					ctor: '_Tuple2',
+					_0: A2(func, a, b),
+					_1: seed2
+				};
+			});
+	});
+var _mgold$elm_random_pcg$Random_Pcg$pair = F2(
+	function (genA, genB) {
+		return A3(
+			_mgold$elm_random_pcg$Random_Pcg$map2,
+			F2(
+				function (v0, v1) {
+					return {ctor: '_Tuple2', _0: v0, _1: v1};
+				}),
+			genA,
+			genB);
+	});
+var _mgold$elm_random_pcg$Random_Pcg$andMap = _mgold$elm_random_pcg$Random_Pcg$map2(
+	F2(
+		function (x, y) {
+			return x(y);
+		}));
+var _mgold$elm_random_pcg$Random_Pcg$map3 = F4(
+	function (func, _p22, _p21, _p20) {
+		var _p23 = _p22;
+		var _p24 = _p21;
+		var _p25 = _p20;
+		return _mgold$elm_random_pcg$Random_Pcg$Generator(
+			function (seed0) {
+				var _p26 = _p23._0(seed0);
+				var a = _p26._0;
+				var seed1 = _p26._1;
+				var _p27 = _p24._0(seed1);
+				var b = _p27._0;
+				var seed2 = _p27._1;
+				var _p28 = _p25._0(seed2);
+				var c = _p28._0;
+				var seed3 = _p28._1;
+				return {
+					ctor: '_Tuple2',
+					_0: A3(func, a, b, c),
+					_1: seed3
+				};
+			});
+	});
+var _mgold$elm_random_pcg$Random_Pcg$map4 = F5(
+	function (func, _p32, _p31, _p30, _p29) {
+		var _p33 = _p32;
+		var _p34 = _p31;
+		var _p35 = _p30;
+		var _p36 = _p29;
+		return _mgold$elm_random_pcg$Random_Pcg$Generator(
+			function (seed0) {
+				var _p37 = _p33._0(seed0);
+				var a = _p37._0;
+				var seed1 = _p37._1;
+				var _p38 = _p34._0(seed1);
+				var b = _p38._0;
+				var seed2 = _p38._1;
+				var _p39 = _p35._0(seed2);
+				var c = _p39._0;
+				var seed3 = _p39._1;
+				var _p40 = _p36._0(seed3);
+				var d = _p40._0;
+				var seed4 = _p40._1;
+				return {
+					ctor: '_Tuple2',
+					_0: A4(func, a, b, c, d),
+					_1: seed4
+				};
+			});
+	});
+var _mgold$elm_random_pcg$Random_Pcg$map5 = F6(
+	function (func, _p45, _p44, _p43, _p42, _p41) {
+		var _p46 = _p45;
+		var _p47 = _p44;
+		var _p48 = _p43;
+		var _p49 = _p42;
+		var _p50 = _p41;
+		return _mgold$elm_random_pcg$Random_Pcg$Generator(
+			function (seed0) {
+				var _p51 = _p46._0(seed0);
+				var a = _p51._0;
+				var seed1 = _p51._1;
+				var _p52 = _p47._0(seed1);
+				var b = _p52._0;
+				var seed2 = _p52._1;
+				var _p53 = _p48._0(seed2);
+				var c = _p53._0;
+				var seed3 = _p53._1;
+				var _p54 = _p49._0(seed3);
+				var d = _p54._0;
+				var seed4 = _p54._1;
+				var _p55 = _p50._0(seed4);
+				var e = _p55._0;
+				var seed5 = _p55._1;
+				return {
+					ctor: '_Tuple2',
+					_0: A5(func, a, b, c, d, e),
+					_1: seed5
+				};
+			});
+	});
+var _mgold$elm_random_pcg$Random_Pcg$andThen = F2(
+	function (callback, _p56) {
+		var _p57 = _p56;
+		return _mgold$elm_random_pcg$Random_Pcg$Generator(
+			function (seed) {
+				var _p58 = _p57._0(seed);
+				var result = _p58._0;
+				var newSeed = _p58._1;
+				var _p59 = callback(result);
+				var generateB = _p59._0;
+				return generateB(newSeed);
+			});
+	});
+var _mgold$elm_random_pcg$Random_Pcg$maybe = F2(
+	function (genBool, genA) {
+		return A2(
+			_mgold$elm_random_pcg$Random_Pcg$andThen,
+			function (b) {
+				return b ? A2(_mgold$elm_random_pcg$Random_Pcg$map, _elm_lang$core$Maybe$Just, genA) : _mgold$elm_random_pcg$Random_Pcg$constant(_elm_lang$core$Maybe$Nothing);
+			},
+			genBool);
+	});
+var _mgold$elm_random_pcg$Random_Pcg$filter = F2(
+	function (predicate, generator) {
+		return _mgold$elm_random_pcg$Random_Pcg$Generator(
+			A2(_mgold$elm_random_pcg$Random_Pcg$retry, generator, predicate));
+	});
+var _mgold$elm_random_pcg$Random_Pcg$Seed = F2(
+	function (a, b) {
+		return {ctor: 'Seed', _0: a, _1: b};
+	});
+var _mgold$elm_random_pcg$Random_Pcg$next = function (_p60) {
+	var _p61 = _p60;
+	var _p62 = _p61._1;
+	return A2(_mgold$elm_random_pcg$Random_Pcg$Seed, ((_p61._0 * 1664525) + _p62) >>> 0, _p62);
+};
+var _mgold$elm_random_pcg$Random_Pcg$initialSeed = function (x) {
+	var _p63 = _mgold$elm_random_pcg$Random_Pcg$next(
+		A2(_mgold$elm_random_pcg$Random_Pcg$Seed, 0, 1013904223));
+	var state1 = _p63._0;
+	var incr = _p63._1;
+	var state2 = (state1 + x) >>> 0;
+	return _mgold$elm_random_pcg$Random_Pcg$next(
+		A2(_mgold$elm_random_pcg$Random_Pcg$Seed, state2, incr));
+};
+var _mgold$elm_random_pcg$Random_Pcg$generate = F2(
+	function (toMsg, generator) {
+		return A2(
+			_elm_lang$core$Task$perform,
+			toMsg,
+			A2(
+				_elm_lang$core$Task$map,
+				function (_p64) {
+					return _elm_lang$core$Tuple$first(
+						A2(
+							_mgold$elm_random_pcg$Random_Pcg$step,
+							generator,
+							_mgold$elm_random_pcg$Random_Pcg$initialSeed(
+								_elm_lang$core$Basics$round(_p64))));
+				},
+				_elm_lang$core$Time$now));
+	});
+var _mgold$elm_random_pcg$Random_Pcg$int = F2(
+	function (a, b) {
+		return _mgold$elm_random_pcg$Random_Pcg$Generator(
+			function (seed0) {
+				var _p65 = (_elm_lang$core$Native_Utils.cmp(a, b) < 0) ? {ctor: '_Tuple2', _0: a, _1: b} : {ctor: '_Tuple2', _0: b, _1: a};
+				var lo = _p65._0;
+				var hi = _p65._1;
+				var range = (hi - lo) + 1;
+				if (_elm_lang$core$Native_Utils.eq((range - 1) & range, 0)) {
+					return {
+						ctor: '_Tuple2',
+						_0: (((range - 1) & _mgold$elm_random_pcg$Random_Pcg$peel(seed0)) >>> 0) + lo,
+						_1: _mgold$elm_random_pcg$Random_Pcg$next(seed0)
+					};
+				} else {
+					var threshhold = A2(_elm_lang$core$Basics$rem, (0 - range) >>> 0, range) >>> 0;
+					var accountForBias = function (seed) {
+						accountForBias:
+						while (true) {
+							var seedN = _mgold$elm_random_pcg$Random_Pcg$next(seed);
+							var x = _mgold$elm_random_pcg$Random_Pcg$peel(seed);
+							if (_elm_lang$core$Native_Utils.cmp(x, threshhold) < 0) {
+								var _v28 = seedN;
+								seed = _v28;
+								continue accountForBias;
+							} else {
+								return {
+									ctor: '_Tuple2',
+									_0: A2(_elm_lang$core$Basics$rem, x, range) + lo,
+									_1: seedN
+								};
+							}
+						}
+					};
+					return accountForBias(seed0);
+				}
+			});
+	});
+var _mgold$elm_random_pcg$Random_Pcg$bool = A2(
+	_mgold$elm_random_pcg$Random_Pcg$map,
+	F2(
+		function (x, y) {
+			return _elm_lang$core$Native_Utils.eq(x, y);
+		})(1),
+	A2(_mgold$elm_random_pcg$Random_Pcg$int, 0, 1));
+var _mgold$elm_random_pcg$Random_Pcg$choice = F2(
+	function (x, y) {
+		return A2(
+			_mgold$elm_random_pcg$Random_Pcg$map,
+			function (b) {
+				return b ? x : y;
+			},
+			_mgold$elm_random_pcg$Random_Pcg$bool);
+	});
+var _mgold$elm_random_pcg$Random_Pcg$oneIn = function (n) {
+	return A2(
+		_mgold$elm_random_pcg$Random_Pcg$map,
+		F2(
+			function (x, y) {
+				return _elm_lang$core$Native_Utils.eq(x, y);
+			})(1),
+		A2(_mgold$elm_random_pcg$Random_Pcg$int, 1, n));
+};
+var _mgold$elm_random_pcg$Random_Pcg$sample = function () {
+	var find = F2(
+		function (k, ys) {
+			find:
+			while (true) {
+				var _p66 = ys;
+				if (_p66.ctor === '[]') {
+					return _elm_lang$core$Maybe$Nothing;
+				} else {
+					if (_elm_lang$core$Native_Utils.eq(k, 0)) {
+						return _elm_lang$core$Maybe$Just(_p66._0);
+					} else {
+						var _v30 = k - 1,
+							_v31 = _p66._1;
+						k = _v30;
+						ys = _v31;
+						continue find;
+					}
+				}
+			}
+		});
+	return function (xs) {
+		return A2(
+			_mgold$elm_random_pcg$Random_Pcg$map,
+			function (i) {
+				return A2(find, i, xs);
+			},
+			A2(
+				_mgold$elm_random_pcg$Random_Pcg$int,
+				0,
+				_elm_lang$core$List$length(xs) - 1));
+	};
+}();
+var _mgold$elm_random_pcg$Random_Pcg$float = F2(
+	function (min, max) {
+		return _mgold$elm_random_pcg$Random_Pcg$Generator(
+			function (seed0) {
+				var range = _elm_lang$core$Basics$abs(max - min);
+				var n0 = _mgold$elm_random_pcg$Random_Pcg$peel(seed0);
+				var hi = _elm_lang$core$Basics$toFloat(67108863 & n0) * 1.0;
+				var seed1 = _mgold$elm_random_pcg$Random_Pcg$next(seed0);
+				var n1 = _mgold$elm_random_pcg$Random_Pcg$peel(seed1);
+				var lo = _elm_lang$core$Basics$toFloat(134217727 & n1) * 1.0;
+				var val = ((hi * _mgold$elm_random_pcg$Random_Pcg$bit27) + lo) / _mgold$elm_random_pcg$Random_Pcg$bit53;
+				var scaled = (val * range) + min;
+				return {
+					ctor: '_Tuple2',
+					_0: scaled,
+					_1: _mgold$elm_random_pcg$Random_Pcg$next(seed1)
+				};
+			});
+	});
+var _mgold$elm_random_pcg$Random_Pcg$frequency = function (pairs) {
+	var pick = F2(
+		function (choices, n) {
+			pick:
+			while (true) {
+				var _p67 = choices;
+				if ((_p67.ctor === '::') && (_p67._0.ctor === '_Tuple2')) {
+					var _p68 = _p67._0._0;
+					if (_elm_lang$core$Native_Utils.cmp(n, _p68) < 1) {
+						return _p67._0._1;
+					} else {
+						var _v33 = _p67._1,
+							_v34 = n - _p68;
+						choices = _v33;
+						n = _v34;
+						continue pick;
+					}
+				} else {
+					return _elm_lang$core$Native_Utils.crashCase(
+						'Random.Pcg',
+						{
+							start: {line: 682, column: 13},
+							end: {line: 690, column: 77}
+						},
+						_p67)('Empty list passed to Random.Pcg.frequency!');
+				}
+			}
+		});
+	var total = _elm_lang$core$List$sum(
+		A2(
+			_elm_lang$core$List$map,
+			function (_p70) {
+				return _elm_lang$core$Basics$abs(
+					_elm_lang$core$Tuple$first(_p70));
+			},
+			pairs));
+	return A2(
+		_mgold$elm_random_pcg$Random_Pcg$andThen,
+		pick(pairs),
+		A2(_mgold$elm_random_pcg$Random_Pcg$float, 0, total));
+};
+var _mgold$elm_random_pcg$Random_Pcg$choices = function (gens) {
+	return _mgold$elm_random_pcg$Random_Pcg$frequency(
+		A2(
+			_elm_lang$core$List$map,
+			function (g) {
+				return {ctor: '_Tuple2', _0: 1, _1: g};
+			},
+			gens));
+};
+var _mgold$elm_random_pcg$Random_Pcg$independentSeed = _mgold$elm_random_pcg$Random_Pcg$Generator(
+	function (seed0) {
+		var gen = A2(_mgold$elm_random_pcg$Random_Pcg$int, 0, 4294967295);
+		var _p71 = A2(
+			_mgold$elm_random_pcg$Random_Pcg$step,
+			A4(
+				_mgold$elm_random_pcg$Random_Pcg$map3,
+				F3(
+					function (v0, v1, v2) {
+						return {ctor: '_Tuple3', _0: v0, _1: v1, _2: v2};
+					}),
+				gen,
+				gen,
+				gen),
+			seed0);
+		var state = _p71._0._0;
+		var b = _p71._0._1;
+		var c = _p71._0._2;
+		var seed1 = _p71._1;
+		var incr = 1 | (b ^ c);
+		return {
+			ctor: '_Tuple2',
+			_0: seed1,
+			_1: _mgold$elm_random_pcg$Random_Pcg$next(
+				A2(_mgold$elm_random_pcg$Random_Pcg$Seed, state, incr))
+		};
+	});
+var _mgold$elm_random_pcg$Random_Pcg$fastForward = F2(
+	function (delta0, _p72) {
+		var _p73 = _p72;
+		var _p76 = _p73._1;
+		var helper = F6(
+			function (accMult, accPlus, curMult, curPlus, delta, repeat) {
+				helper:
+				while (true) {
+					var newDelta = delta >>> 1;
+					var curMult_ = A2(_mgold$elm_random_pcg$Random_Pcg$mul32, curMult, curMult);
+					var curPlus_ = A2(_mgold$elm_random_pcg$Random_Pcg$mul32, curMult + 1, curPlus);
+					var _p74 = _elm_lang$core$Native_Utils.eq(delta & 1, 1) ? {
+						ctor: '_Tuple2',
+						_0: A2(_mgold$elm_random_pcg$Random_Pcg$mul32, accMult, curMult),
+						_1: (A2(_mgold$elm_random_pcg$Random_Pcg$mul32, accPlus, curMult) + curPlus) >>> 0
+					} : {ctor: '_Tuple2', _0: accMult, _1: accPlus};
+					var accMult_ = _p74._0;
+					var accPlus_ = _p74._1;
+					if (_elm_lang$core$Native_Utils.eq(newDelta, 0)) {
+						if ((_elm_lang$core$Native_Utils.cmp(delta0, 0) < 0) && repeat) {
+							var _v36 = accMult_,
+								_v37 = accPlus_,
+								_v38 = curMult_,
+								_v39 = curPlus_,
+								_v40 = -1,
+								_v41 = false;
+							accMult = _v36;
+							accPlus = _v37;
+							curMult = _v38;
+							curPlus = _v39;
+							delta = _v40;
+							repeat = _v41;
+							continue helper;
+						} else {
+							return {ctor: '_Tuple2', _0: accMult_, _1: accPlus_};
+						}
+					} else {
+						var _v42 = accMult_,
+							_v43 = accPlus_,
+							_v44 = curMult_,
+							_v45 = curPlus_,
+							_v46 = newDelta,
+							_v47 = repeat;
+						accMult = _v42;
+						accPlus = _v43;
+						curMult = _v44;
+						curPlus = _v45;
+						delta = _v46;
+						repeat = _v47;
+						continue helper;
+					}
+				}
+			});
+		var _p75 = A6(helper, 1, 0, 1664525, _p76, delta0, true);
+		var accMultFinal = _p75._0;
+		var accPlusFinal = _p75._1;
+		return A2(
+			_mgold$elm_random_pcg$Random_Pcg$Seed,
+			(A2(_mgold$elm_random_pcg$Random_Pcg$mul32, accMultFinal, _p73._0) + accPlusFinal) >>> 0,
+			_p76);
+	});
+var _mgold$elm_random_pcg$Random_Pcg$fromJson = _elm_lang$core$Json_Decode$oneOf(
+	{
+		ctor: '::',
+		_0: A3(
+			_elm_lang$core$Json_Decode$map2,
+			_mgold$elm_random_pcg$Random_Pcg$Seed,
+			A2(_elm_lang$core$Json_Decode$index, 0, _elm_lang$core$Json_Decode$int),
+			A2(_elm_lang$core$Json_Decode$index, 1, _elm_lang$core$Json_Decode$int)),
+		_1: {
+			ctor: '::',
+			_0: A2(_elm_lang$core$Json_Decode$map, _mgold$elm_random_pcg$Random_Pcg$initialSeed, _elm_lang$core$Json_Decode$int),
+			_1: {ctor: '[]'}
+		}
+	});
+
+//import Maybe, Native.List //
+
+var _elm_lang$core$Native_Regex = function() {
+
+function escape(str)
+{
+	return str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+}
+function caseInsensitive(re)
+{
+	return new RegExp(re.source, 'gi');
+}
+function regex(raw)
+{
+	return new RegExp(raw, 'g');
+}
+
+function contains(re, string)
+{
+	return string.match(re) !== null;
+}
+
+function find(n, re, str)
+{
+	n = n.ctor === 'All' ? Infinity : n._0;
+	var out = [];
+	var number = 0;
+	var string = str;
+	var lastIndex = re.lastIndex;
+	var prevLastIndex = -1;
+	var result;
+	while (number++ < n && (result = re.exec(string)))
+	{
+		if (prevLastIndex === re.lastIndex) break;
+		var i = result.length - 1;
+		var subs = new Array(i);
+		while (i > 0)
+		{
+			var submatch = result[i];
+			subs[--i] = submatch === undefined
+				? _elm_lang$core$Maybe$Nothing
+				: _elm_lang$core$Maybe$Just(submatch);
+		}
+		out.push({
+			match: result[0],
+			submatches: _elm_lang$core$Native_List.fromArray(subs),
+			index: result.index,
+			number: number
+		});
+		prevLastIndex = re.lastIndex;
+	}
+	re.lastIndex = lastIndex;
+	return _elm_lang$core$Native_List.fromArray(out);
+}
+
+function replace(n, re, replacer, string)
+{
+	n = n.ctor === 'All' ? Infinity : n._0;
+	var count = 0;
+	function jsReplacer(match)
+	{
+		if (count++ >= n)
+		{
+			return match;
+		}
+		var i = arguments.length - 3;
+		var submatches = new Array(i);
+		while (i > 0)
+		{
+			var submatch = arguments[i];
+			submatches[--i] = submatch === undefined
+				? _elm_lang$core$Maybe$Nothing
+				: _elm_lang$core$Maybe$Just(submatch);
+		}
+		return replacer({
+			match: match,
+			submatches: _elm_lang$core$Native_List.fromArray(submatches),
+			index: arguments[arguments.length - 2],
+			number: count
+		});
+	}
+	return string.replace(re, jsReplacer);
+}
+
+function split(n, re, str)
+{
+	n = n.ctor === 'All' ? Infinity : n._0;
+	if (n === Infinity)
+	{
+		return _elm_lang$core$Native_List.fromArray(str.split(re));
+	}
+	var string = str;
+	var result;
+	var out = [];
+	var start = re.lastIndex;
+	var restoreLastIndex = re.lastIndex;
+	while (n--)
+	{
+		if (!(result = re.exec(string))) break;
+		out.push(string.slice(start, result.index));
+		start = re.lastIndex;
+	}
+	out.push(string.slice(start));
+	re.lastIndex = restoreLastIndex;
+	return _elm_lang$core$Native_List.fromArray(out);
+}
+
+return {
+	regex: regex,
+	caseInsensitive: caseInsensitive,
+	escape: escape,
+
+	contains: F2(contains),
+	find: F3(find),
+	replace: F4(replace),
+	split: F3(split)
+};
+
+}();
+
+var _elm_lang$core$Regex$split = _elm_lang$core$Native_Regex.split;
+var _elm_lang$core$Regex$replace = _elm_lang$core$Native_Regex.replace;
+var _elm_lang$core$Regex$find = _elm_lang$core$Native_Regex.find;
+var _elm_lang$core$Regex$contains = _elm_lang$core$Native_Regex.contains;
+var _elm_lang$core$Regex$caseInsensitive = _elm_lang$core$Native_Regex.caseInsensitive;
+var _elm_lang$core$Regex$regex = _elm_lang$core$Native_Regex.regex;
+var _elm_lang$core$Regex$escape = _elm_lang$core$Native_Regex.escape;
+var _elm_lang$core$Regex$Match = F4(
+	function (a, b, c, d) {
+		return {match: a, submatches: b, index: c, number: d};
+	});
+var _elm_lang$core$Regex$Regex = {ctor: 'Regex'};
+var _elm_lang$core$Regex$AtMost = function (a) {
+	return {ctor: 'AtMost', _0: a};
+};
+var _elm_lang$core$Regex$All = {ctor: 'All'};
+
+var _danyx23$elm_uuid$Uuid_Barebones$hexGenerator = A2(_mgold$elm_random_pcg$Random_Pcg$int, 0, 15);
+var _danyx23$elm_uuid$Uuid_Barebones$hexDigits = function () {
+	var mapChars = F2(
+		function (offset, digit) {
+			return _elm_lang$core$Char$fromCode(digit + offset);
+		});
+	return _elm_lang$core$Array$fromList(
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			A2(
+				_elm_lang$core$List$map,
+				mapChars(48),
+				A2(_elm_lang$core$List$range, 0, 9)),
+			A2(
+				_elm_lang$core$List$map,
+				mapChars(97),
+				A2(_elm_lang$core$List$range, 0, 5))));
+}();
+var _danyx23$elm_uuid$Uuid_Barebones$mapToHex = function (index) {
+	var maybeResult = A2(_elm_lang$core$Basics$flip, _elm_lang$core$Array$get, _danyx23$elm_uuid$Uuid_Barebones$hexDigits)(index);
+	var _p0 = maybeResult;
+	if (_p0.ctor === 'Nothing') {
+		return _elm_lang$core$Native_Utils.chr('x');
+	} else {
+		return _p0._0;
+	}
+};
+var _danyx23$elm_uuid$Uuid_Barebones$uuidRegex = _elm_lang$core$Regex$regex('^[0-9A-Fa-f]{8,8}-[0-9A-Fa-f]{4,4}-[1-5][0-9A-Fa-f]{3,3}-[8-9A-Ba-b][0-9A-Fa-f]{3,3}-[0-9A-Fa-f]{12,12}$');
+var _danyx23$elm_uuid$Uuid_Barebones$limitDigitRange8ToB = function (digit) {
+	return (digit & 3) | 8;
+};
+var _danyx23$elm_uuid$Uuid_Barebones$toUuidString = function (thirtyOneHexDigits) {
+	return _elm_lang$core$String$concat(
+		{
+			ctor: '::',
+			_0: _elm_lang$core$String$fromList(
+				A2(
+					_elm_lang$core$List$map,
+					_danyx23$elm_uuid$Uuid_Barebones$mapToHex,
+					A2(_elm_lang$core$List$take, 8, thirtyOneHexDigits))),
+			_1: {
+				ctor: '::',
+				_0: '-',
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$core$String$fromList(
+						A2(
+							_elm_lang$core$List$map,
+							_danyx23$elm_uuid$Uuid_Barebones$mapToHex,
+							A2(
+								_elm_lang$core$List$take,
+								4,
+								A2(_elm_lang$core$List$drop, 8, thirtyOneHexDigits)))),
+					_1: {
+						ctor: '::',
+						_0: '-',
+						_1: {
+							ctor: '::',
+							_0: '4',
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$core$String$fromList(
+									A2(
+										_elm_lang$core$List$map,
+										_danyx23$elm_uuid$Uuid_Barebones$mapToHex,
+										A2(
+											_elm_lang$core$List$take,
+											3,
+											A2(_elm_lang$core$List$drop, 12, thirtyOneHexDigits)))),
+								_1: {
+									ctor: '::',
+									_0: '-',
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$core$String$fromList(
+											A2(
+												_elm_lang$core$List$map,
+												_danyx23$elm_uuid$Uuid_Barebones$mapToHex,
+												A2(
+													_elm_lang$core$List$map,
+													_danyx23$elm_uuid$Uuid_Barebones$limitDigitRange8ToB,
+													A2(
+														_elm_lang$core$List$take,
+														1,
+														A2(_elm_lang$core$List$drop, 15, thirtyOneHexDigits))))),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$core$String$fromList(
+												A2(
+													_elm_lang$core$List$map,
+													_danyx23$elm_uuid$Uuid_Barebones$mapToHex,
+													A2(
+														_elm_lang$core$List$take,
+														3,
+														A2(_elm_lang$core$List$drop, 16, thirtyOneHexDigits)))),
+											_1: {
+												ctor: '::',
+												_0: '-',
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$core$String$fromList(
+														A2(
+															_elm_lang$core$List$map,
+															_danyx23$elm_uuid$Uuid_Barebones$mapToHex,
+															A2(
+																_elm_lang$core$List$take,
+																12,
+																A2(_elm_lang$core$List$drop, 19, thirtyOneHexDigits)))),
+													_1: {ctor: '[]'}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		});
+};
+var _danyx23$elm_uuid$Uuid_Barebones$isValidUuid = function (uuidAsString) {
+	return A2(_elm_lang$core$Regex$contains, _danyx23$elm_uuid$Uuid_Barebones$uuidRegex, uuidAsString);
+};
+var _danyx23$elm_uuid$Uuid_Barebones$uuidStringGenerator = A2(
+	_mgold$elm_random_pcg$Random_Pcg$map,
+	_danyx23$elm_uuid$Uuid_Barebones$toUuidString,
+	A2(_mgold$elm_random_pcg$Random_Pcg$list, 31, _danyx23$elm_uuid$Uuid_Barebones$hexGenerator));
+
+var _danyx23$elm_uuid$Uuid$toString = function (_p0) {
+	var _p1 = _p0;
+	return _p1._0;
+};
+var _danyx23$elm_uuid$Uuid$Uuid = function (a) {
+	return {ctor: 'Uuid', _0: a};
+};
+var _danyx23$elm_uuid$Uuid$fromString = function (text) {
+	return _danyx23$elm_uuid$Uuid_Barebones$isValidUuid(text) ? _elm_lang$core$Maybe$Just(
+		_danyx23$elm_uuid$Uuid$Uuid(
+			_elm_lang$core$String$toLower(text))) : _elm_lang$core$Maybe$Nothing;
+};
+var _danyx23$elm_uuid$Uuid$uuidGenerator = A2(_mgold$elm_random_pcg$Random_Pcg$map, _danyx23$elm_uuid$Uuid$Uuid, _danyx23$elm_uuid$Uuid_Barebones$uuidStringGenerator);
 
 var _elm_lang$virtual_dom$VirtualDom_Debug$wrap;
 var _elm_lang$virtual_dom$VirtualDom_Debug$wrapWithFlags;
@@ -9113,6 +9976,563 @@ var _elm_lang$http$Http$StringPart = F2(
 	});
 var _elm_lang$http$Http$stringPart = _elm_lang$http$Http$StringPart;
 
+var _krisajenkins$elm_exts$Exts_Html_Bootstrap$video = F2(
+	function (ratio, url) {
+		var ratioClass = function () {
+			var _p0 = ratio;
+			if (_p0.ctor === 'SixteenByNine') {
+				return 'embed-responsive-16by9';
+			} else {
+				return 'embed-responsive-4by3';
+			}
+		}();
+		return A2(
+			_elm_lang$html$Html$div,
+			{ctor: '[]'},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$h1,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('About'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('embed-responsive'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$iframe,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('embed-responsive-item'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$src(url),
+										_1: {ctor: '[]'}
+									}
+								},
+								{ctor: '[]'}),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _krisajenkins$elm_exts$Exts_Html_Bootstrap$badge = _elm_lang$html$Html$span(
+	{
+		ctor: '::',
+		_0: _elm_lang$html$Html_Attributes$class('badge'),
+		_1: {ctor: '[]'}
+	});
+var _krisajenkins$elm_exts$Exts_Html_Bootstrap$well = _elm_lang$html$Html$div(
+	{
+		ctor: '::',
+		_0: _elm_lang$html$Html_Attributes$class('well'),
+		_1: {ctor: '[]'}
+	});
+var _krisajenkins$elm_exts$Exts_Html_Bootstrap$jumbotron = _elm_lang$html$Html$div(
+	{
+		ctor: '::',
+		_0: _elm_lang$html$Html_Attributes$class('jumbotron'),
+		_1: {ctor: '[]'}
+	});
+var _krisajenkins$elm_exts$Exts_Html_Bootstrap$clearfix = A2(
+	_elm_lang$html$Html$div,
+	{
+		ctor: '::',
+		_0: _elm_lang$html$Html_Attributes$class('clearfix'),
+		_1: {ctor: '[]'}
+	},
+	{ctor: '[]'});
+var _krisajenkins$elm_exts$Exts_Html_Bootstrap$empty = A2(
+	_elm_lang$html$Html$span,
+	{ctor: '[]'},
+	{ctor: '[]'});
+var _krisajenkins$elm_exts$Exts_Html_Bootstrap$formGroup = _elm_lang$html$Html$div(
+	{
+		ctor: '::',
+		_0: _elm_lang$html$Html_Attributes$class('form-group'),
+		_1: {ctor: '[]'}
+	});
+var _krisajenkins$elm_exts$Exts_Html_Bootstrap$row = _elm_lang$html$Html$div(
+	{
+		ctor: '::',
+		_0: _elm_lang$html$Html_Attributes$class('row'),
+		_1: {ctor: '[]'}
+	});
+var _krisajenkins$elm_exts$Exts_Html_Bootstrap$twoColumns = F2(
+	function (left, right) {
+		return _krisajenkins$elm_exts$Exts_Html_Bootstrap$row(
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('col-xs-6'),
+						_1: {ctor: '[]'}
+					},
+					left),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('col-xs-6'),
+							_1: {ctor: '[]'}
+						},
+						right),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _krisajenkins$elm_exts$Exts_Html_Bootstrap$containerFluid = _elm_lang$html$Html$div(
+	{
+		ctor: '::',
+		_0: _elm_lang$html$Html_Attributes$class('container-fluid'),
+		_1: {ctor: '[]'}
+	});
+var _krisajenkins$elm_exts$Exts_Html_Bootstrap$container = _elm_lang$html$Html$div(
+	{
+		ctor: '::',
+		_0: _elm_lang$html$Html_Attributes$class('container'),
+		_1: {ctor: '[]'}
+	});
+var _krisajenkins$elm_exts$Exts_Html_Bootstrap$stylesheet = A3(
+	_elm_lang$html$Html$node,
+	'link',
+	{
+		ctor: '::',
+		_0: _elm_lang$html$Html_Attributes$rel('stylesheet'),
+		_1: {
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$href('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'),
+			_1: {ctor: '[]'}
+		}
+	},
+	{ctor: '[]'});
+var _krisajenkins$elm_exts$Exts_Html_Bootstrap$FourByThree = {ctor: 'FourByThree'};
+var _krisajenkins$elm_exts$Exts_Html_Bootstrap$SixteenByNine = {ctor: 'SixteenByNine'};
+var _krisajenkins$elm_exts$Exts_Html_Bootstrap$Left = {ctor: 'Left'};
+var _krisajenkins$elm_exts$Exts_Html_Bootstrap$Bottom = {ctor: 'Bottom'};
+var _krisajenkins$elm_exts$Exts_Html_Bootstrap$Right = {ctor: 'Right'};
+var _krisajenkins$elm_exts$Exts_Html_Bootstrap$Top = {ctor: 'Top'};
+var _krisajenkins$elm_exts$Exts_Html_Bootstrap$popover = F5(
+	function (direction, isShown, styles, title, body) {
+		return A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$classList(
+					{
+						ctor: '::',
+						_0: {ctor: '_Tuple2', _0: 'popover fade', _1: true},
+						_1: {
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'in', _1: isShown},
+							_1: {
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'top',
+									_1: _elm_lang$core$Native_Utils.eq(direction, _krisajenkins$elm_exts$Exts_Html_Bootstrap$Top)
+								},
+								_1: {
+									ctor: '::',
+									_0: {
+										ctor: '_Tuple2',
+										_0: 'right',
+										_1: _elm_lang$core$Native_Utils.eq(direction, _krisajenkins$elm_exts$Exts_Html_Bootstrap$Right)
+									},
+									_1: {
+										ctor: '::',
+										_0: {
+											ctor: '_Tuple2',
+											_0: 'bottom',
+											_1: _elm_lang$core$Native_Utils.eq(direction, _krisajenkins$elm_exts$Exts_Html_Bootstrap$Bottom)
+										},
+										_1: {
+											ctor: '::',
+											_0: {
+												ctor: '_Tuple2',
+												_0: 'left',
+												_1: _elm_lang$core$Native_Utils.eq(direction, _krisajenkins$elm_exts$Exts_Html_Bootstrap$Left)
+											},
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							}
+						}
+					}),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$style(
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							styles,
+							{
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'display', _1: 'block'},
+								_1: {ctor: '[]'}
+							})),
+					_1: {ctor: '[]'}
+				}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('arrow'),
+						_1: {ctor: '[]'}
+					},
+					{ctor: '[]'}),
+				_1: {
+					ctor: '::',
+					_0: function () {
+						var _p1 = title;
+						if (_p1.ctor === 'Just') {
+							return A2(
+								_elm_lang$html$Html$h3,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('popover-title'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html$text(_p1._0),
+									_1: {ctor: '[]'}
+								});
+						} else {
+							return _krisajenkins$elm_exts$Exts_Html_Bootstrap$empty;
+						}
+					}(),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('popover-content'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: body,
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
+				}
+			});
+	});
+
+var _krisajenkins$elm_exts$Exts_Maybe$oneOf = A2(
+	_elm_lang$core$List$foldl,
+	F2(
+		function (x, acc) {
+			return (!_elm_lang$core$Native_Utils.eq(acc, _elm_lang$core$Maybe$Nothing)) ? acc : x;
+		}),
+	_elm_lang$core$Maybe$Nothing);
+var _krisajenkins$elm_exts$Exts_Maybe$when = F2(
+	function (test, value) {
+		return test ? _elm_lang$core$Maybe$Just(value) : _elm_lang$core$Maybe$Nothing;
+	});
+var _krisajenkins$elm_exts$Exts_Maybe$validate = F2(
+	function (predicate, value) {
+		return predicate(value) ? _elm_lang$core$Maybe$Just(value) : _elm_lang$core$Maybe$Nothing;
+	});
+var _krisajenkins$elm_exts$Exts_Maybe$matches = function (predicate) {
+	return _elm_lang$core$Maybe$andThen(
+		_krisajenkins$elm_exts$Exts_Maybe$validate(predicate));
+};
+var _krisajenkins$elm_exts$Exts_Maybe$maybeDefault = F2(
+	function ($default, x) {
+		var _p0 = x;
+		if (_p0.ctor === 'Just') {
+			return _elm_lang$core$Maybe$Just(_p0._0);
+		} else {
+			return _elm_lang$core$Maybe$Just($default);
+		}
+	});
+var _krisajenkins$elm_exts$Exts_Maybe$join = F3(
+	function (f, left, right) {
+		var _p1 = {ctor: '_Tuple2', _0: left, _1: right};
+		if (((_p1.ctor === '_Tuple2') && (_p1._0.ctor === 'Just')) && (_p1._1.ctor === 'Just')) {
+			return _elm_lang$core$Maybe$Just(
+				A2(f, _p1._0._0, _p1._1._0));
+		} else {
+			return _elm_lang$core$Maybe$Nothing;
+		}
+	});
+var _krisajenkins$elm_exts$Exts_Maybe$catMaybes = _elm_lang$core$List$filterMap(_elm_lang$core$Basics$identity);
+var _krisajenkins$elm_exts$Exts_Maybe$mappend = F2(
+	function (a, b) {
+		var _p2 = {ctor: '_Tuple2', _0: a, _1: b};
+		if (_p2._0.ctor === 'Nothing') {
+			return _elm_lang$core$Maybe$Nothing;
+		} else {
+			if (_p2._1.ctor === 'Nothing') {
+				return _elm_lang$core$Maybe$Nothing;
+			} else {
+				return _elm_lang$core$Maybe$Just(
+					{ctor: '_Tuple2', _0: _p2._0._0, _1: _p2._1._0});
+			}
+		}
+	});
+var _krisajenkins$elm_exts$Exts_Maybe$maybe = F2(
+	function ($default, f) {
+		return function (_p3) {
+			return A2(
+				_elm_lang$core$Maybe$withDefault,
+				$default,
+				A2(_elm_lang$core$Maybe$map, f, _p3));
+		};
+	});
+var _krisajenkins$elm_exts$Exts_Maybe$isJust = function (x) {
+	var _p4 = x;
+	if (_p4.ctor === 'Just') {
+		return true;
+	} else {
+		return false;
+	}
+};
+var _krisajenkins$elm_exts$Exts_Maybe$isNothing = function (_p5) {
+	return !_krisajenkins$elm_exts$Exts_Maybe$isJust(_p5);
+};
+
+var _krisajenkins$elm_dialog$Dialog$map = F2(
+	function (f, config) {
+		return {
+			closeMessage: A2(_elm_lang$core$Maybe$map, f, config.closeMessage),
+			containerClass: config.containerClass,
+			header: A2(
+				_elm_lang$core$Maybe$map,
+				_elm_lang$html$Html$map(f),
+				config.header),
+			body: A2(
+				_elm_lang$core$Maybe$map,
+				_elm_lang$html$Html$map(f),
+				config.body),
+			footer: A2(
+				_elm_lang$core$Maybe$map,
+				_elm_lang$html$Html$map(f),
+				config.footer)
+		};
+	});
+var _krisajenkins$elm_dialog$Dialog$mapMaybe = function (_p0) {
+	return _elm_lang$core$Maybe$map(
+		_krisajenkins$elm_dialog$Dialog$map(_p0));
+};
+var _krisajenkins$elm_dialog$Dialog$backdrop = function (config) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$classList(
+				{
+					ctor: '::',
+					_0: {
+						ctor: '_Tuple2',
+						_0: 'modal-backdrop in',
+						_1: _krisajenkins$elm_exts$Exts_Maybe$isJust(config)
+					},
+					_1: {ctor: '[]'}
+				}),
+			_1: {ctor: '[]'}
+		},
+		{ctor: '[]'});
+};
+var _krisajenkins$elm_dialog$Dialog$wrapFooter = function (footer) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('modal-footer'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: footer,
+			_1: {ctor: '[]'}
+		});
+};
+var _krisajenkins$elm_dialog$Dialog$wrapBody = function (body) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('modal-body'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: body,
+			_1: {ctor: '[]'}
+		});
+};
+var _krisajenkins$elm_dialog$Dialog$closeButton = function (closeMessage) {
+	return A2(
+		_elm_lang$html$Html$button,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('close'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Events$onClick(closeMessage),
+				_1: {ctor: '[]'}
+			}
+		},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text('x'),
+			_1: {ctor: '[]'}
+		});
+};
+var _krisajenkins$elm_dialog$Dialog$wrapHeader = F2(
+	function (closeMessage, header) {
+		return (_elm_lang$core$Native_Utils.eq(closeMessage, _elm_lang$core$Maybe$Nothing) && _elm_lang$core$Native_Utils.eq(header, _elm_lang$core$Maybe$Nothing)) ? _krisajenkins$elm_exts$Exts_Html_Bootstrap$empty : A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('modal-header'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A3(_krisajenkins$elm_exts$Exts_Maybe$maybe, _krisajenkins$elm_exts$Exts_Html_Bootstrap$empty, _krisajenkins$elm_dialog$Dialog$closeButton, closeMessage),
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$core$Maybe$withDefault, _krisajenkins$elm_exts$Exts_Html_Bootstrap$empty, header),
+					_1: {ctor: '[]'}
+				}
+			});
+	});
+var _krisajenkins$elm_dialog$Dialog$view = function (maybeConfig) {
+	var displayed = _krisajenkins$elm_exts$Exts_Maybe$isJust(maybeConfig);
+	return A2(
+		_elm_lang$html$Html$div,
+		function () {
+			var _p1 = A2(
+				_elm_lang$core$Maybe$andThen,
+				function (_) {
+					return _.containerClass;
+				},
+				maybeConfig);
+			if (_p1.ctor === 'Nothing') {
+				return {ctor: '[]'};
+			} else {
+				return {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class(_p1._0),
+					_1: {ctor: '[]'}
+				};
+			}
+		}(),
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$classList(
+						{
+							ctor: '::',
+							_0: {ctor: '_Tuple2', _0: 'modal', _1: true},
+							_1: {
+								ctor: '::',
+								_0: {ctor: '_Tuple2', _0: 'in', _1: displayed},
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$style(
+							{
+								ctor: '::',
+								_0: {
+									ctor: '_Tuple2',
+									_0: 'display',
+									_1: displayed ? 'block' : 'none'
+								},
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('modal-dialog'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('modal-content'),
+									_1: {ctor: '[]'}
+								},
+								function () {
+									var _p2 = maybeConfig;
+									if (_p2.ctor === 'Nothing') {
+										return {
+											ctor: '::',
+											_0: _krisajenkins$elm_exts$Exts_Html_Bootstrap$empty,
+											_1: {ctor: '[]'}
+										};
+									} else {
+										var _p3 = _p2._0;
+										return {
+											ctor: '::',
+											_0: A2(_krisajenkins$elm_dialog$Dialog$wrapHeader, _p3.closeMessage, _p3.header),
+											_1: {
+												ctor: '::',
+												_0: A3(_krisajenkins$elm_exts$Exts_Maybe$maybe, _krisajenkins$elm_exts$Exts_Html_Bootstrap$empty, _krisajenkins$elm_dialog$Dialog$wrapBody, _p3.body),
+												_1: {
+													ctor: '::',
+													_0: A3(_krisajenkins$elm_exts$Exts_Maybe$maybe, _krisajenkins$elm_exts$Exts_Html_Bootstrap$empty, _krisajenkins$elm_dialog$Dialog$wrapFooter, _p3.footer),
+													_1: {ctor: '[]'}
+												}
+											}
+										};
+									}
+								}()),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}),
+			_1: {
+				ctor: '::',
+				_0: _krisajenkins$elm_dialog$Dialog$backdrop(maybeConfig),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _krisajenkins$elm_dialog$Dialog$Config = F5(
+	function (a, b, c, d, e) {
+		return {closeMessage: a, containerClass: b, header: c, body: d, footer: e};
+	});
+
 var _krisajenkins$remotedata$RemoteData$isNotAsked = function (data) {
 	var _p0 = data;
 	if (_p0.ctor === 'NotAsked') {
@@ -9329,49 +10749,165 @@ var _krisajenkins$remotedata$RemoteData$update = F2(
 		}
 	});
 
-var _user$project$Models$initModel = {messagesList: _krisajenkins$remotedata$RemoteData$Loading, currentMessage: _elm_lang$core$Maybe$Nothing};
-var _user$project$Models$Model = F2(
-	function (a, b) {
-		return {messagesList: a, currentMessage: b};
+var _user$project$Models$setChatEntry = F2(
+	function (chatEntry, chatEntryModel) {
+		return _elm_lang$core$Native_Utils.update(
+			chatEntryModel,
+			{chatEntry: chatEntry});
 	});
-var _user$project$Models$Message = F5(
-	function (a, b, c, d, e) {
-		return {id: a, title: b, lastEntry: c, messageInput: d, messageEntries: e};
+var _user$project$Models$setUser = F2(
+	function (user, chatEntryModel) {
+		return _elm_lang$core$Native_Utils.update(
+			chatEntryModel,
+			{user: user});
 	});
-var _user$project$Models$User = F3(
+var _user$project$Models$getChatEntryModel = function (mayWebChatEntryModel) {
+	var _p0 = mayWebChatEntryModel;
+	if (_p0.ctor === 'Just') {
+		var _p1 = _p0._0;
+		switch (_p1.ctor) {
+			case 'NotAsked':
+				return _elm_lang$core$Maybe$Nothing;
+			case 'Loading':
+				return _elm_lang$core$Maybe$Nothing;
+			case 'Success':
+				return _elm_lang$core$Maybe$Just(_p1._0);
+			default:
+				return _elm_lang$core$Maybe$Nothing;
+		}
+	} else {
+		return _elm_lang$core$Maybe$Nothing;
+	}
+};
+var _user$project$Models$setLastEntry = F2(
+	function (chatEntryModel, chatRoom) {
+		return _elm_lang$core$Native_Utils.update(
+			chatRoom,
+			{
+				lastEntry: _elm_lang$core$Maybe$Just(chatEntryModel)
+			});
+	});
+var _user$project$Models$setChatEntryInList = F2(
+	function (chatEntry, chatRoomModel) {
+		return _elm_lang$core$Native_Utils.update(
+			chatRoomModel,
+			{
+				chatEntries: A3(
+					_elm_lang$core$Maybe$map2,
+					F2(
+						function (a, b) {
+							var _p2 = a;
+							if (_p2.ctor === 'Success') {
+								var _p3 = b;
+								if (_p3.ctor === 'Success') {
+									return _krisajenkins$remotedata$RemoteData$Success(
+										A2(
+											_elm_lang$core$Basics_ops['++'],
+											_p2._0,
+											{
+												ctor: '::',
+												_0: _p3._0,
+												_1: {ctor: '[]'}
+											}));
+								} else {
+									return a;
+								}
+							} else {
+								return a;
+							}
+						}),
+					chatRoomModel.chatEntries,
+					chatEntry)
+			});
+	});
+var _user$project$Models$setChatEntries = F2(
+	function (chatEntries, chatRoomModel) {
+		return _elm_lang$core$Native_Utils.update(
+			chatRoomModel,
+			{chatEntries: chatEntries});
+	});
+var _user$project$Models$initModel = {chatRoomList: _krisajenkins$remotedata$RemoteData$Loading, currentChatRoom: _elm_lang$core$Maybe$Nothing, showDialog: false};
+var _user$project$Models$Model = F3(
 	function (a, b, c) {
-		return {name: a, profileImg: b, profileLink: c};
+		return {chatRoomList: a, currentChatRoom: b, showDialog: c};
 	});
-var _user$project$Models$MessageEntry = F6(
-	function (a, b, c, d, e, f) {
-		return {id: a, content: b, created_at: c, file_id: d, message_id: e, user: f};
+var _user$project$Models$ChatRoomModel = F3(
+	function (a, b, c) {
+		return {chatRoom: a, chatEntries: b, chatInput: c};
+	});
+var _user$project$Models$ChatRoom = F3(
+	function (a, b, c) {
+		return {guid: a, title: b, lastEntry: c};
+	});
+var _user$project$Models$User = F4(
+	function (a, b, c, d) {
+		return {name: a, guid: b, profileImg: c, profileLink: d};
+	});
+var _user$project$Models$ChatEntryModel = F3(
+	function (a, b, c) {
+		return {chatEntry: a, user: b, chatRoomGuid: c};
+	});
+var _user$project$Models$ChatEntry = F3(
+	function (a, b, c) {
+		return {guid: a, message: b, createdAt: c};
 	});
 
 var _user$project$Msgs$NewPubNubEntry = function (a) {
 	return {ctor: 'NewPubNubEntry', _0: a};
 };
-var _user$project$Msgs$OnFetchMessageEntries = function (a) {
-	return {ctor: 'OnFetchMessageEntries', _0: a};
+var _user$project$Msgs$OnFetchChatEntries = function (a) {
+	return {ctor: 'OnFetchChatEntries', _0: a};
 };
-var _user$project$Msgs$OnFetchMessages = function (a) {
-	return {ctor: 'OnFetchMessages', _0: a};
+var _user$project$Msgs$OnFetchChatRooms = function (a) {
+	return {ctor: 'OnFetchChatRooms', _0: a};
 };
-var _user$project$Msgs$LoadMessagesList = {ctor: 'LoadMessagesList'};
-var _user$project$Msgs$LoadMessagesEntry = function (a) {
-	return {ctor: 'LoadMessagesEntry', _0: a};
+var _user$project$Msgs$LoadChatEntries = function (a) {
+	return {ctor: 'LoadChatEntries', _0: a};
 };
-var _user$project$Msgs$Send = F2(
-	function (a, b) {
-		return {ctor: 'Send', _0: a, _1: b};
-	});
+var _user$project$Msgs$Send = function (a) {
+	return {ctor: 'Send', _0: a};
+};
 
-var _user$project$Urls$messageWithIdUrl = function (id) {
+var _user$project$Urls$url = F2(
+	function (baseUrl, query) {
+		var _p0 = query;
+		if (_p0.ctor === '[]') {
+			return baseUrl;
+		} else {
+			var queryPairs = A2(
+				_elm_lang$core$List$map,
+				function (_p1) {
+					var _p2 = _p1;
+					return A2(
+						_elm_lang$core$Basics_ops['++'],
+						_elm_lang$http$Http$encodeUri(_p2._0),
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							'=',
+							_elm_lang$http$Http$encodeUri(_p2._1)));
+				},
+				query);
+			var queryString = A2(_elm_lang$core$String$join, '&', queryPairs);
+			return A2(
+				_elm_lang$core$Basics_ops['++'],
+				baseUrl,
+				A2(_elm_lang$core$Basics_ops['++'], '?', queryString));
+		}
+	});
+var _user$project$Urls$allRoomsUrl = function (offset) {
 	return A2(
-		_elm_lang$core$Basics_ops['++'],
-		'/index.php?r=mail%2Fmail%2Fget-message-entries&id=',
-		_elm_lang$core$Basics$toString(id));
+		_user$project$Urls$url,
+		'/index.php?r=chat%2Findex%2Fget-rooms',
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'offset',
+				_1: _elm_lang$core$Basics$toString(offset)
+			},
+			_1: {ctor: '[]'}
+		});
 };
-var _user$project$Urls$allMassagesUrl = '/index.php?r=mail%2Fmail%2Fget-messages';
 
 var _user$project$Commands$userDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -9383,35 +10919,39 @@ var _user$project$Commands$userDecoder = A3(
 		_elm_lang$core$Json_Decode$string,
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'name',
+			'guid',
 			_elm_lang$core$Json_Decode$string,
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Models$User))));
-var _user$project$Commands$messageEntryDecoder = A3(
-	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-	'user',
-	_user$project$Commands$userDecoder,
-	A3(
-		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-		'message_id',
-		_elm_lang$core$Json_Decode$int,
-		A3(
-			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'file_id',
-			_elm_lang$core$Json_Decode$nullable(_elm_lang$core$Json_Decode$string),
 			A3(
 				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'created_at',
+				'name',
 				_elm_lang$core$Json_Decode$string,
-				A3(
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'content',
-					_elm_lang$core$Json_Decode$string,
-					A3(
-						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-						'id',
-						_elm_lang$core$Json_Decode$int,
-						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Models$MessageEntry)))))));
-var _user$project$Commands$messageDecoder = A2(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Models$User)))));
+var _user$project$Commands$chatEntryDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'createdAt',
+	_elm_lang$core$Json_Decode$string,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'message',
+		_elm_lang$core$Json_Decode$string,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'guid',
+			_elm_lang$core$Json_Decode$string,
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Models$ChatEntry))));
+var _user$project$Commands$chatRoomDecoder = A2(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$hardcoded,
+	_elm_lang$core$Maybe$Nothing,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'title',
+		_elm_lang$core$Json_Decode$string,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'guid',
+			_elm_lang$core$Json_Decode$string,
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Models$ChatRoom))));
+var _user$project$Commands$chatRoomModelDecoder = A2(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$hardcoded,
 	_elm_lang$core$Maybe$Nothing,
 	A2(
@@ -9419,34 +10959,195 @@ var _user$project$Commands$messageDecoder = A2(
 		_elm_lang$core$Maybe$Nothing,
 		A3(
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-			'lastEntry',
-			_user$project$Commands$messageEntryDecoder,
-			A3(
-				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-				'title',
-				_elm_lang$core$Json_Decode$string,
-				A3(
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
-					'id',
-					_elm_lang$core$Json_Decode$int,
-					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Models$Message))))));
-var _user$project$Commands$messagesDecoder = _elm_lang$core$Json_Decode$list(_user$project$Commands$messageDecoder);
-var _user$project$Commands$fetchMessageEntryList = function (message) {
+			'chatRoom',
+			_user$project$Commands$chatRoomDecoder,
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Models$ChatRoomModel))));
+var _user$project$Commands$chatRoomsModelDecoder = _elm_lang$core$Json_Decode$list(_user$project$Commands$chatRoomModelDecoder);
+var _user$project$Commands$chatRoomsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Commands$chatRoomDecoder);
+var _user$project$Commands$fetchMessagesList = function (offset) {
 	return A2(
 		_elm_lang$core$Platform_Cmd$map,
-		_user$project$Msgs$OnFetchMessageEntries,
+		_user$project$Msgs$OnFetchChatRooms,
 		_krisajenkins$remotedata$RemoteData$sendRequest(
 			A2(
 				_elm_lang$http$Http$get,
-				_user$project$Urls$messageWithIdUrl(message.id),
-				_elm_lang$core$Json_Decode$list(_user$project$Commands$messageEntryDecoder))));
+				_user$project$Urls$allRoomsUrl(offset),
+				_user$project$Commands$chatRoomsModelDecoder)));
 };
-var _user$project$Commands$fetchMessagesList = A2(
-	_elm_lang$core$Platform_Cmd$map,
-	_user$project$Msgs$OnFetchMessages,
-	_krisajenkins$remotedata$RemoteData$sendRequest(
-		A2(_elm_lang$http$Http$get, _user$project$Urls$allMassagesUrl, _user$project$Commands$messagesDecoder)));
 
+var _user$project$View$bootstrapModel = A2(
+	_elm_lang$html$Html$div,
+	{
+		ctor: '::',
+		_0: _elm_lang$html$Html_Attributes$class('modal fade'),
+		_1: {
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$id('chatModel'),
+			_1: {
+				ctor: '::',
+				_0: A2(_elm_lang$html$Html_Attributes$attribute, 'role', 'dialog'),
+				_1: {ctor: '[]'}
+			}
+		}
+	},
+	{
+		ctor: '::',
+		_0: A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('modal-dialog'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('modal-content'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('modal-header'),
+								_1: {ctor: '[]'}
+							},
+							{
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$button,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('close'),
+										_1: {
+											ctor: '::',
+											_0: A2(_elm_lang$html$Html_Attributes$attribute, 'data-dismiss', 'modal'),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$type_('button'),
+												_1: {ctor: '[]'}
+											}
+										}
+									},
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html$text('×'),
+										_1: {ctor: '[]'}
+									}),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$h4,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$class('modal-title'),
+											_1: {ctor: '[]'}
+										},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text('Modal Header'),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}
+							}),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$div,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('modal-body'),
+									_1: {ctor: '[]'}
+								},
+								{
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$p,
+										{ctor: '[]'},
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html$text('Some text in the modal.'),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								}),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$div,
+									{
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class('modal-footer'),
+										_1: {ctor: '[]'}
+									},
+									{
+										ctor: '::',
+										_0: A2(
+											_elm_lang$html$Html$button,
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$class('btn btn-default'),
+												_1: {
+													ctor: '::',
+													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'data-dismiss', 'modal'),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$type_('button'),
+														_1: {ctor: '[]'}
+													}
+												}
+											},
+											{
+												ctor: '::',
+												_0: _elm_lang$html$Html$text('Close'),
+												_1: {ctor: '[]'}
+											}),
+										_1: {ctor: '[]'}
+									}),
+								_1: {ctor: '[]'}
+							}
+						}
+					}),
+				_1: {ctor: '[]'}
+			}),
+		_1: {ctor: '[]'}
+	});
+var _user$project$View$dialogConfig = function (model) {
+	return {
+		closeMessage: _elm_lang$core$Maybe$Nothing,
+		containerClass: _elm_lang$core$Maybe$Nothing,
+		header: _elm_lang$core$Maybe$Just(
+			A2(
+				_elm_lang$html$Html$h3,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('1 Up!'),
+					_1: {ctor: '[]'}
+				})),
+		body: _elm_lang$core$Maybe$Just(
+			_elm_lang$html$Html$text('The counter ticks up to ')),
+		footer: _elm_lang$core$Maybe$Just(
+			A2(
+				_elm_lang$html$Html$button,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('btn btn-success'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('OK'),
+					_1: {ctor: '[]'}
+				}))
+	};
+};
 var _user$project$View$loader = A2(
 	_elm_lang$html$Html$div,
 	{
@@ -9477,7 +11178,7 @@ var _user$project$View$loader = A2(
 			}),
 		_1: {ctor: '[]'}
 	});
-var _user$project$View$messageEntryView = function (messageEntry) {
+var _user$project$View$messageEntryView = function (chatEntryModel) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -9503,7 +11204,7 @@ var _user$project$View$messageEntryView = function (messageEntry) {
 					_0: _elm_lang$html$Html_Attributes$class('pull-left'),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$href(messageEntry.user.profileLink),
+						_0: _elm_lang$html$Html_Attributes$href(chatEntryModel.user.profileLink),
 						_1: {ctor: '[]'}
 					}
 				},
@@ -9522,7 +11223,7 @@ var _user$project$View$messageEntryView = function (messageEntry) {
 									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'data-src', 'holder.js/50x50'),
 									_1: {
 										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$src(messageEntry.user.profileImg),
+										_0: _elm_lang$html$Html_Attributes$src(chatEntryModel.user.profileImg),
 										_1: {
 											ctor: '::',
 											_0: _elm_lang$html$Html_Attributes$style(
@@ -9565,11 +11266,7 @@ var _user$project$View$messageEntryView = function (messageEntry) {
 									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'data-target', '#globalModal'),
 									_1: {
 										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$href(
-											A2(
-												_elm_lang$core$Basics_ops['++'],
-												'/mail/mail/edit-entry?messageEntryId=',
-												_elm_lang$core$Basics$toString(messageEntry.id))),
+										_0: _elm_lang$html$Html_Attributes$href('/mail/mail/edit-entry?messageEntryId='),
 										_1: {ctor: '[]'}
 									}
 								}
@@ -9612,7 +11309,7 @@ var _user$project$View$messageEntryView = function (messageEntry) {
 								},
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text(messageEntry.user.name),
+									_0: _elm_lang$html$Html$text(chatEntryModel.user.name),
 									_1: {
 										ctor: '::',
 										_0: A2(
@@ -9666,7 +11363,7 @@ var _user$project$View$messageEntryView = function (messageEntry) {
 													{ctor: '[]'},
 													{
 														ctor: '::',
-														_0: _elm_lang$html$Html$text(messageEntry.content),
+														_0: _elm_lang$html$Html$text(chatEntryModel.chatEntry.message),
 														_1: {ctor: '[]'}
 													}),
 												_1: {ctor: '[]'}
@@ -9714,7 +11411,7 @@ var _user$project$View$displayEntries = function (msgEntries) {
 		return {ctor: '[]'};
 	}
 };
-var _user$project$View$messagesStream = function (message) {
+var _user$project$View$messagesStream = function (chatRoomModel) {
 	return A2(
 		_elm_lang$html$Html$div,
 		{
@@ -9751,7 +11448,7 @@ var _user$project$View$messagesStream = function (message) {
 								},
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html$text(message.title),
+									_0: _elm_lang$html$Html$text(chatRoomModel.chatRoom.title),
 									_1: {
 										ctor: '::',
 										_0: A2(
@@ -9951,7 +11648,7 @@ var _user$project$View$messagesStream = function (message) {
 													_0: _elm_lang$html$Html_Attributes$class('media-list'),
 													_1: {ctor: '[]'}
 												},
-												_user$project$View$displayEntries(message.messageEntries)),
+												_user$project$View$displayEntries(chatRoomModel.chatEntries)),
 											_1: {
 												ctor: '::',
 												_0: A2(
@@ -10151,7 +11848,7 @@ var _user$project$View$messagesStream = function (message) {
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$View$messagePreview = function (message) {
+var _user$project$View$messagePreview = function (chatRoomModel) {
 	return A2(
 		_elm_lang$html$Html$li,
 		{
@@ -10160,10 +11857,7 @@ var _user$project$View$messagePreview = function (message) {
 				A2(
 					_elm_lang$core$Basics_ops['++'],
 					'messagePreviewEntry_',
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						_elm_lang$core$Basics$toString(message.id),
-						' messagePreviewEntry entry'))),
+					A2(_elm_lang$core$Basics_ops['++'], chatRoomModel.chatRoom.guid, ' messagePreviewEntry entry'))),
 			_1: {ctor: '[]'}
 		},
 		{
@@ -10173,12 +11867,7 @@ var _user$project$View$messagePreview = function (message) {
 				{
 					ctor: '::',
 					_0: _elm_lang$html$Html_Attributes$href('javascript:void(0)'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onClick(
-							_user$project$Msgs$LoadMessagesEntry(message)),
-						_1: {ctor: '[]'}
-					}
+					_1: {ctor: '[]'}
 				},
 				{
 					ctor: '::',
@@ -10216,7 +11905,15 @@ var _user$project$View$messagePreview = function (message) {
 													}),
 												_1: {
 													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$src(message.lastEntry.user.profileImg),
+													_0: _elm_lang$html$Html_Attributes$src(
+														function () {
+															var _p2 = _user$project$Models$getChatEntryModel(chatRoomModel.chatRoom.lastEntry);
+															if (_p2.ctor === 'Just') {
+																return _p2._0.user.profileImg;
+															} else {
+																return '';
+															}
+														}()),
 													_1: {ctor: '[]'}
 												}
 											}
@@ -10244,7 +11941,15 @@ var _user$project$View$messagePreview = function (message) {
 											},
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html$text(message.lastEntry.user.name),
+												_0: _elm_lang$html$Html$text(
+													function () {
+														var _p3 = _user$project$Models$getChatEntryModel(chatRoomModel.chatRoom.lastEntry);
+														if (_p3.ctor === 'Just') {
+															return _p3._0.user.name;
+														} else {
+															return '';
+														}
+													}()),
 												_1: {ctor: '[]'}
 											}),
 										_1: {
@@ -10254,12 +11959,20 @@ var _user$project$View$messagePreview = function (message) {
 												{ctor: '[]'},
 												{
 													ctor: '::',
-													_0: _elm_lang$html$Html$text(message.title),
+													_0: _elm_lang$html$Html$text(chatRoomModel.chatRoom.title),
 													_1: {ctor: '[]'}
 												}),
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$html$Html$text(message.lastEntry.content),
+												_0: _elm_lang$html$Html$text(
+													function () {
+														var _p4 = _user$project$Models$getChatEntryModel(chatRoomModel.chatRoom.lastEntry);
+														if (_p4.ctor === 'Just') {
+															return _p4._0.chatEntry.message;
+														} else {
+															return '';
+														}
+													}()),
 												_1: {ctor: '[]'}
 											}
 										}
@@ -10273,8 +11986,8 @@ var _user$project$View$messagePreview = function (message) {
 		});
 };
 var _user$project$View$messagesPreview = function (model) {
-	var _p2 = model.messagesList;
-	switch (_p2.ctor) {
+	var _p5 = model.chatRoomList;
+	switch (_p5.ctor) {
 		case 'NotAsked':
 			return A2(
 				_elm_lang$html$Html$ul,
@@ -10313,10 +12026,14 @@ var _user$project$View$messagesPreview = function (model) {
 						_1: {ctor: '[]'}
 					}
 				},
-				A2(_elm_lang$core$List$map, _user$project$View$messagePreview, _p2._0));
+				A2(_elm_lang$core$List$map, _user$project$View$messagePreview, _p5._0));
 		default:
-			return _elm_lang$html$Html$text(
-				_elm_lang$core$Basics$toString(_p2._0));
+			var _p6 = _p5._0;
+			if (_p6.ctor === 'BadStatus') {
+				return _elm_lang$core$Native_Utils.eq(_p6._0.status.code, 404) ? _elm_lang$html$Html$text('Create your first Chat Room') : _elm_lang$html$Html$text(':( Sorry there is an error please reload the page');
+			} else {
+				return _elm_lang$html$Html$text(':( Sorry there is an error please reload the page');
+			}
 	}
 };
 var _user$project$View$view = function (model) {
@@ -10363,14 +12080,18 @@ var _user$project$View$view = function (model) {
 											_elm_lang$html$Html$a,
 											{
 												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$href('/mail/mail/create'),
+												_0: _elm_lang$html$Html_Attributes$href('#'),
 												_1: {
 													ctor: '::',
 													_0: _elm_lang$html$Html_Attributes$class('btn btn-info pull-right'),
 													_1: {
 														ctor: '::',
-														_0: A2(_elm_lang$html$Html_Attributes$attribute, 'data-target', '#globalModal'),
-														_1: {ctor: '[]'}
+														_0: A2(_elm_lang$html$Html_Attributes$attribute, 'data-toggle', 'model'),
+														_1: {
+															ctor: '::',
+															_0: A2(_elm_lang$html$Html_Attributes$attribute, 'data-target', '#chatModel'),
+															_1: {ctor: '[]'}
+														}
 													}
 												}
 											},
@@ -10400,124 +12121,94 @@ var _user$project$View$view = function (model) {
 			_1: {
 				ctor: '::',
 				_0: function () {
-					var _p3 = model.currentMessage;
-					if (_p3.ctor === 'Just') {
-						return _user$project$View$messagesStream(_p3._0);
+					var _p7 = model.currentChatRoom;
+					if (_p7.ctor === 'Just') {
+						return _user$project$View$messagesStream(_p7._0);
 					} else {
 						return _user$project$View$loader;
 					}
 				}(),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: _krisajenkins$elm_dialog$Dialog$view(
+						model.showDialog ? _elm_lang$core$Maybe$Just(
+							_user$project$View$dialogConfig(model)) : _elm_lang$core$Maybe$Nothing),
+					_1: {ctor: '[]'}
+				}
 			}
 		});
 };
 
-var _user$project$Update$convert = F2(
-	function (msgEntries, msgEntry) {
-		return A3(
-			_elm_lang$core$Maybe$map2,
-			F2(
-				function (a, b) {
-					var _p0 = a;
-					switch (_p0.ctor) {
-						case 'NotAsked':
-							return _krisajenkins$remotedata$RemoteData$Loading;
-						case 'Loading':
-							return _krisajenkins$remotedata$RemoteData$Loading;
-						case 'Failure':
-							return _krisajenkins$remotedata$RemoteData$Loading;
-						default:
-							var _p1 = b;
-							switch (_p1.ctor) {
-								case 'NotAsked':
-									return _krisajenkins$remotedata$RemoteData$Loading;
-								case 'Loading':
-									return _krisajenkins$remotedata$RemoteData$Loading;
-								case 'Failure':
-									return _krisajenkins$remotedata$RemoteData$Loading;
-								default:
-									return _krisajenkins$remotedata$RemoteData$Success(
-										{ctor: '::', _0: _p1._0, _1: _p0._0});
-							}
-					}
-				}),
-			msgEntries,
-			msgEntry);
+var _user$project$Ports$newChatEntry = _elm_lang$core$Native_Platform.incomingPort(
+	'newChatEntry',
+	A2(
+		_elm_lang$core$Json_Decode$andThen,
+		function (guid) {
+			return A2(
+				_elm_lang$core$Json_Decode$andThen,
+				function (message) {
+					return A2(
+						_elm_lang$core$Json_Decode$andThen,
+						function (createdAt) {
+							return _elm_lang$core$Json_Decode$succeed(
+								{guid: guid, message: message, createdAt: createdAt});
+						},
+						A2(_elm_lang$core$Json_Decode$field, 'createdAt', _elm_lang$core$Json_Decode$string));
+				},
+				A2(_elm_lang$core$Json_Decode$field, 'message', _elm_lang$core$Json_Decode$string));
+		},
+		A2(_elm_lang$core$Json_Decode$field, 'guid', _elm_lang$core$Json_Decode$string)));
+var _user$project$Ports$newChatEntries = _elm_lang$core$Native_Platform.incomingPort(
+	'newChatEntries',
+	_elm_lang$core$Json_Decode$list(
+		A2(
+			_elm_lang$core$Json_Decode$andThen,
+			function (guid) {
+				return A2(
+					_elm_lang$core$Json_Decode$andThen,
+					function (message) {
+						return A2(
+							_elm_lang$core$Json_Decode$andThen,
+							function (createdAt) {
+								return _elm_lang$core$Json_Decode$succeed(
+									{guid: guid, message: message, createdAt: createdAt});
+							},
+							A2(_elm_lang$core$Json_Decode$field, 'createdAt', _elm_lang$core$Json_Decode$string));
+					},
+					A2(_elm_lang$core$Json_Decode$field, 'message', _elm_lang$core$Json_Decode$string));
+			},
+			A2(_elm_lang$core$Json_Decode$field, 'guid', _elm_lang$core$Json_Decode$string))));
+var _user$project$Ports$fetchRoomEntryList = _elm_lang$core$Native_Platform.outgoingPort(
+	'fetchRoomEntryList',
+	function (v) {
+		return v;
 	});
+var _user$project$Ports$sendChatMessage = _elm_lang$core$Native_Platform.outgoingPort(
+	'sendChatMessage',
+	function (v) {
+		return {
+			chatEntry: {guid: v.chatEntry.guid, message: v.chatEntry.message, createdAt: v.chatEntry.createdAt},
+			user: {name: v.user.name, guid: v.user.guid, profileImg: v.user.profileImg, profileLink: v.user.profileLink},
+			chatRoomGuid: v.chatRoomGuid
+		};
+	});
+
 var _user$project$Update$update = F2(
 	function (msg, model) {
-		var _p2 = msg;
-		switch (_p2.ctor) {
-			case 'LoadMessagesList':
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			case 'OnFetchMessages':
+		var _p0 = msg;
+		switch (_p0.ctor) {
+			case 'Send':
 				return {
 					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{messagesList: _p2._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
+					_0: model,
+					_1: _user$project$Ports$sendChatMessage(_p0._0)
 				};
-			case 'LoadMessagesEntry':
-				var _p3 = _p2._0;
+			case 'OnFetchChatRooms':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{
-							currentMessage: _elm_lang$core$Maybe$Just(_p3)
-						}),
-					_1: _user$project$Commands$fetchMessageEntryList(_p3)
-				};
-			case 'OnFetchMessageEntries':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							currentMessage: A2(
-								_elm_lang$core$Maybe$map,
-								function (a) {
-									return _elm_lang$core$Native_Utils.update(
-										a,
-										{
-											messageEntries: _elm_lang$core$Maybe$Just(_p2._0)
-										});
-								},
-								model.currentMessage)
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'NewPubNubEntry':
-				var _p4 = _p2._0;
-				var y = A2(
-					_elm_lang$core$Debug$log,
-					'model',
-					_elm_lang$core$Basics$toString(model.currentMessage));
-				var x = A2(
-					_elm_lang$core$Debug$log,
-					'newentry',
-					_elm_lang$core$Basics$toString(_p4));
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							currentMessage: A2(
-								_elm_lang$core$Maybe$map,
-								function (a) {
-									return _elm_lang$core$Native_Utils.update(
-										a,
-										{
-											messageEntries: A2(
-												_user$project$Update$convert,
-												a.messageEntries,
-												_elm_lang$core$Maybe$Just(
-													_krisajenkins$remotedata$RemoteData$Success(_p4)))
-										});
-								},
-								model.currentMessage)
-						}),
+						{chatRoomList: _p0._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			default:
@@ -10525,77 +12216,16 @@ var _user$project$Update$update = F2(
 		}
 	});
 
-var _user$project$Main$newMessage = _elm_lang$core$Native_Platform.incomingPort(
-	'newMessage',
-	A2(
-		_elm_lang$core$Json_Decode$andThen,
-		function (id) {
-			return A2(
-				_elm_lang$core$Json_Decode$andThen,
-				function (content) {
-					return A2(
-						_elm_lang$core$Json_Decode$andThen,
-						function (created_at) {
-							return A2(
-								_elm_lang$core$Json_Decode$andThen,
-								function (file_id) {
-									return A2(
-										_elm_lang$core$Json_Decode$andThen,
-										function (message_id) {
-											return A2(
-												_elm_lang$core$Json_Decode$andThen,
-												function (user) {
-													return _elm_lang$core$Json_Decode$succeed(
-														{id: id, content: content, created_at: created_at, file_id: file_id, message_id: message_id, user: user});
-												},
-												A2(
-													_elm_lang$core$Json_Decode$field,
-													'user',
-													A2(
-														_elm_lang$core$Json_Decode$andThen,
-														function (name) {
-															return A2(
-																_elm_lang$core$Json_Decode$andThen,
-																function (profileImg) {
-																	return A2(
-																		_elm_lang$core$Json_Decode$andThen,
-																		function (profileLink) {
-																			return _elm_lang$core$Json_Decode$succeed(
-																				{name: name, profileImg: profileImg, profileLink: profileLink});
-																		},
-																		A2(_elm_lang$core$Json_Decode$field, 'profileLink', _elm_lang$core$Json_Decode$string));
-																},
-																A2(_elm_lang$core$Json_Decode$field, 'profileImg', _elm_lang$core$Json_Decode$string));
-														},
-														A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string))));
-										},
-										A2(_elm_lang$core$Json_Decode$field, 'message_id', _elm_lang$core$Json_Decode$int));
-								},
-								A2(
-									_elm_lang$core$Json_Decode$field,
-									'file_id',
-									_elm_lang$core$Json_Decode$oneOf(
-										{
-											ctor: '::',
-											_0: _elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
-											_1: {
-												ctor: '::',
-												_0: A2(_elm_lang$core$Json_Decode$map, _elm_lang$core$Maybe$Just, _elm_lang$core$Json_Decode$string),
-												_1: {ctor: '[]'}
-											}
-										})));
-						},
-						A2(_elm_lang$core$Json_Decode$field, 'created_at', _elm_lang$core$Json_Decode$string));
-				},
-				A2(_elm_lang$core$Json_Decode$field, 'content', _elm_lang$core$Json_Decode$string));
-		},
-		A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int)));
 var _user$project$Main$subscriptions = function (model) {
-	return _user$project$Main$newMessage(_user$project$Msgs$NewPubNubEntry);
+	return _user$project$Ports$newChatEntry(_user$project$Msgs$NewPubNubEntry);
 };
 var _user$project$Main$main = _elm_lang$html$Html$program(
 	{
-		init: {ctor: '_Tuple2', _0: _user$project$Models$initModel, _1: _user$project$Commands$fetchMessagesList},
+		init: {
+			ctor: '_Tuple2',
+			_0: _user$project$Models$initModel,
+			_1: _user$project$Commands$fetchMessagesList(0)
+		},
 		view: _user$project$View$view,
 		update: _user$project$Update$update,
 		subscriptions: _user$project$Main$subscriptions
