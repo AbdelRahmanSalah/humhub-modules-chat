@@ -15,6 +15,11 @@ fetchMessagesList offset =
         |> RemoteData.sendRequest
         |> Cmd.map OnFetchChatRooms
 
+userSearch : String -> Cmd Msg
+userSearch keyword = 
+    Http.get (userSearchUrl keyword) usersSearchDecoder
+        |> RemoteData.sendRequest
+        |> Cmd.map OnFetchUserSearch
 
 chatRoomsDecoder : Decode.Decoder (List ChatRoom)
 chatRoomsDecoder =
@@ -25,7 +30,9 @@ chatRoomsModelDecoder : Decode.Decoder (List ChatRoomModel)
 chatRoomsModelDecoder =
     Decode.list chatRoomModelDecoder
 
-
+usersSearchDecoder : Decode.Decoder (List UserSearch)
+usersSearchDecoder = 
+    Decode.list userSearchDecoder
 chatRoomDecoder : Decode.Decoder ChatRoom
 chatRoomDecoder =
     decode ChatRoom
@@ -57,3 +64,14 @@ chatRoomModelDecoder =
         |> required "chatRoom" chatRoomDecoder
         |> hardcoded Nothing
         |> hardcoded Nothing
+
+userSearchDecoder : Decode.Decoder UserSearch
+userSearchDecoder = 
+    decode UserSearch 
+        |> required "id" Decode.int
+        |> required "guid" Decode.string 
+        |> required "disabled" Decode.bool 
+        |> required "displayName" Decode.string 
+        |> required "image" Decode.string 
+        |> required "link" Decode.string 
+        |> required "priority" Decode.int 

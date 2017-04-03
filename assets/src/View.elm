@@ -22,11 +22,11 @@ view model =
                     [ class "panel-heading" ]
                     [ text "Conversations"
                     , a
-                        [ href "#", class "btn btn-info pull-right", attribute "data-toggle" "model", attribute "data-target" "#chatModel" ]
+                        [ href "#", class "btn btn-info pull-right", onClick CreateNewChatRoom ]
                         [ text "New message" ]
                     ]
                 , hr [] []
-                , messagesPreview model
+                , chatRoomsPreview model
                 ]
             ]
         , case model.currentChatRoom of
@@ -35,17 +35,17 @@ view model =
 
             Nothing ->
                 loader
-        , Dialog.view
-            (if model.showDialog then
-                Just (dialogConfig model)
-             else
-                Nothing
-            )
+        -- , Dialog.view
+        --     (if model.showDialog then
+        --         Just (dialogConfig model)
+        --      else
+        --         Nothing
+        --     )
         ]
 
 
-messagesPreview : Model -> Html Msg
-messagesPreview model =
+chatRoomsPreview : Model -> Html Msg
+chatRoomsPreview model =
     case model.chatRoomList of
         RemoteData.NotAsked ->
             ul [ id "inbox", class "media-list" ] []
@@ -53,23 +53,22 @@ messagesPreview model =
         RemoteData.Loading ->
             ul [ id "inbox", class "media-list" ] []
 
-        RemoteData.Success messages ->
-            ul [ id "inbox", class "media-list" ] (List.map messagePreview messages)
-
+        RemoteData.Success chatRooms ->
+            if List.length chatRooms > 0
+                then 
+                    ul [ id "inbox", class "media-list" ] (List.map chatRoomPreview chatRooms)
+                else 
+                    ul [ id "inbox", class "media-list" ] 
+                        [
+                            li [ class "messagePreviewEntry entry" ] 
+                                [ text  "Create your first Chat Room" ]
+                        ]
         RemoteData.Failure err ->
-            case err of
-                Http.BadStatus response ->
-                    if response.status.code == 404 then
-                        text "Create your first Chat Room"
-                    else
-                        text ":( Sorry there is an error please reload the page"
-
-                _ ->
-                    text ":( Sorry there is an error please reload the page"
+            text ":( Sorry there is an error please reload the page"
 
 
-messagePreview : ChatRoomModel -> Html Msg
-messagePreview chatRoomModel =
+chatRoomPreview : ChatRoomModel -> Html Msg
+chatRoomPreview chatRoomModel =
     li
         [ class ("messagePreviewEntry_" ++ chatRoomModel.chatRoom.guid ++ " messagePreviewEntry entry") ]
         [ a

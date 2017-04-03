@@ -10,3 +10,5 @@ type Msg
     | OnFetchChatRooms (WebData (List ChatRoomModel))
     | OnFetchChatEntries (WebData (List ChatEntry))
     | NewPubNubEntry ChatEntry
+    | CreateNewChatRoom
+    | OnFetchUserSearch (WebData (List UserSearch))

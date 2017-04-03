@@ -12,6 +12,9 @@ update msg model =
     case msg of
         Send chatEntryModel ->
             ( model, sendChatMessage chatEntryModel )
+        
+        CreateNewChatRoom -> 
+            ( { model | showNewMessage = True }, Cmd.none )            
 
         OnFetchChatRooms rooms ->
             ( { model | chatRoomList = rooms }, Cmd.none )

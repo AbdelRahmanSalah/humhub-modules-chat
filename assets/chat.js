@@ -10826,10 +10826,10 @@ var _user$project$Models$setChatEntries = F2(
 			chatRoomModel,
 			{chatEntries: chatEntries});
 	});
-var _user$project$Models$initModel = {chatRoomList: _krisajenkins$remotedata$RemoteData$Loading, currentChatRoom: _elm_lang$core$Maybe$Nothing, showDialog: false};
+var _user$project$Models$initModel = {chatRoomList: _krisajenkins$remotedata$RemoteData$Loading, currentChatRoom: _elm_lang$core$Maybe$Nothing, showNewMessage: false};
 var _user$project$Models$Model = F3(
 	function (a, b, c) {
-		return {chatRoomList: a, currentChatRoom: b, showDialog: c};
+		return {chatRoomList: a, currentChatRoom: b, showNewMessage: c};
 	});
 var _user$project$Models$ChatRoomModel = F3(
 	function (a, b, c) {
@@ -10851,7 +10851,15 @@ var _user$project$Models$ChatEntry = F3(
 	function (a, b, c) {
 		return {guid: a, message: b, createdAt: c};
 	});
+var _user$project$Models$UserSearch = F7(
+	function (a, b, c, d, e, f, g) {
+		return {id: a, guid: b, disabled: c, displayName: d, image: e, link: f, priority: g};
+	});
 
+var _user$project$Msgs$OnFetchUserSearch = function (a) {
+	return {ctor: 'OnFetchUserSearch', _0: a};
+};
+var _user$project$Msgs$CreateNewChatRoom = {ctor: 'CreateNewChatRoom'};
 var _user$project$Msgs$NewPubNubEntry = function (a) {
 	return {ctor: 'NewPubNubEntry', _0: a};
 };
@@ -10894,21 +10902,68 @@ var _user$project$Urls$url = F2(
 				A2(_elm_lang$core$Basics_ops['++'], '?', queryString));
 		}
 	});
+var _user$project$Urls$userSearchUrl = function (keyword) {
+	return A2(
+		_user$project$Urls$url,
+		'/index.php',
+		{
+			ctor: '::',
+			_0: {ctor: '_Tuple2', _0: 'r', _1: 'user/search/json'},
+			_1: {
+				ctor: '::',
+				_0: {ctor: '_Tuple2', _0: 'keyword', _1: keyword},
+				_1: {ctor: '[]'}
+			}
+		});
+};
 var _user$project$Urls$allRoomsUrl = function (offset) {
 	return A2(
 		_user$project$Urls$url,
-		'/index.php?r=chat%2Findex%2Fget-rooms',
+		'/index.php',
 		{
 			ctor: '::',
-			_0: {
-				ctor: '_Tuple2',
-				_0: 'offset',
-				_1: _elm_lang$core$Basics$toString(offset)
-			},
-			_1: {ctor: '[]'}
+			_0: {ctor: '_Tuple2', _0: 'r', _1: 'chat/index/get-rooms'},
+			_1: {
+				ctor: '::',
+				_0: {
+					ctor: '_Tuple2',
+					_0: 'offset',
+					_1: _elm_lang$core$Basics$toString(offset)
+				},
+				_1: {ctor: '[]'}
+			}
 		});
 };
 
+var _user$project$Commands$userSearchDecoder = A3(
+	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+	'priority',
+	_elm_lang$core$Json_Decode$int,
+	A3(
+		_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+		'link',
+		_elm_lang$core$Json_Decode$string,
+		A3(
+			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+			'image',
+			_elm_lang$core$Json_Decode$string,
+			A3(
+				_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+				'displayName',
+				_elm_lang$core$Json_Decode$string,
+				A3(
+					_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+					'disabled',
+					_elm_lang$core$Json_Decode$bool,
+					A3(
+						_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+						'guid',
+						_elm_lang$core$Json_Decode$string,
+						A3(
+							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
+							'id',
+							_elm_lang$core$Json_Decode$int,
+							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Models$UserSearch))))))));
 var _user$project$Commands$userDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'profileLink',
@@ -10962,8 +11017,19 @@ var _user$project$Commands$chatRoomModelDecoder = A2(
 			'chatRoom',
 			_user$project$Commands$chatRoomDecoder,
 			_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Models$ChatRoomModel))));
+var _user$project$Commands$usersSearchDecoder = _elm_lang$core$Json_Decode$list(_user$project$Commands$userSearchDecoder);
 var _user$project$Commands$chatRoomsModelDecoder = _elm_lang$core$Json_Decode$list(_user$project$Commands$chatRoomModelDecoder);
 var _user$project$Commands$chatRoomsDecoder = _elm_lang$core$Json_Decode$list(_user$project$Commands$chatRoomDecoder);
+var _user$project$Commands$userSearch = function (keyword) {
+	return A2(
+		_elm_lang$core$Platform_Cmd$map,
+		_user$project$Msgs$OnFetchUserSearch,
+		_krisajenkins$remotedata$RemoteData$sendRequest(
+			A2(
+				_elm_lang$http$Http$get,
+				_user$project$Urls$userSearchUrl(keyword),
+				_user$project$Commands$usersSearchDecoder)));
+};
 var _user$project$Commands$fetchMessagesList = function (offset) {
 	return A2(
 		_elm_lang$core$Platform_Cmd$map,
@@ -11848,7 +11914,7 @@ var _user$project$View$messagesStream = function (chatRoomModel) {
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$View$messagePreview = function (chatRoomModel) {
+var _user$project$View$chatRoomPreview = function (chatRoomModel) {
 	return A2(
 		_elm_lang$html$Html$li,
 		{
@@ -11985,7 +12051,7 @@ var _user$project$View$messagePreview = function (chatRoomModel) {
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$View$messagesPreview = function (model) {
+var _user$project$View$chatRoomsPreview = function (model) {
 	var _p5 = model.chatRoomList;
 	switch (_p5.ctor) {
 		case 'NotAsked':
@@ -12015,7 +12081,10 @@ var _user$project$View$messagesPreview = function (model) {
 				},
 				{ctor: '[]'});
 		case 'Success':
-			return A2(
+			var _p6 = _p5._0;
+			return (_elm_lang$core$Native_Utils.cmp(
+				_elm_lang$core$List$length(_p6),
+				0) > 0) ? A2(
 				_elm_lang$html$Html$ul,
 				{
 					ctor: '::',
@@ -12026,14 +12095,35 @@ var _user$project$View$messagesPreview = function (model) {
 						_1: {ctor: '[]'}
 					}
 				},
-				A2(_elm_lang$core$List$map, _user$project$View$messagePreview, _p5._0));
+				A2(_elm_lang$core$List$map, _user$project$View$chatRoomPreview, _p6)) : A2(
+				_elm_lang$html$Html$ul,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$id('inbox'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('media-list'),
+						_1: {ctor: '[]'}
+					}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$li,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('messagePreviewEntry entry'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text('Create your first Chat Room'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				});
 		default:
-			var _p6 = _p5._0;
-			if (_p6.ctor === 'BadStatus') {
-				return _elm_lang$core$Native_Utils.eq(_p6._0.status.code, 404) ? _elm_lang$html$Html$text('Create your first Chat Room') : _elm_lang$html$Html$text(':( Sorry there is an error please reload the page');
-			} else {
-				return _elm_lang$html$Html$text(':( Sorry there is an error please reload the page');
-			}
+			return _elm_lang$html$Html$text(':( Sorry there is an error please reload the page');
 	}
 };
 var _user$project$View$view = function (model) {
@@ -12086,12 +12176,8 @@ var _user$project$View$view = function (model) {
 													_0: _elm_lang$html$Html_Attributes$class('btn btn-info pull-right'),
 													_1: {
 														ctor: '::',
-														_0: A2(_elm_lang$html$Html_Attributes$attribute, 'data-toggle', 'model'),
-														_1: {
-															ctor: '::',
-															_0: A2(_elm_lang$html$Html_Attributes$attribute, 'data-target', '#chatModel'),
-															_1: {ctor: '[]'}
-														}
+														_0: _elm_lang$html$Html_Events$onClick(_user$project$Msgs$CreateNewChatRoom),
+														_1: {ctor: '[]'}
 													}
 												}
 											},
@@ -12111,7 +12197,7 @@ var _user$project$View$view = function (model) {
 									{ctor: '[]'}),
 								_1: {
 									ctor: '::',
-									_0: _user$project$View$messagesPreview(model),
+									_0: _user$project$View$chatRoomsPreview(model),
 									_1: {ctor: '[]'}
 								}
 							}
@@ -12128,13 +12214,7 @@ var _user$project$View$view = function (model) {
 						return _user$project$View$loader;
 					}
 				}(),
-				_1: {
-					ctor: '::',
-					_0: _krisajenkins$elm_dialog$Dialog$view(
-						model.showDialog ? _elm_lang$core$Maybe$Just(
-							_user$project$View$dialogConfig(model)) : _elm_lang$core$Maybe$Nothing),
-					_1: {ctor: '[]'}
-				}
+				_1: {ctor: '[]'}
 			}
 		});
 };
@@ -12202,6 +12282,14 @@ var _user$project$Update$update = F2(
 					ctor: '_Tuple2',
 					_0: model,
 					_1: _user$project$Ports$sendChatMessage(_p0._0)
+				};
+			case 'CreateNewChatRoom':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{showNewMessage: true}),
+					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'OnFetchChatRooms':
 				return {

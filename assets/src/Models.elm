@@ -7,7 +7,7 @@ import Uuid exposing (..)
 type alias Model =
     { chatRoomList : WebData (List ChatRoomModel)
     , currentChatRoom : Maybe ChatRoomModel
-    , showDialog : Bool
+    , showNewMessage : Bool
     }
 
 
@@ -15,7 +15,7 @@ initModel : Model
 initModel =
     { chatRoomList = RemoteData.Loading
     , currentChatRoom = Nothing
-    , showDialog = False
+    , showNewMessage = False
     }
 
 
@@ -141,3 +141,14 @@ type alias ChatEntry =
 
 type alias ChatEntryGuid =
     String
+
+type alias UserSearch = 
+    { id : Int
+    , guid : UserGuid
+    , disabled : Bool
+    , displayName : String
+    , image : String
+    , link : String
+    , priority : Int
+    }
+
