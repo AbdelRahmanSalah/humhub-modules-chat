@@ -12,3 +12,4 @@ type Msg
     | NewPubNubEntry ChatEntry
     | CreateNewChatRoom
     | OnFetchUserSearch (WebData (List UserSearch))
+    | SearchUsers String

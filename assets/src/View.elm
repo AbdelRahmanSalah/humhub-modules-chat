@@ -23,7 +23,8 @@ view model =
                     [ text "Conversations"
                     , a
                         [ href "#", class "btn btn-info pull-right", onClick CreateNewChatRoom ]
-                        [ text "New message" ]
+                        [ i [ class "fa fa-pencil-square-o", attribute "aria-hidden" "true" ] []
+                        ]
                     ]
                 , hr [] []
                 , chatRoomsPreview model
@@ -34,7 +35,11 @@ view model =
                 messagesStream chatRoom
 
             Nothing ->
-                loader
+                if model.showNewMessage then
+                    newChatRoom model
+                else
+                    loader
+
         -- , Dialog.view
         --     (if model.showDialog then
         --         Just (dialogConfig model)
@@ -54,15 +59,14 @@ chatRoomsPreview model =
             ul [ id "inbox", class "media-list" ] []
 
         RemoteData.Success chatRooms ->
-            if List.length chatRooms > 0
-                then 
-                    ul [ id "inbox", class "media-list" ] (List.map chatRoomPreview chatRooms)
-                else 
-                    ul [ id "inbox", class "media-list" ] 
-                        [
-                            li [ class "messagePreviewEntry entry" ] 
-                                [ text  "Create your first Chat Room" ]
-                        ]
+            if List.length chatRooms > 0 then
+                ul [ id "inbox", class "media-list" ] (List.map chatRoomPreview chatRooms)
+            else
+                ul [ id "inbox", class "media-list" ]
+                    [ li [ class "messagePreviewEntry entry" ]
+                        [ text "Create your first Chat Room" ]
+                    ]
+
         RemoteData.Failure err ->
             text ":( Sorry there is an error please reload the page"
 
@@ -260,24 +264,102 @@ dialogConfig model =
     }
 
 
-bootstrapModel : Html Msg
-bootstrapModel =
-    div [ class "modal fade", id "chatModel", attribute "role" "dialog" ]
-        [ div [ class "modal-dialog" ]
-            [ div [ class "modal-content" ]
-                [ div [ class "modal-header" ]
-                    [ button [ class "close", attribute "data-dismiss" "modal", type_ "button" ]
-                        [ text "×" ]
-                    , h4 [ class "modal-title" ]
-                        [ text "Modal Header" ]
+newChatRoom : Model -> Html Msg
+newChatRoom model =
+    div [ class "col-md-8 messages" ]
+        [ div [ id "mail_message_details" ]
+            [ div [ class "panel panel-default" ]
+                [ div [ class "panel-heading" ]
+                    [ userPicker model
                     ]
-                , div [ class "modal-body" ]
-                    [ p []
-                        [ text "Some text in the modal." ]
+                , div [ class "panel-body" ]
+                    [ hr [ attribute "style" "margin-top: 0;" ]
+                        []
+                    , ul [ class "media-list" ] []
+                    , div [ class "row-fluid" ]
+                        [ Html.form [ action "/mail/mail/show?id=1&_=1489984283524", id "h975204w1", method "post" ]
+                            [ input [ name "_csrf", type_ "hidden", value "Zlo0NWNlVnUja2t2OiY.TA1oYVcVVhgcXmJDbDUvFB4nLWsNNRAaIQ==" ]
+                                []
+                            , div [ class "error-summary", attribute "style" "display:none" ]
+                                [ p []
+                                    [ text "Please fix the following errors:" ]
+                                , ul []
+                                    []
+                                ]
+                            , div [ class "form-group" ]
+                                [ div [ class "md-editor", id "1489984285308" ]
+                                    [ textarea [ class "form-control md-input", id "newMessage", name "ReplyMessage[message]", placeholder "Write an answer...", attribute "rows" "4", attribute "style" "resize: vertical;" ]
+                                        []
+                                    ]
+                                , input [ id "fileUploaderHiddenGuidField_newMessage", name "fileUploaderHiddenGuidField", type_ "hidden", value "" ]
+                                    []
+                                ]
+                            , hr []
+                                []
+                            , button [ class "btn btn-primary", id "h975204w2" ]
+                                [ text "Send" ]
+                            ]
+                        ]
                     ]
-                , div [ class "modal-footer" ]
-                    [ button [ class "btn btn-default", attribute "data-dismiss" "modal", type_ "button" ]
-                        [ text "Close" ]
+                ]
+            ]
+        ]
+
+
+userPicker : Model -> Html Msg
+userPicker model =
+    div [ class "form-group", id "notifyUserContainer", attribute "style" "margin-top: 15px;" ]
+        [ input [ id "notifyUserInput", name "notifyUserInput", attribute "style" "display: none;", type_ "text", value "" ]
+            []
+        , div [ class "notifyUserInput_user_picker_container", style [ ( "position", "relative" ) ] ]
+            [ ul [ class "tag_input", id "notifyUserInput_invite_tags" ]
+                [ li [ id "notifyUserInput_tag_input" ]
+                    [ input
+                        [ attribute "autocomplete" "off"
+                        , class "tag_input_field"
+                        , id "notifyUserInput_tag_input_field"
+                        , placeholder "Type the name of a user or group"
+                        , type_ "text"
+                        , value
+                            (case model.userPickerSearch of
+                                Just val ->
+                                    val.input
+
+                                Nothing ->
+                                    ""
+                            )
+                        , onInput SearchUsers
+                        ]
+                        []
+                    ]
+                ]
+            , ul [ attribute "aria-labelledby" "dropdownMenu", class "dropdown-menu", id "notifyUserInput_userpicker", attribute "role" "menu", style [ ( "position", "absolute" ), ( "display", "block" ) ] ]
+                [ li
+                    [ class "selected" ]
+                    [ a [ href "#" ]
+                        [ img
+                            [ class "img-rounded", src "/img/default_user.jpg", height 20, width 20 ]
+                            []
+                        , text "Abdo salah"
+                        ]
+                    ]
+                , li
+                    [ class "" ]
+                    [ a [ href "#" ]
+                        [ img
+                            [ class "img-rounded", src "/img/default_user.jpg", height 20, width 20 ]
+                            []
+                        , text "Abdo salah"
+                        ]
+                    ]
+                , li
+                    [ class "" ]
+                    [ a [ href "#" ]
+                        [ img
+                            [ class "img-rounded", src "/img/default_user.jpg", height 20, width 20 ]
+                            []
+                        , text "Abdo salah"
+                        ]
                     ]
                 ]
             ]

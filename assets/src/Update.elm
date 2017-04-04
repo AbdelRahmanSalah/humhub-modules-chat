@@ -12,12 +12,22 @@ update msg model =
     case msg of
         Send chatEntryModel ->
             ( model, sendChatMessage chatEntryModel )
-        
-        CreateNewChatRoom -> 
-            ( { model | showNewMessage = True }, Cmd.none )            
+
+        CreateNewChatRoom ->
+            ( { model | showNewMessage = True }, Cmd.none )
 
         OnFetchChatRooms rooms ->
             ( { model | chatRoomList = rooms }, Cmd.none )
+
+        SearchUsers searchInput ->
+            let
+                x =
+                    Debug.log "test" model
+
+                y =
+                    Debug.log "test" searchInput
+            in
+                ( { model | userPickerSearch = Just { input = searchInput, users = Nothing } }, Cmd.none )
 
         _ ->
             ( model, Cmd.none )

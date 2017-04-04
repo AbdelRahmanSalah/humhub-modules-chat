@@ -8,6 +8,13 @@ type alias Model =
     { chatRoomList : WebData (List ChatRoomModel)
     , currentChatRoom : Maybe ChatRoomModel
     , showNewMessage : Bool
+    , userPickerSearch : Maybe UserTypeAhead
+    }
+
+
+type alias UserTypeAhead =
+    { input : String
+    , users : Maybe (WebData (List UserSearch)) -- The data you want to list and filter
     }
 
 
@@ -16,6 +23,7 @@ initModel =
     { chatRoomList = RemoteData.Loading
     , currentChatRoom = Nothing
     , showNewMessage = False
+    , userPickerSearch = Nothing
     }
 
 
@@ -142,7 +150,8 @@ type alias ChatEntry =
 type alias ChatEntryGuid =
     String
 
-type alias UserSearch = 
+
+type alias UserSearch =
     { id : Int
     , guid : UserGuid
     , disabled : Bool
@@ -151,4 +160,3 @@ type alias UserSearch =
     , link : String
     , priority : Int
     }
-
