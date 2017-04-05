@@ -11048,6 +11048,175 @@ var _user$project$Commands$fetchMessagesList = function (offset) {
 				_user$project$Commands$chatRoomsModelDecoder)));
 };
 
+var _user$project$View$userPickerElement = F2(
+	function (userSearch, selectedClass) {
+		return A2(
+			_elm_lang$html$Html$li,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class(selectedClass),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$a,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$href('#'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$img,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('img-rounded'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$src(userSearch.image),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$height(20),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$width(20),
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							},
+							{ctor: '[]'}),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(userSearch.displayName),
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			});
+	});
+var _user$project$View$dialogConfig = function (model) {
+	return {
+		closeMessage: _elm_lang$core$Maybe$Nothing,
+		containerClass: _elm_lang$core$Maybe$Nothing,
+		header: _elm_lang$core$Maybe$Just(
+			A2(
+				_elm_lang$html$Html$h3,
+				{ctor: '[]'},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('1 Up!'),
+					_1: {ctor: '[]'}
+				})),
+		body: _elm_lang$core$Maybe$Just(
+			_elm_lang$html$Html$text('The counter ticks up to ')),
+		footer: _elm_lang$core$Maybe$Just(
+			A2(
+				_elm_lang$html$Html$button,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('btn btn-success'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html$text('OK'),
+					_1: {ctor: '[]'}
+				}))
+	};
+};
+var _user$project$View$loader = A2(
+	_elm_lang$html$Html$div,
+	{
+		ctor: '::',
+		_0: _elm_lang$html$Html_Attributes$class('col-md-8 messages'),
+		_1: {ctor: '[]'}
+	},
+	{
+		ctor: '::',
+		_0: A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$id('mail_message_details'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('loader'),
+						_1: {ctor: '[]'}
+					},
+					{ctor: '[]'}),
+				_1: {ctor: '[]'}
+			}),
+		_1: {ctor: '[]'}
+	});
+var _user$project$View$userPickerList = function (userSearch) {
+	var _p0 = userSearch;
+	switch (_p0.ctor) {
+		case 'NotAsked':
+			return _elm_lang$core$Maybe$Nothing;
+		case 'Loading':
+			return _elm_lang$core$Maybe$Just(
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$li,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _user$project$View$loader,
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				});
+		case 'Success':
+			if (_p0._0.ctor === '[]') {
+				return _elm_lang$core$Maybe$Nothing;
+			} else {
+				if (_p0._0._1.ctor === '[]') {
+					return _elm_lang$core$Maybe$Just(
+						{
+							ctor: '::',
+							_0: A2(_user$project$View$userPickerElement, _p0._0._0, 'selected'),
+							_1: {ctor: '[]'}
+						});
+				} else {
+					return _elm_lang$core$Maybe$Just(
+						{
+							ctor: '::',
+							_0: A2(_user$project$View$userPickerElement, _p0._0._0, 'selected'),
+							_1: A2(
+								_elm_lang$core$List$map,
+								function (u) {
+									return A2(_user$project$View$userPickerElement, u, '');
+								},
+								_p0._0._1)
+						});
+				}
+			}
+		default:
+			return _elm_lang$core$Maybe$Just(
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$li,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(':( Sorry there is an error happen'),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				});
+	}
+};
 var _user$project$View$userPicker = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -11153,9 +11322,9 @@ var _user$project$View$userPicker = function (model) {
 																	ctor: '::',
 																	_0: _elm_lang$html$Html_Attributes$value(
 																		function () {
-																			var _p0 = model.userPickerSearch;
-																			if (_p0.ctor === 'Just') {
-																				return _p0._0.input;
+																			var _p1 = model.userPickerSearch;
+																			if (_p1.ctor === 'Just') {
+																				return _p1._0.input;
 																			} else {
 																				return '';
 																			}
@@ -11185,7 +11354,23 @@ var _user$project$View$userPicker = function (model) {
 									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-labelledby', 'dropdownMenu'),
 									_1: {
 										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class('dropdown-menu'),
+										_0: _elm_lang$html$Html_Attributes$class(
+											A2(
+												_elm_lang$core$Basics_ops['++'],
+												'dropdown-menu ',
+												function () {
+													var _p2 = model.userPickerSearch;
+													if (_p2.ctor === 'Just') {
+														var _p3 = _p2._0.users;
+														if (_p3.ctor === 'Just') {
+															return '';
+														} else {
+															return 'hidden';
+														}
+													} else {
+														return 'hidden';
+													}
+												}())),
 										_1: {
 											ctor: '::',
 											_0: _elm_lang$html$Html_Attributes$id('notifyUserInput_userpicker'),
@@ -11210,154 +11395,24 @@ var _user$project$View$userPicker = function (model) {
 										}
 									}
 								},
-								{
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$li,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('selected'),
-											_1: {ctor: '[]'}
-										},
-										{
-											ctor: '::',
-											_0: A2(
-												_elm_lang$html$Html$a,
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$href('#'),
-													_1: {ctor: '[]'}
-												},
-												{
-													ctor: '::',
-													_0: A2(
-														_elm_lang$html$Html$img,
-														{
-															ctor: '::',
-															_0: _elm_lang$html$Html_Attributes$class('img-rounded'),
-															_1: {
-																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$src('/img/default_user.jpg'),
-																_1: {
-																	ctor: '::',
-																	_0: _elm_lang$html$Html_Attributes$height(20),
-																	_1: {
-																		ctor: '::',
-																		_0: _elm_lang$html$Html_Attributes$width(20),
-																		_1: {ctor: '[]'}
-																	}
-																}
-															}
-														},
-														{ctor: '[]'}),
-													_1: {
-														ctor: '::',
-														_0: _elm_lang$html$Html$text('Abdo salah'),
-														_1: {ctor: '[]'}
-													}
-												}),
-											_1: {ctor: '[]'}
-										}),
-									_1: {
-										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$li,
-											{
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$class(''),
-												_1: {ctor: '[]'}
-											},
-											{
-												ctor: '::',
-												_0: A2(
-													_elm_lang$html$Html$a,
-													{
-														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$href('#'),
-														_1: {ctor: '[]'}
-													},
-													{
-														ctor: '::',
-														_0: A2(
-															_elm_lang$html$Html$img,
-															{
-																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$class('img-rounded'),
-																_1: {
-																	ctor: '::',
-																	_0: _elm_lang$html$Html_Attributes$src('/img/default_user.jpg'),
-																	_1: {
-																		ctor: '::',
-																		_0: _elm_lang$html$Html_Attributes$height(20),
-																		_1: {
-																			ctor: '::',
-																			_0: _elm_lang$html$Html_Attributes$width(20),
-																			_1: {ctor: '[]'}
-																		}
-																	}
-																}
-															},
-															{ctor: '[]'}),
-														_1: {
-															ctor: '::',
-															_0: _elm_lang$html$Html$text('Abdo salah'),
-															_1: {ctor: '[]'}
-														}
-													}),
-												_1: {ctor: '[]'}
-											}),
-										_1: {
-											ctor: '::',
-											_0: A2(
-												_elm_lang$html$Html$li,
-												{
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$class(''),
-													_1: {ctor: '[]'}
-												},
-												{
-													ctor: '::',
-													_0: A2(
-														_elm_lang$html$Html$a,
-														{
-															ctor: '::',
-															_0: _elm_lang$html$Html_Attributes$href('#'),
-															_1: {ctor: '[]'}
-														},
-														{
-															ctor: '::',
-															_0: A2(
-																_elm_lang$html$Html$img,
-																{
-																	ctor: '::',
-																	_0: _elm_lang$html$Html_Attributes$class('img-rounded'),
-																	_1: {
-																		ctor: '::',
-																		_0: _elm_lang$html$Html_Attributes$src('/img/default_user.jpg'),
-																		_1: {
-																			ctor: '::',
-																			_0: _elm_lang$html$Html_Attributes$height(20),
-																			_1: {
-																				ctor: '::',
-																				_0: _elm_lang$html$Html_Attributes$width(20),
-																				_1: {ctor: '[]'}
-																			}
-																		}
-																	}
-																},
-																{ctor: '[]'}),
-															_1: {
-																ctor: '::',
-																_0: _elm_lang$html$Html$text('Abdo salah'),
-																_1: {ctor: '[]'}
-															}
-														}),
-													_1: {ctor: '[]'}
-												}),
-											_1: {ctor: '[]'}
+								function () {
+									var _p4 = model.userPickerSearch;
+									if (_p4.ctor === 'Just') {
+										var _p5 = _p4._0.users;
+										if (_p5.ctor === 'Just') {
+											var _p6 = _user$project$View$userPickerList(_p5._0);
+											if (_p6.ctor === 'Just') {
+												return _p6._0;
+											} else {
+												return {ctor: '[]'};
+											}
+										} else {
+											return {ctor: '[]'};
 										}
+									} else {
+										return {ctor: '[]'};
 									}
-								}),
+								}()),
 							_1: {ctor: '[]'}
 						}
 					}),
@@ -11633,66 +11688,6 @@ var _user$project$View$newChatRoom = function (model) {
 			_1: {ctor: '[]'}
 		});
 };
-var _user$project$View$dialogConfig = function (model) {
-	return {
-		closeMessage: _elm_lang$core$Maybe$Nothing,
-		containerClass: _elm_lang$core$Maybe$Nothing,
-		header: _elm_lang$core$Maybe$Just(
-			A2(
-				_elm_lang$html$Html$h3,
-				{ctor: '[]'},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text('1 Up!'),
-					_1: {ctor: '[]'}
-				})),
-		body: _elm_lang$core$Maybe$Just(
-			_elm_lang$html$Html$text('The counter ticks up to ')),
-		footer: _elm_lang$core$Maybe$Just(
-			A2(
-				_elm_lang$html$Html$button,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('btn btn-success'),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text('OK'),
-					_1: {ctor: '[]'}
-				}))
-	};
-};
-var _user$project$View$loader = A2(
-	_elm_lang$html$Html$div,
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html_Attributes$class('col-md-8 messages'),
-		_1: {ctor: '[]'}
-	},
-	{
-		ctor: '::',
-		_0: A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$id('mail_message_details'),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('loader'),
-						_1: {ctor: '[]'}
-					},
-					{ctor: '[]'}),
-				_1: {ctor: '[]'}
-			}),
-		_1: {ctor: '[]'}
-	});
 var _user$project$View$messageEntryView = function (chatEntryModel) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -11901,10 +11896,10 @@ var _user$project$View$messageEntryView = function (chatEntryModel) {
 		});
 };
 var _user$project$View$displayEntries = function (msgEntries) {
-	var _p1 = msgEntries;
-	if (_p1.ctor === 'Just') {
-		var _p2 = _p1._0;
-		switch (_p2.ctor) {
+	var _p7 = msgEntries;
+	if (_p7.ctor === 'Just') {
+		var _p8 = _p7._0;
+		switch (_p8.ctor) {
 			case 'NotAsked':
 				return {ctor: '[]'};
 			case 'Loading':
@@ -11914,7 +11909,7 @@ var _user$project$View$displayEntries = function (msgEntries) {
 					_1: {ctor: '[]'}
 				};
 			case 'Success':
-				return A2(_elm_lang$core$List$map, _user$project$View$messageEntryView, _p2._0);
+				return A2(_elm_lang$core$List$map, _user$project$View$messageEntryView, _p8._0);
 			default:
 				return {
 					ctor: '::',
@@ -12422,9 +12417,9 @@ var _user$project$View$chatRoomPreview = function (chatRoomModel) {
 													ctor: '::',
 													_0: _elm_lang$html$Html_Attributes$src(
 														function () {
-															var _p3 = _user$project$Models$getChatEntryModel(chatRoomModel.chatRoom.lastEntry);
-															if (_p3.ctor === 'Just') {
-																return _p3._0.user.profileImg;
+															var _p9 = _user$project$Models$getChatEntryModel(chatRoomModel.chatRoom.lastEntry);
+															if (_p9.ctor === 'Just') {
+																return _p9._0.user.profileImg;
 															} else {
 																return '';
 															}
@@ -12458,9 +12453,9 @@ var _user$project$View$chatRoomPreview = function (chatRoomModel) {
 												ctor: '::',
 												_0: _elm_lang$html$Html$text(
 													function () {
-														var _p4 = _user$project$Models$getChatEntryModel(chatRoomModel.chatRoom.lastEntry);
-														if (_p4.ctor === 'Just') {
-															return _p4._0.user.name;
+														var _p10 = _user$project$Models$getChatEntryModel(chatRoomModel.chatRoom.lastEntry);
+														if (_p10.ctor === 'Just') {
+															return _p10._0.user.name;
 														} else {
 															return '';
 														}
@@ -12481,9 +12476,9 @@ var _user$project$View$chatRoomPreview = function (chatRoomModel) {
 												ctor: '::',
 												_0: _elm_lang$html$Html$text(
 													function () {
-														var _p5 = _user$project$Models$getChatEntryModel(chatRoomModel.chatRoom.lastEntry);
-														if (_p5.ctor === 'Just') {
-															return _p5._0.chatEntry.message;
+														var _p11 = _user$project$Models$getChatEntryModel(chatRoomModel.chatRoom.lastEntry);
+														if (_p11.ctor === 'Just') {
+															return _p11._0.chatEntry.message;
 														} else {
 															return '';
 														}
@@ -12501,8 +12496,8 @@ var _user$project$View$chatRoomPreview = function (chatRoomModel) {
 		});
 };
 var _user$project$View$chatRoomsPreview = function (model) {
-	var _p6 = model.chatRoomList;
-	switch (_p6.ctor) {
+	var _p12 = model.chatRoomList;
+	switch (_p12.ctor) {
 		case 'NotAsked':
 			return A2(
 				_elm_lang$html$Html$ul,
@@ -12530,9 +12525,9 @@ var _user$project$View$chatRoomsPreview = function (model) {
 				},
 				{ctor: '[]'});
 		case 'Success':
-			var _p7 = _p6._0;
+			var _p13 = _p12._0;
 			return (_elm_lang$core$Native_Utils.cmp(
-				_elm_lang$core$List$length(_p7),
+				_elm_lang$core$List$length(_p13),
 				0) > 0) ? A2(
 				_elm_lang$html$Html$ul,
 				{
@@ -12544,7 +12539,7 @@ var _user$project$View$chatRoomsPreview = function (model) {
 						_1: {ctor: '[]'}
 					}
 				},
-				A2(_elm_lang$core$List$map, _user$project$View$chatRoomPreview, _p7)) : A2(
+				A2(_elm_lang$core$List$map, _user$project$View$chatRoomPreview, _p13)) : A2(
 				_elm_lang$html$Html$ul,
 				{
 					ctor: '::',
@@ -12667,9 +12662,9 @@ var _user$project$View$view = function (model) {
 			_1: {
 				ctor: '::',
 				_0: function () {
-					var _p8 = model.currentChatRoom;
-					if (_p8.ctor === 'Just') {
-						return _user$project$View$messagesStream(_p8._0);
+					var _p14 = model.currentChatRoom;
+					if (_p14.ctor === 'Just') {
+						return _user$project$View$messagesStream(_p14._0);
 					} else {
 						return model.showNewMessage ? _user$project$View$newChatRoom(model) : _user$project$View$loader;
 					}
@@ -12761,8 +12756,6 @@ var _user$project$Update$update = F2(
 				};
 			case 'SearchUsers':
 				var _p1 = _p0._0;
-				var y = A2(_elm_lang$core$Debug$log, 'test', _p1);
-				var x = A2(_elm_lang$core$Debug$log, 'test', model);
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -12770,6 +12763,25 @@ var _user$project$Update$update = F2(
 						{
 							userPickerSearch: _elm_lang$core$Maybe$Just(
 								{input: _p1, users: _elm_lang$core$Maybe$Nothing})
+						}),
+					_1: _user$project$Commands$userSearch(_p1)
+				};
+			case 'OnFetchUserSearch':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							userPickerSearch: A2(
+								_elm_lang$core$Maybe$map,
+								function (a) {
+									return _elm_lang$core$Native_Utils.update(
+										a,
+										{
+											users: _elm_lang$core$Maybe$Just(_p0._0)
+										});
+								},
+								model.userPickerSearch)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};

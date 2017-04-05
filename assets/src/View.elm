@@ -333,34 +333,69 @@ userPicker model =
                         []
                     ]
                 ]
-            , ul [ attribute "aria-labelledby" "dropdownMenu", class "dropdown-menu", id "notifyUserInput_userpicker", attribute "role" "menu", style [ ( "position", "absolute" ), ( "display", "block" ) ] ]
-                [ li
-                    [ class "selected" ]
-                    [ a [ href "#" ]
-                        [ img
-                            [ class "img-rounded", src "/img/default_user.jpg", height 20, width 20 ]
+
+            , ul [ attribute "aria-labelledby" "dropdownMenu", class ("dropdown-menu " ++ (
+                case model.userPickerSearch of
+                  Just typeAhead ->
+                    case typeAhead.users of
+                      Just searchUsers ->
+                        ""
+                      Nothing ->
+                        "hidden"
+                  Nothing ->
+                    "hidden"
+            )) , id "notifyUserInput_userpicker", attribute "role" "menu", style [ ( "position", "absolute" ), ( "display", "block" ) ] ]
+                (
+                    case model.userPickerSearch of
+                        Just typeAhead ->
+                            case typeAhead.users of
+                                Just searchUsers ->
+                                    case userPickerList searchUsers of
+                                        Just usersHtmlList -> 
+                                            usersHtmlList
+                                        Nothing -> 
+                                            [] 
+                                Nothing ->
+                                []
+                        Nothing ->
                             []
-                        , text "Abdo salah"
-                        ]
-                    ]
-                , li
-                    [ class "" ]
-                    [ a [ href "#" ]
-                        [ img
-                            [ class "img-rounded", src "/img/default_user.jpg", height 20, width 20 ]
-                            []
-                        , text "Abdo salah"
-                        ]
-                    ]
-                , li
-                    [ class "" ]
-                    [ a [ href "#" ]
-                        [ img
-                            [ class "img-rounded", src "/img/default_user.jpg", height 20, width 20 ]
-                            []
-                        , text "Abdo salah"
-                        ]
-                    ]
-                ]
+                )                
             ]
+        ]
+
+userPickerList : WebData (List UserSearch) -> Maybe (List (Html Msg))
+userPickerList userSearch = 
+    case userSearch of
+      NotAsked ->
+        Nothing
+      
+      Loading ->
+        Just ([li [] [ loader ]])
+      
+      Success [] -> 
+        Nothing
+    
+      Success [user] -> 
+        Just ([userPickerElement user "selected"])
+
+      Success (user::users) ->
+        Just (
+             userPickerElement user "selected" :: List.map (\u -> userPickerElement u ""
+            ) users)
+
+      Failure err ->
+        Just [li [] [ text ":( Sorry there is an error happen" ]]
+
+userPickerElement : UserSearch -> String -> Html Msg
+userPickerElement userSearch selectedClass = 
+    li 
+        [ class selectedClass]
+        [ 
+            a [ href "#" ]
+                [ img
+                [ class "img-rounded", src userSearch.image, height 20, width 20 ]
+                []
+                , text userSearch.displayName
+                ]
+            
         ]

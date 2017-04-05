@@ -20,14 +20,11 @@ update msg model =
             ( { model | chatRoomList = rooms }, Cmd.none )
 
         SearchUsers searchInput ->
-            let
-                x =
-                    Debug.log "test" model
+            ( { model | userPickerSearch = Just { input = searchInput, users = Nothing } }, userSearch searchInput )
+        
+        OnFetchUserSearch userSearchResult -> 
+            ( { model | userPickerSearch = Maybe.map(\a -> { a | users = Just userSearchResult }) model.userPickerSearch }, Cmd.none )            
 
-                y =
-                    Debug.log "test" searchInput
-            in
-                ( { model | userPickerSearch = Just { input = searchInput, users = Nothing } }, Cmd.none )
 
         _ ->
             ( model, Cmd.none )
