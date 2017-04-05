@@ -313,40 +313,39 @@ userPicker model =
             []
         , div [ class "notifyUserInput_user_picker_container", style [ ( "position", "relative" ) ] ]
             [ ul [ class "tag_input", id "notifyUserInput_invite_tags" ]
-                (
-                    (case model.userPickerSearch of
-                        Just typeAhead ->
-                            case (usersSelectedElement typeAhead.selectedUsers) of
-                                Just searchUsersElements ->
-                                    searchUsersElements
+                ((case model.userPickerSearch of
+                    Just typeAhead ->
+                        case (usersSelectedElement typeAhead.selectedUsers) of
+                            Just searchUsersElements ->
+                                searchUsersElements
 
-                                Nothing ->
-                                    []
+                            Nothing ->
+                                []
 
-                        Nothing ->
-                            []
-                    ) ++ 
-                        
-                    [ li [ id "notifyUserInput_tag_input" ]
-                        [ input
-                            [ attribute "autocomplete" "off"
-                            , class "tag_input_field"
-                            , id "notifyUserInput_tag_input_field"
-                            , placeholder "Type the name of a user or group"
-                            , type_ "text"
-                            , value
-                                (case model.userPickerSearch of
-                                    Just val ->
-                                        val.input
+                    Nothing ->
+                        []
+                 )
+                    ++ [ li [ id "notifyUserInput_tag_input" ]
+                            [ input
+                                [ attribute "autocomplete" "off"
+                                , class "tag_input_field"
+                                , id "notifyUserInput_tag_input_field"
+                                , placeholder "Type the name of a user or group"
+                                , type_ "text"
+                                , value
+                                    (case model.userPickerSearch of
+                                        Just val ->
+                                            val.input
 
-                                    Nothing ->
-                                        ""
-                                )
-                            , onInput SearchUsers
+                                        Nothing ->
+                                            ""
+                                    )
+                                , onInput SearchUsers
+                                ]
+                                []
                             ]
-                            []
-                        ]
-                ])
+                       ]
+                )
             , ul
                 [ attribute "aria-labelledby" "dropdownMenu"
                 , class
