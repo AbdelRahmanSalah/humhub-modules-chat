@@ -313,89 +313,142 @@ userPicker model =
             []
         , div [ class "notifyUserInput_user_picker_container", style [ ( "position", "relative" ) ] ]
             [ ul [ class "tag_input", id "notifyUserInput_invite_tags" ]
-                [ li [ id "notifyUserInput_tag_input" ]
-                    [ input
-                        [ attribute "autocomplete" "off"
-                        , class "tag_input_field"
-                        , id "notifyUserInput_tag_input_field"
-                        , placeholder "Type the name of a user or group"
-                        , type_ "text"
-                        , value
-                            (case model.userPickerSearch of
-                                Just val ->
-                                    val.input
-
-                                Nothing ->
-                                    ""
-                            )
-                        , onInput SearchUsers
-                        ]
-                        []
-                    ]
-                ]
-
-            , ul [ attribute "aria-labelledby" "dropdownMenu", class ("dropdown-menu " ++ (
-                case model.userPickerSearch of
-                  Just typeAhead ->
-                    case typeAhead.users of
-                      Just searchUsers ->
-                        ""
-                      Nothing ->
-                        "hidden"
-                  Nothing ->
-                    "hidden"
-            )) , id "notifyUserInput_userpicker", attribute "role" "menu", style [ ( "position", "absolute" ), ( "display", "block" ) ] ]
                 (
-                    case model.userPickerSearch of
+                    (case model.userPickerSearch of
                         Just typeAhead ->
-                            case typeAhead.users of
-                                Just searchUsers ->
-                                    case userPickerList searchUsers of
-                                        Just usersHtmlList -> 
-                                            usersHtmlList
-                                        Nothing -> 
-                                            [] 
+                            case (usersSelectedElement typeAhead.selectedUsers) of
+                                Just searchUsersElements ->
+                                    searchUsersElements
+
                                 Nothing ->
-                                []
+                                    []
+
                         Nothing ->
                             []
-                )                
+                    ) ++ 
+                        
+                    [ li [ id "notifyUserInput_tag_input" ]
+                        [ input
+                            [ attribute "autocomplete" "off"
+                            , class "tag_input_field"
+                            , id "notifyUserInput_tag_input_field"
+                            , placeholder "Type the name of a user or group"
+                            , type_ "text"
+                            , value
+                                (case model.userPickerSearch of
+                                    Just val ->
+                                        val.input
+
+                                    Nothing ->
+                                        ""
+                                )
+                            , onInput SearchUsers
+                            ]
+                            []
+                        ]
+                ])
+            , ul
+                [ attribute "aria-labelledby" "dropdownMenu"
+                , class
+                    ("dropdown-menu "
+                        ++ (case model.userPickerSearch of
+                                Just typeAhead ->
+                                    case typeAhead.users of
+                                        Just searchUsers ->
+                                            ""
+
+                                        Nothing ->
+                                            "hidden"
+
+                                Nothing ->
+                                    "hidden"
+                           )
+                    )
+                , id "notifyUserInput_userpicker"
+                , attribute "role" "menu"
+                , style [ ( "position", "absolute" ), ( "display", "block" ) ]
+                ]
+                (case model.userPickerSearch of
+                    Just typeAhead ->
+                        case typeAhead.users of
+                            Just searchUsers ->
+                                case userPickerList searchUsers of
+                                    Just usersHtmlList ->
+                                        usersHtmlList
+
+                                    Nothing ->
+                                        []
+
+                            Nothing ->
+                                []
+
+                    Nothing ->
+                        []
+                )
             ]
         ]
 
+
 userPickerList : WebData (List UserSearch) -> Maybe (List (Html Msg))
-userPickerList userSearch = 
+userPickerList userSearch =
     case userSearch of
-      NotAsked ->
-        Nothing
-      
-      Loading ->
-        Just ([li [] [ loader ]])
-      
-      Success [] -> 
-        Nothing
-    
-      Success [user] -> 
-        Just ([userPickerElement user "selected"])
+        NotAsked ->
+            Nothing
 
-      Success (user::users) ->
-        Just (
-             userPickerElement user "selected" :: List.map (\u -> userPickerElement u ""
-            ) users)
+        Loading ->
+            Just ([ li [] [ loader ] ])
 
-      Failure err ->
-        Just [li [] [ text ":( Sorry there is an error happen" ]]
+        Success [] ->
+            Nothing
+
+        Success [ user ] ->
+            Just ([ userPickerElement user "selected" ])
+
+        Success (user :: users) ->
+            Just
+                (userPickerElement user "selected"
+                    :: List.map
+                        (\u -> userPickerElement u "")
+                        users
+                )
+
+        Failure err ->
+            Just [ li [] [ text ":( Sorry there is an error happen" ] ]
+
 
 userPickerElement : UserSearch -> String -> Html Msg
-userPickerElement userSearch selectedClass = 
-    li 
-        [ class selectedClass]
-        [ 
-            a [ href "#" ]
-                [ img
+userPickerElement userSearch selectedClass =
+    li
+        [ class selectedClass, onClick (UserSearchSelected userSearch) ]
+        [ a [ href "#" ]
+            [ img
                 [ class "img-rounded", src userSearch.image, height 20, width 20 ]
                 []
-                , text userSearch.displayName
-                ]
-            
+            , text userSearch.displayName
+            ]
         ]
+
+
+usersSelectedElement : Maybe (List UserSearch) -> Maybe (List (Html Msg))
+usersSelectedElement userSearchs =
+    case userSearchs of
+        Just users ->
+            Just
+                (List.map
+                    (\u ->
+                        li
+                            [ class "userInput" ]
+                            [ img
+                                [ class "img-rounded", src u.image, height 24, width 24, attribute "data-src" "holder.js/24x24" ]
+                                []
+                            , text u.displayName
+                            , i
+                                [ class "fa fa-times-circle" ]
+                                []
+                            ]
+                    )
+                    users
+                )
+
+        Nothing ->
+            Nothing

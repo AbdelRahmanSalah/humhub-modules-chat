@@ -15,6 +15,7 @@ type alias Model =
 type alias UserTypeAhead =
     { input : String
     , users : Maybe (WebData (List UserSearch)) -- The data you want to list and filter
+    , selectedUsers : Maybe (List UserSearch)
     }
 
 

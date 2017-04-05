@@ -13,3 +13,4 @@ type Msg
     | CreateNewChatRoom
     | OnFetchUserSearch (WebData (List UserSearch))
     | SearchUsers String
+    | UserSearchSelected UserSearch

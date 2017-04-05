@@ -10831,9 +10831,9 @@ var _user$project$Models$Model = F4(
 	function (a, b, c, d) {
 		return {chatRoomList: a, currentChatRoom: b, showNewMessage: c, userPickerSearch: d};
 	});
-var _user$project$Models$UserTypeAhead = F2(
-	function (a, b) {
-		return {input: a, users: b};
+var _user$project$Models$UserTypeAhead = F3(
+	function (a, b, c) {
+		return {input: a, users: b, selectedUsers: c};
 	});
 var _user$project$Models$ChatRoomModel = F3(
 	function (a, b, c) {
@@ -10860,6 +10860,9 @@ var _user$project$Models$UserSearch = F7(
 		return {id: a, guid: b, disabled: c, displayName: d, image: e, link: f, priority: g};
 	});
 
+var _user$project$Msgs$UserSearchSelected = function (a) {
+	return {ctor: 'UserSearchSelected', _0: a};
+};
 var _user$project$Msgs$SearchUsers = function (a) {
 	return {ctor: 'SearchUsers', _0: a};
 };
@@ -11048,6 +11051,69 @@ var _user$project$Commands$fetchMessagesList = function (offset) {
 				_user$project$Commands$chatRoomsModelDecoder)));
 };
 
+var _user$project$View$usersSelectedElement = function (userSearchs) {
+	var _p0 = userSearchs;
+	if (_p0.ctor === 'Just') {
+		return _elm_lang$core$Maybe$Just(
+			A2(
+				_elm_lang$core$List$map,
+				function (u) {
+					return A2(
+						_elm_lang$html$Html$li,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('userInput'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$img,
+								{
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('img-rounded'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$src(u.image),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$height(24),
+											_1: {
+												ctor: '::',
+												_0: _elm_lang$html$Html_Attributes$width(24),
+												_1: {
+													ctor: '::',
+													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'data-src', 'holder.js/24x24'),
+													_1: {ctor: '[]'}
+												}
+											}
+										}
+									}
+								},
+								{ctor: '[]'}),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(u.displayName),
+								_1: {
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$i,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$class('fa fa-times-circle'),
+											_1: {ctor: '[]'}
+										},
+										{ctor: '[]'}),
+									_1: {ctor: '[]'}
+								}
+							}
+						});
+				},
+				_p0._0));
+	} else {
+		return _elm_lang$core$Maybe$Nothing;
+	}
+};
 var _user$project$View$userPickerElement = F2(
 	function (userSearch, selectedClass) {
 		return A2(
@@ -11055,7 +11121,12 @@ var _user$project$View$userPickerElement = F2(
 			{
 				ctor: '::',
 				_0: _elm_lang$html$Html_Attributes$class(selectedClass),
-				_1: {ctor: '[]'}
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(
+						_user$project$Msgs$UserSearchSelected(userSearch)),
+					_1: {ctor: '[]'}
+				}
 			},
 			{
 				ctor: '::',
@@ -11158,8 +11229,8 @@ var _user$project$View$loader = A2(
 		_1: {ctor: '[]'}
 	});
 var _user$project$View$userPickerList = function (userSearch) {
-	var _p0 = userSearch;
-	switch (_p0.ctor) {
+	var _p1 = userSearch;
+	switch (_p1.ctor) {
 		case 'NotAsked':
 			return _elm_lang$core$Maybe$Nothing;
 		case 'Loading':
@@ -11177,27 +11248,27 @@ var _user$project$View$userPickerList = function (userSearch) {
 					_1: {ctor: '[]'}
 				});
 		case 'Success':
-			if (_p0._0.ctor === '[]') {
+			if (_p1._0.ctor === '[]') {
 				return _elm_lang$core$Maybe$Nothing;
 			} else {
-				if (_p0._0._1.ctor === '[]') {
+				if (_p1._0._1.ctor === '[]') {
 					return _elm_lang$core$Maybe$Just(
 						{
 							ctor: '::',
-							_0: A2(_user$project$View$userPickerElement, _p0._0._0, 'selected'),
+							_0: A2(_user$project$View$userPickerElement, _p1._0._0, 'selected'),
 							_1: {ctor: '[]'}
 						});
 				} else {
 					return _elm_lang$core$Maybe$Just(
 						{
 							ctor: '::',
-							_0: A2(_user$project$View$userPickerElement, _p0._0._0, 'selected'),
+							_0: A2(_user$project$View$userPickerElement, _p1._0._0, 'selected'),
 							_1: A2(
 								_elm_lang$core$List$map,
 								function (u) {
 									return A2(_user$project$View$userPickerElement, u, '');
 								},
-								_p0._0._1)
+								_p1._0._1)
 						});
 				}
 			}
@@ -11290,61 +11361,76 @@ var _user$project$View$userPicker = function (model) {
 									_1: {ctor: '[]'}
 								}
 							},
-							{
-								ctor: '::',
-								_0: A2(
-									_elm_lang$html$Html$li,
-									{
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$id('notifyUserInput_tag_input'),
-										_1: {ctor: '[]'}
-									},
-									{
-										ctor: '::',
-										_0: A2(
-											_elm_lang$html$Html$input,
-											{
-												ctor: '::',
-												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'autocomplete', 'off'),
-												_1: {
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								function () {
+									var _p2 = model.userPickerSearch;
+									if (_p2.ctor === 'Just') {
+										var _p3 = _user$project$View$usersSelectedElement(_p2._0.selectedUsers);
+										if (_p3.ctor === 'Just') {
+											return _p3._0;
+										} else {
+											return {ctor: '[]'};
+										}
+									} else {
+										return {ctor: '[]'};
+									}
+								}(),
+								{
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$li,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$id('notifyUserInput_tag_input'),
+											_1: {ctor: '[]'}
+										},
+										{
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$input,
+												{
 													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$class('tag_input_field'),
+													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'autocomplete', 'off'),
 													_1: {
 														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$id('notifyUserInput_tag_input_field'),
+														_0: _elm_lang$html$Html_Attributes$class('tag_input_field'),
 														_1: {
 															ctor: '::',
-															_0: _elm_lang$html$Html_Attributes$placeholder('Type the name of a user or group'),
+															_0: _elm_lang$html$Html_Attributes$id('notifyUserInput_tag_input_field'),
 															_1: {
 																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$type_('text'),
+																_0: _elm_lang$html$Html_Attributes$placeholder('Type the name of a user or group'),
 																_1: {
 																	ctor: '::',
-																	_0: _elm_lang$html$Html_Attributes$value(
-																		function () {
-																			var _p1 = model.userPickerSearch;
-																			if (_p1.ctor === 'Just') {
-																				return _p1._0.input;
-																			} else {
-																				return '';
-																			}
-																		}()),
+																	_0: _elm_lang$html$Html_Attributes$type_('text'),
 																	_1: {
 																		ctor: '::',
-																		_0: _elm_lang$html$Html_Events$onInput(_user$project$Msgs$SearchUsers),
-																		_1: {ctor: '[]'}
+																		_0: _elm_lang$html$Html_Attributes$value(
+																			function () {
+																				var _p4 = model.userPickerSearch;
+																				if (_p4.ctor === 'Just') {
+																					return _p4._0.input;
+																				} else {
+																					return '';
+																				}
+																			}()),
+																		_1: {
+																			ctor: '::',
+																			_0: _elm_lang$html$Html_Events$onInput(_user$project$Msgs$SearchUsers),
+																			_1: {ctor: '[]'}
+																		}
 																	}
 																}
 															}
 														}
 													}
-												}
-											},
-											{ctor: '[]'}),
-										_1: {ctor: '[]'}
-									}),
-								_1: {ctor: '[]'}
-							}),
+												},
+												{ctor: '[]'}),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								})),
 						_1: {
 							ctor: '::',
 							_0: A2(
@@ -11359,10 +11445,10 @@ var _user$project$View$userPicker = function (model) {
 												_elm_lang$core$Basics_ops['++'],
 												'dropdown-menu ',
 												function () {
-													var _p2 = model.userPickerSearch;
-													if (_p2.ctor === 'Just') {
-														var _p3 = _p2._0.users;
-														if (_p3.ctor === 'Just') {
+													var _p5 = model.userPickerSearch;
+													if (_p5.ctor === 'Just') {
+														var _p6 = _p5._0.users;
+														if (_p6.ctor === 'Just') {
 															return '';
 														} else {
 															return 'hidden';
@@ -11396,13 +11482,13 @@ var _user$project$View$userPicker = function (model) {
 									}
 								},
 								function () {
-									var _p4 = model.userPickerSearch;
-									if (_p4.ctor === 'Just') {
-										var _p5 = _p4._0.users;
-										if (_p5.ctor === 'Just') {
-											var _p6 = _user$project$View$userPickerList(_p5._0);
-											if (_p6.ctor === 'Just') {
-												return _p6._0;
+									var _p7 = model.userPickerSearch;
+									if (_p7.ctor === 'Just') {
+										var _p8 = _p7._0.users;
+										if (_p8.ctor === 'Just') {
+											var _p9 = _user$project$View$userPickerList(_p8._0);
+											if (_p9.ctor === 'Just') {
+												return _p9._0;
 											} else {
 												return {ctor: '[]'};
 											}
@@ -11896,10 +11982,10 @@ var _user$project$View$messageEntryView = function (chatEntryModel) {
 		});
 };
 var _user$project$View$displayEntries = function (msgEntries) {
-	var _p7 = msgEntries;
-	if (_p7.ctor === 'Just') {
-		var _p8 = _p7._0;
-		switch (_p8.ctor) {
+	var _p10 = msgEntries;
+	if (_p10.ctor === 'Just') {
+		var _p11 = _p10._0;
+		switch (_p11.ctor) {
 			case 'NotAsked':
 				return {ctor: '[]'};
 			case 'Loading':
@@ -11909,7 +11995,7 @@ var _user$project$View$displayEntries = function (msgEntries) {
 					_1: {ctor: '[]'}
 				};
 			case 'Success':
-				return A2(_elm_lang$core$List$map, _user$project$View$messageEntryView, _p8._0);
+				return A2(_elm_lang$core$List$map, _user$project$View$messageEntryView, _p11._0);
 			default:
 				return {
 					ctor: '::',
@@ -12417,9 +12503,9 @@ var _user$project$View$chatRoomPreview = function (chatRoomModel) {
 													ctor: '::',
 													_0: _elm_lang$html$Html_Attributes$src(
 														function () {
-															var _p9 = _user$project$Models$getChatEntryModel(chatRoomModel.chatRoom.lastEntry);
-															if (_p9.ctor === 'Just') {
-																return _p9._0.user.profileImg;
+															var _p12 = _user$project$Models$getChatEntryModel(chatRoomModel.chatRoom.lastEntry);
+															if (_p12.ctor === 'Just') {
+																return _p12._0.user.profileImg;
 															} else {
 																return '';
 															}
@@ -12453,9 +12539,9 @@ var _user$project$View$chatRoomPreview = function (chatRoomModel) {
 												ctor: '::',
 												_0: _elm_lang$html$Html$text(
 													function () {
-														var _p10 = _user$project$Models$getChatEntryModel(chatRoomModel.chatRoom.lastEntry);
-														if (_p10.ctor === 'Just') {
-															return _p10._0.user.name;
+														var _p13 = _user$project$Models$getChatEntryModel(chatRoomModel.chatRoom.lastEntry);
+														if (_p13.ctor === 'Just') {
+															return _p13._0.user.name;
 														} else {
 															return '';
 														}
@@ -12476,9 +12562,9 @@ var _user$project$View$chatRoomPreview = function (chatRoomModel) {
 												ctor: '::',
 												_0: _elm_lang$html$Html$text(
 													function () {
-														var _p11 = _user$project$Models$getChatEntryModel(chatRoomModel.chatRoom.lastEntry);
-														if (_p11.ctor === 'Just') {
-															return _p11._0.chatEntry.message;
+														var _p14 = _user$project$Models$getChatEntryModel(chatRoomModel.chatRoom.lastEntry);
+														if (_p14.ctor === 'Just') {
+															return _p14._0.chatEntry.message;
 														} else {
 															return '';
 														}
@@ -12496,8 +12582,8 @@ var _user$project$View$chatRoomPreview = function (chatRoomModel) {
 		});
 };
 var _user$project$View$chatRoomsPreview = function (model) {
-	var _p12 = model.chatRoomList;
-	switch (_p12.ctor) {
+	var _p15 = model.chatRoomList;
+	switch (_p15.ctor) {
 		case 'NotAsked':
 			return A2(
 				_elm_lang$html$Html$ul,
@@ -12525,9 +12611,9 @@ var _user$project$View$chatRoomsPreview = function (model) {
 				},
 				{ctor: '[]'});
 		case 'Success':
-			var _p13 = _p12._0;
+			var _p16 = _p15._0;
 			return (_elm_lang$core$Native_Utils.cmp(
-				_elm_lang$core$List$length(_p13),
+				_elm_lang$core$List$length(_p16),
 				0) > 0) ? A2(
 				_elm_lang$html$Html$ul,
 				{
@@ -12539,7 +12625,7 @@ var _user$project$View$chatRoomsPreview = function (model) {
 						_1: {ctor: '[]'}
 					}
 				},
-				A2(_elm_lang$core$List$map, _user$project$View$chatRoomPreview, _p13)) : A2(
+				A2(_elm_lang$core$List$map, _user$project$View$chatRoomPreview, _p16)) : A2(
 				_elm_lang$html$Html$ul,
 				{
 					ctor: '::',
@@ -12662,9 +12748,9 @@ var _user$project$View$view = function (model) {
 			_1: {
 				ctor: '::',
 				_0: function () {
-					var _p14 = model.currentChatRoom;
-					if (_p14.ctor === 'Just') {
-						return _user$project$View$messagesStream(_p14._0);
+					var _p17 = model.currentChatRoom;
+					if (_p17.ctor === 'Just') {
+						return _user$project$View$messagesStream(_p17._0);
 					} else {
 						return model.showNewMessage ? _user$project$View$newChatRoom(model) : _user$project$View$loader;
 					}
@@ -12755,16 +12841,26 @@ var _user$project$Update$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'SearchUsers':
-				var _p1 = _p0._0;
+				var _p2 = _p0._0;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							userPickerSearch: _elm_lang$core$Maybe$Just(
-								{input: _p1, users: _elm_lang$core$Maybe$Nothing})
+							userPickerSearch: function () {
+								var _p1 = model.userPickerSearch;
+								if (_p1.ctor === 'Just') {
+									return _elm_lang$core$Maybe$Just(
+										_elm_lang$core$Native_Utils.update(
+											_p1._0,
+											{input: _p2, users: _elm_lang$core$Maybe$Nothing}));
+								} else {
+									return _elm_lang$core$Maybe$Just(
+										{input: _p2, users: _elm_lang$core$Maybe$Nothing, selectedUsers: _elm_lang$core$Maybe$Nothing});
+								}
+							}()
 						}),
-					_1: _user$project$Commands$userSearch(_p1)
+					_1: _user$project$Commands$userSearch(_p2)
 				};
 			case 'OnFetchUserSearch':
 				return {
@@ -12779,6 +12875,48 @@ var _user$project$Update$update = F2(
 										a,
 										{
 											users: _elm_lang$core$Maybe$Just(_p0._0)
+										});
+								},
+								model.userPickerSearch)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'UserSearchSelected':
+				var _p4 = _p0._0;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							userPickerSearch: A2(
+								_elm_lang$core$Maybe$map,
+								function (a) {
+									return _elm_lang$core$Native_Utils.update(
+										a,
+										{
+											selectedUsers: function () {
+												var _p3 = a.selectedUsers;
+												if (_p3.ctor === 'Just') {
+													return _elm_lang$core$Maybe$Just(
+														A2(
+															_elm_lang$core$Basics_ops['++'],
+															_p3._0,
+															{
+																ctor: '::',
+																_0: _p4,
+																_1: {ctor: '[]'}
+															}));
+												} else {
+													return _elm_lang$core$Maybe$Just(
+														{
+															ctor: '::',
+															_0: _p4,
+															_1: {ctor: '[]'}
+														});
+												}
+											}(),
+											input: '',
+											users: _elm_lang$core$Maybe$Nothing
 										});
 								},
 								model.userPickerSearch)

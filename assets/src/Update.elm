@@ -20,11 +20,25 @@ update msg model =
             ( { model | chatRoomList = rooms }, Cmd.none )
 
         SearchUsers searchInput ->
-            ( { model | userPickerSearch = Just { input = searchInput, users = Nothing } }, userSearch searchInput )
-        
-        OnFetchUserSearch userSearchResult -> 
-            ( { model | userPickerSearch = Maybe.map(\a -> { a | users = Just userSearchResult }) model.userPickerSearch }, Cmd.none )            
+            ( { model | userPickerSearch = (
+                case model.userPickerSearch of
+                    Just picker ->
+                        Just { picker | input = searchInput, users = Nothing }
+                    Nothing ->
+                        Just { input = searchInput, users = Nothing, selectedUsers = Nothing }
+                ) }, userSearch searchInput )
 
+        OnFetchUserSearch userSearchResult ->
+            ( { model | userPickerSearch = Maybe.map (\a -> { a | users = Just userSearchResult }) model.userPickerSearch }, Cmd.none )
+
+        UserSearchSelected selectedUser ->
+            ( { model | userPickerSearch = Maybe.map (\a -> { a | selectedUsers = (
+                case a.selectedUsers of
+                    Just users ->
+                        Just (users ++ [selectedUser])
+                    Nothing ->
+                        Just ([selectedUser])
+                ), input = "" , users = Nothing }) model.userPickerSearch }, Cmd.none )
 
         _ ->
             ( model, Cmd.none )
