@@ -7,8 +7,6 @@ import Html.Events exposing (..)
 import Msgs exposing (..)
 import RemoteData exposing (..)
 import Http
-import Dialog
-
 
 view : Model -> Html Msg
 view model =
@@ -243,27 +241,6 @@ loader =
             ]
         ]
 
-
-{-| A `Dialog.Config` is just a few piece of optional `Html`, plus "what do we do onClose?"
--}
-dialogConfig : Model -> Dialog.Config Msg
-dialogConfig model =
-    { closeMessage = Nothing -- Just Acknowledge
-    , containerClass = Nothing
-    , header = Just (h3 [] [ text "1 Up!" ])
-    , body = Just (text ("The counter ticks up to "))
-    , footer =
-        Just
-            (button
-                [ class "btn btn-success"
-
-                -- , onClick Acknowledge
-                ]
-                [ text "OK" ]
-            )
-    }
-
-
 newChatRoom : Model -> Html Msg
 newChatRoom model =
     div [ class "col-md-8 messages" ]
@@ -329,7 +306,8 @@ userPicker model =
                             [ input
                                 [ attribute "autocomplete" "off"
                                 , class "tag_input_field"
-                                , id "notifyUserInput_tag_input_field"
+                                , id "user-picker-search"
+                                , autofocus True
                                 , placeholder "Type the name of a user or group"
                                 , type_ "text"
                                 , value
@@ -435,19 +413,23 @@ usersSelectedElement userSearchs =
             Just
                 (List.map
                     (\u ->
-                        li
-                            [ class "userInput" ]
-                            [ img
-                                [ class "img-rounded", src u.image, height 24, width 24, attribute "data-src" "holder.js/24x24" ]
-                                []
-                            , text u.displayName
-                            , i
-                                [ class "fa fa-times-circle" ]
-                                []
-                            ]
+                        userSelectedElement u
                     )
                     users
                 )
 
         Nothing ->
             Nothing
+
+userSelectedElement : UserSearch -> Html Msg
+userSelectedElement userSearch = 
+    li
+        [ class "userInput" ]
+        [ img
+            [ class "img-rounded", src userSearch.image, height 24, width 24, attribute "data-src" "holder.js/24x24" ]
+            []
+        , text userSearch.displayName
+        , i
+            [ class "fa fa-times-circle", onClick (RemoveUserFromPicker userSearch) ]
+            []
+        ]

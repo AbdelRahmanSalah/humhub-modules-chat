@@ -7112,6 +7112,195 @@ var _danyx23$elm_uuid$Uuid$fromString = function (text) {
 };
 var _danyx23$elm_uuid$Uuid$uuidGenerator = A2(_mgold$elm_random_pcg$Random_Pcg$map, _danyx23$elm_uuid$Uuid$Uuid, _danyx23$elm_uuid$Uuid_Barebones$uuidStringGenerator);
 
+var _elm_lang$dom$Native_Dom = function() {
+
+var fakeNode = {
+	addEventListener: function() {},
+	removeEventListener: function() {}
+};
+
+var onDocument = on(typeof document !== 'undefined' ? document : fakeNode);
+var onWindow = on(typeof window !== 'undefined' ? window : fakeNode);
+
+function on(node)
+{
+	return function(eventName, decoder, toTask)
+	{
+		return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback) {
+
+			function performTask(event)
+			{
+				var result = A2(_elm_lang$core$Json_Decode$decodeValue, decoder, event);
+				if (result.ctor === 'Ok')
+				{
+					_elm_lang$core$Native_Scheduler.rawSpawn(toTask(result._0));
+				}
+			}
+
+			node.addEventListener(eventName, performTask);
+
+			return function()
+			{
+				node.removeEventListener(eventName, performTask);
+			};
+		});
+	};
+}
+
+var rAF = typeof requestAnimationFrame !== 'undefined'
+	? requestAnimationFrame
+	: function(callback) { callback(); };
+
+function withNode(id, doStuff)
+{
+	return _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)
+	{
+		rAF(function()
+		{
+			var node = document.getElementById(id);
+			if (node === null)
+			{
+				callback(_elm_lang$core$Native_Scheduler.fail({ ctor: 'NotFound', _0: id }));
+				return;
+			}
+			callback(_elm_lang$core$Native_Scheduler.succeed(doStuff(node)));
+		});
+	});
+}
+
+
+// FOCUS
+
+function focus(id)
+{
+	return withNode(id, function(node) {
+		node.focus();
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+function blur(id)
+{
+	return withNode(id, function(node) {
+		node.blur();
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+
+// SCROLLING
+
+function getScrollTop(id)
+{
+	return withNode(id, function(node) {
+		return node.scrollTop;
+	});
+}
+
+function setScrollTop(id, desiredScrollTop)
+{
+	return withNode(id, function(node) {
+		node.scrollTop = desiredScrollTop;
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+function toBottom(id)
+{
+	return withNode(id, function(node) {
+		node.scrollTop = node.scrollHeight;
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+function getScrollLeft(id)
+{
+	return withNode(id, function(node) {
+		return node.scrollLeft;
+	});
+}
+
+function setScrollLeft(id, desiredScrollLeft)
+{
+	return withNode(id, function(node) {
+		node.scrollLeft = desiredScrollLeft;
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+function toRight(id)
+{
+	return withNode(id, function(node) {
+		node.scrollLeft = node.scrollWidth;
+		return _elm_lang$core$Native_Utils.Tuple0;
+	});
+}
+
+
+// SIZE
+
+function width(options, id)
+{
+	return withNode(id, function(node) {
+		switch (options.ctor)
+		{
+			case 'Content':
+				return node.scrollWidth;
+			case 'VisibleContent':
+				return node.clientWidth;
+			case 'VisibleContentWithBorders':
+				return node.offsetWidth;
+			case 'VisibleContentWithBordersAndMargins':
+				var rect = node.getBoundingClientRect();
+				return rect.right - rect.left;
+		}
+	});
+}
+
+function height(options, id)
+{
+	return withNode(id, function(node) {
+		switch (options.ctor)
+		{
+			case 'Content':
+				return node.scrollHeight;
+			case 'VisibleContent':
+				return node.clientHeight;
+			case 'VisibleContentWithBorders':
+				return node.offsetHeight;
+			case 'VisibleContentWithBordersAndMargins':
+				var rect = node.getBoundingClientRect();
+				return rect.bottom - rect.top;
+		}
+	});
+}
+
+return {
+	onDocument: F3(onDocument),
+	onWindow: F3(onWindow),
+
+	focus: focus,
+	blur: blur,
+
+	getScrollTop: getScrollTop,
+	setScrollTop: F2(setScrollTop),
+	getScrollLeft: getScrollLeft,
+	setScrollLeft: F2(setScrollLeft),
+	toBottom: toBottom,
+	toRight: toRight,
+
+	height: F2(height),
+	width: F2(width)
+};
+
+}();
+
+var _elm_lang$dom$Dom$blur = _elm_lang$dom$Native_Dom.blur;
+var _elm_lang$dom$Dom$focus = _elm_lang$dom$Native_Dom.focus;
+var _elm_lang$dom$Dom$NotFound = function (a) {
+	return {ctor: 'NotFound', _0: a};
+};
+
 var _elm_lang$virtual_dom$VirtualDom_Debug$wrap;
 var _elm_lang$virtual_dom$VirtualDom_Debug$wrapWithFlags;
 
@@ -9976,563 +10165,6 @@ var _elm_lang$http$Http$StringPart = F2(
 	});
 var _elm_lang$http$Http$stringPart = _elm_lang$http$Http$StringPart;
 
-var _krisajenkins$elm_exts$Exts_Html_Bootstrap$video = F2(
-	function (ratio, url) {
-		var ratioClass = function () {
-			var _p0 = ratio;
-			if (_p0.ctor === 'SixteenByNine') {
-				return 'embed-responsive-16by9';
-			} else {
-				return 'embed-responsive-4by3';
-			}
-		}();
-		return A2(
-			_elm_lang$html$Html$div,
-			{ctor: '[]'},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$h1,
-					{ctor: '[]'},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('About'),
-						_1: {ctor: '[]'}
-					}),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('embed-responsive'),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$iframe,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('embed-responsive-item'),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$src(url),
-										_1: {ctor: '[]'}
-									}
-								},
-								{ctor: '[]'}),
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				}
-			});
-	});
-var _krisajenkins$elm_exts$Exts_Html_Bootstrap$badge = _elm_lang$html$Html$span(
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html_Attributes$class('badge'),
-		_1: {ctor: '[]'}
-	});
-var _krisajenkins$elm_exts$Exts_Html_Bootstrap$well = _elm_lang$html$Html$div(
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html_Attributes$class('well'),
-		_1: {ctor: '[]'}
-	});
-var _krisajenkins$elm_exts$Exts_Html_Bootstrap$jumbotron = _elm_lang$html$Html$div(
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html_Attributes$class('jumbotron'),
-		_1: {ctor: '[]'}
-	});
-var _krisajenkins$elm_exts$Exts_Html_Bootstrap$clearfix = A2(
-	_elm_lang$html$Html$div,
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html_Attributes$class('clearfix'),
-		_1: {ctor: '[]'}
-	},
-	{ctor: '[]'});
-var _krisajenkins$elm_exts$Exts_Html_Bootstrap$empty = A2(
-	_elm_lang$html$Html$span,
-	{ctor: '[]'},
-	{ctor: '[]'});
-var _krisajenkins$elm_exts$Exts_Html_Bootstrap$formGroup = _elm_lang$html$Html$div(
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html_Attributes$class('form-group'),
-		_1: {ctor: '[]'}
-	});
-var _krisajenkins$elm_exts$Exts_Html_Bootstrap$row = _elm_lang$html$Html$div(
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html_Attributes$class('row'),
-		_1: {ctor: '[]'}
-	});
-var _krisajenkins$elm_exts$Exts_Html_Bootstrap$twoColumns = F2(
-	function (left, right) {
-		return _krisajenkins$elm_exts$Exts_Html_Bootstrap$row(
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('col-xs-6'),
-						_1: {ctor: '[]'}
-					},
-					left),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('col-xs-6'),
-							_1: {ctor: '[]'}
-						},
-						right),
-					_1: {ctor: '[]'}
-				}
-			});
-	});
-var _krisajenkins$elm_exts$Exts_Html_Bootstrap$containerFluid = _elm_lang$html$Html$div(
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html_Attributes$class('container-fluid'),
-		_1: {ctor: '[]'}
-	});
-var _krisajenkins$elm_exts$Exts_Html_Bootstrap$container = _elm_lang$html$Html$div(
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html_Attributes$class('container'),
-		_1: {ctor: '[]'}
-	});
-var _krisajenkins$elm_exts$Exts_Html_Bootstrap$stylesheet = A3(
-	_elm_lang$html$Html$node,
-	'link',
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html_Attributes$rel('stylesheet'),
-		_1: {
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$href('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'),
-			_1: {ctor: '[]'}
-		}
-	},
-	{ctor: '[]'});
-var _krisajenkins$elm_exts$Exts_Html_Bootstrap$FourByThree = {ctor: 'FourByThree'};
-var _krisajenkins$elm_exts$Exts_Html_Bootstrap$SixteenByNine = {ctor: 'SixteenByNine'};
-var _krisajenkins$elm_exts$Exts_Html_Bootstrap$Left = {ctor: 'Left'};
-var _krisajenkins$elm_exts$Exts_Html_Bootstrap$Bottom = {ctor: 'Bottom'};
-var _krisajenkins$elm_exts$Exts_Html_Bootstrap$Right = {ctor: 'Right'};
-var _krisajenkins$elm_exts$Exts_Html_Bootstrap$Top = {ctor: 'Top'};
-var _krisajenkins$elm_exts$Exts_Html_Bootstrap$popover = F5(
-	function (direction, isShown, styles, title, body) {
-		return A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$classList(
-					{
-						ctor: '::',
-						_0: {ctor: '_Tuple2', _0: 'popover fade', _1: true},
-						_1: {
-							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'in', _1: isShown},
-							_1: {
-								ctor: '::',
-								_0: {
-									ctor: '_Tuple2',
-									_0: 'top',
-									_1: _elm_lang$core$Native_Utils.eq(direction, _krisajenkins$elm_exts$Exts_Html_Bootstrap$Top)
-								},
-								_1: {
-									ctor: '::',
-									_0: {
-										ctor: '_Tuple2',
-										_0: 'right',
-										_1: _elm_lang$core$Native_Utils.eq(direction, _krisajenkins$elm_exts$Exts_Html_Bootstrap$Right)
-									},
-									_1: {
-										ctor: '::',
-										_0: {
-											ctor: '_Tuple2',
-											_0: 'bottom',
-											_1: _elm_lang$core$Native_Utils.eq(direction, _krisajenkins$elm_exts$Exts_Html_Bootstrap$Bottom)
-										},
-										_1: {
-											ctor: '::',
-											_0: {
-												ctor: '_Tuple2',
-												_0: 'left',
-												_1: _elm_lang$core$Native_Utils.eq(direction, _krisajenkins$elm_exts$Exts_Html_Bootstrap$Left)
-											},
-											_1: {ctor: '[]'}
-										}
-									}
-								}
-							}
-						}
-					}),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$style(
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							styles,
-							{
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'display', _1: 'block'},
-								_1: {ctor: '[]'}
-							})),
-					_1: {ctor: '[]'}
-				}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('arrow'),
-						_1: {ctor: '[]'}
-					},
-					{ctor: '[]'}),
-				_1: {
-					ctor: '::',
-					_0: function () {
-						var _p1 = title;
-						if (_p1.ctor === 'Just') {
-							return A2(
-								_elm_lang$html$Html$h3,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('popover-title'),
-									_1: {ctor: '[]'}
-								},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text(_p1._0),
-									_1: {ctor: '[]'}
-								});
-						} else {
-							return _krisajenkins$elm_exts$Exts_Html_Bootstrap$empty;
-						}
-					}(),
-					_1: {
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$div,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('popover-content'),
-								_1: {ctor: '[]'}
-							},
-							{
-								ctor: '::',
-								_0: body,
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
-					}
-				}
-			});
-	});
-
-var _krisajenkins$elm_exts$Exts_Maybe$oneOf = A2(
-	_elm_lang$core$List$foldl,
-	F2(
-		function (x, acc) {
-			return (!_elm_lang$core$Native_Utils.eq(acc, _elm_lang$core$Maybe$Nothing)) ? acc : x;
-		}),
-	_elm_lang$core$Maybe$Nothing);
-var _krisajenkins$elm_exts$Exts_Maybe$when = F2(
-	function (test, value) {
-		return test ? _elm_lang$core$Maybe$Just(value) : _elm_lang$core$Maybe$Nothing;
-	});
-var _krisajenkins$elm_exts$Exts_Maybe$validate = F2(
-	function (predicate, value) {
-		return predicate(value) ? _elm_lang$core$Maybe$Just(value) : _elm_lang$core$Maybe$Nothing;
-	});
-var _krisajenkins$elm_exts$Exts_Maybe$matches = function (predicate) {
-	return _elm_lang$core$Maybe$andThen(
-		_krisajenkins$elm_exts$Exts_Maybe$validate(predicate));
-};
-var _krisajenkins$elm_exts$Exts_Maybe$maybeDefault = F2(
-	function ($default, x) {
-		var _p0 = x;
-		if (_p0.ctor === 'Just') {
-			return _elm_lang$core$Maybe$Just(_p0._0);
-		} else {
-			return _elm_lang$core$Maybe$Just($default);
-		}
-	});
-var _krisajenkins$elm_exts$Exts_Maybe$join = F3(
-	function (f, left, right) {
-		var _p1 = {ctor: '_Tuple2', _0: left, _1: right};
-		if (((_p1.ctor === '_Tuple2') && (_p1._0.ctor === 'Just')) && (_p1._1.ctor === 'Just')) {
-			return _elm_lang$core$Maybe$Just(
-				A2(f, _p1._0._0, _p1._1._0));
-		} else {
-			return _elm_lang$core$Maybe$Nothing;
-		}
-	});
-var _krisajenkins$elm_exts$Exts_Maybe$catMaybes = _elm_lang$core$List$filterMap(_elm_lang$core$Basics$identity);
-var _krisajenkins$elm_exts$Exts_Maybe$mappend = F2(
-	function (a, b) {
-		var _p2 = {ctor: '_Tuple2', _0: a, _1: b};
-		if (_p2._0.ctor === 'Nothing') {
-			return _elm_lang$core$Maybe$Nothing;
-		} else {
-			if (_p2._1.ctor === 'Nothing') {
-				return _elm_lang$core$Maybe$Nothing;
-			} else {
-				return _elm_lang$core$Maybe$Just(
-					{ctor: '_Tuple2', _0: _p2._0._0, _1: _p2._1._0});
-			}
-		}
-	});
-var _krisajenkins$elm_exts$Exts_Maybe$maybe = F2(
-	function ($default, f) {
-		return function (_p3) {
-			return A2(
-				_elm_lang$core$Maybe$withDefault,
-				$default,
-				A2(_elm_lang$core$Maybe$map, f, _p3));
-		};
-	});
-var _krisajenkins$elm_exts$Exts_Maybe$isJust = function (x) {
-	var _p4 = x;
-	if (_p4.ctor === 'Just') {
-		return true;
-	} else {
-		return false;
-	}
-};
-var _krisajenkins$elm_exts$Exts_Maybe$isNothing = function (_p5) {
-	return !_krisajenkins$elm_exts$Exts_Maybe$isJust(_p5);
-};
-
-var _krisajenkins$elm_dialog$Dialog$map = F2(
-	function (f, config) {
-		return {
-			closeMessage: A2(_elm_lang$core$Maybe$map, f, config.closeMessage),
-			containerClass: config.containerClass,
-			header: A2(
-				_elm_lang$core$Maybe$map,
-				_elm_lang$html$Html$map(f),
-				config.header),
-			body: A2(
-				_elm_lang$core$Maybe$map,
-				_elm_lang$html$Html$map(f),
-				config.body),
-			footer: A2(
-				_elm_lang$core$Maybe$map,
-				_elm_lang$html$Html$map(f),
-				config.footer)
-		};
-	});
-var _krisajenkins$elm_dialog$Dialog$mapMaybe = function (_p0) {
-	return _elm_lang$core$Maybe$map(
-		_krisajenkins$elm_dialog$Dialog$map(_p0));
-};
-var _krisajenkins$elm_dialog$Dialog$backdrop = function (config) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$classList(
-				{
-					ctor: '::',
-					_0: {
-						ctor: '_Tuple2',
-						_0: 'modal-backdrop in',
-						_1: _krisajenkins$elm_exts$Exts_Maybe$isJust(config)
-					},
-					_1: {ctor: '[]'}
-				}),
-			_1: {ctor: '[]'}
-		},
-		{ctor: '[]'});
-};
-var _krisajenkins$elm_dialog$Dialog$wrapFooter = function (footer) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('modal-footer'),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: footer,
-			_1: {ctor: '[]'}
-		});
-};
-var _krisajenkins$elm_dialog$Dialog$wrapBody = function (body) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('modal-body'),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: body,
-			_1: {ctor: '[]'}
-		});
-};
-var _krisajenkins$elm_dialog$Dialog$closeButton = function (closeMessage) {
-	return A2(
-		_elm_lang$html$Html$button,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('close'),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$html$Html_Events$onClick(closeMessage),
-				_1: {ctor: '[]'}
-			}
-		},
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html$text('x'),
-			_1: {ctor: '[]'}
-		});
-};
-var _krisajenkins$elm_dialog$Dialog$wrapHeader = F2(
-	function (closeMessage, header) {
-		return (_elm_lang$core$Native_Utils.eq(closeMessage, _elm_lang$core$Maybe$Nothing) && _elm_lang$core$Native_Utils.eq(header, _elm_lang$core$Maybe$Nothing)) ? _krisajenkins$elm_exts$Exts_Html_Bootstrap$empty : A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class('modal-header'),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: A3(_krisajenkins$elm_exts$Exts_Maybe$maybe, _krisajenkins$elm_exts$Exts_Html_Bootstrap$empty, _krisajenkins$elm_dialog$Dialog$closeButton, closeMessage),
-				_1: {
-					ctor: '::',
-					_0: A2(_elm_lang$core$Maybe$withDefault, _krisajenkins$elm_exts$Exts_Html_Bootstrap$empty, header),
-					_1: {ctor: '[]'}
-				}
-			});
-	});
-var _krisajenkins$elm_dialog$Dialog$view = function (maybeConfig) {
-	var displayed = _krisajenkins$elm_exts$Exts_Maybe$isJust(maybeConfig);
-	return A2(
-		_elm_lang$html$Html$div,
-		function () {
-			var _p1 = A2(
-				_elm_lang$core$Maybe$andThen,
-				function (_) {
-					return _.containerClass;
-				},
-				maybeConfig);
-			if (_p1.ctor === 'Nothing') {
-				return {ctor: '[]'};
-			} else {
-				return {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class(_p1._0),
-					_1: {ctor: '[]'}
-				};
-			}
-		}(),
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$div,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$classList(
-						{
-							ctor: '::',
-							_0: {ctor: '_Tuple2', _0: 'modal', _1: true},
-							_1: {
-								ctor: '::',
-								_0: {ctor: '_Tuple2', _0: 'in', _1: displayed},
-								_1: {ctor: '[]'}
-							}
-						}),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$style(
-							{
-								ctor: '::',
-								_0: {
-									ctor: '_Tuple2',
-									_0: 'display',
-									_1: displayed ? 'block' : 'none'
-								},
-								_1: {ctor: '[]'}
-							}),
-						_1: {ctor: '[]'}
-					}
-				},
-				{
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('modal-dialog'),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$div,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('modal-content'),
-									_1: {ctor: '[]'}
-								},
-								function () {
-									var _p2 = maybeConfig;
-									if (_p2.ctor === 'Nothing') {
-										return {
-											ctor: '::',
-											_0: _krisajenkins$elm_exts$Exts_Html_Bootstrap$empty,
-											_1: {ctor: '[]'}
-										};
-									} else {
-										var _p3 = _p2._0;
-										return {
-											ctor: '::',
-											_0: A2(_krisajenkins$elm_dialog$Dialog$wrapHeader, _p3.closeMessage, _p3.header),
-											_1: {
-												ctor: '::',
-												_0: A3(_krisajenkins$elm_exts$Exts_Maybe$maybe, _krisajenkins$elm_exts$Exts_Html_Bootstrap$empty, _krisajenkins$elm_dialog$Dialog$wrapBody, _p3.body),
-												_1: {
-													ctor: '::',
-													_0: A3(_krisajenkins$elm_exts$Exts_Maybe$maybe, _krisajenkins$elm_exts$Exts_Html_Bootstrap$empty, _krisajenkins$elm_dialog$Dialog$wrapFooter, _p3.footer),
-													_1: {ctor: '[]'}
-												}
-											}
-										};
-									}
-								}()),
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				}),
-			_1: {
-				ctor: '::',
-				_0: _krisajenkins$elm_dialog$Dialog$backdrop(maybeConfig),
-				_1: {ctor: '[]'}
-			}
-		});
-};
-var _krisajenkins$elm_dialog$Dialog$Config = F5(
-	function (a, b, c, d, e) {
-		return {closeMessage: a, containerClass: b, header: c, body: d, footer: e};
-	});
-
 var _krisajenkins$remotedata$RemoteData$isNotAsked = function (data) {
 	var _p0 = data;
 	if (_p0.ctor === 'NotAsked') {
@@ -10860,6 +10492,9 @@ var _user$project$Models$UserSearch = F7(
 		return {id: a, guid: b, disabled: c, displayName: d, image: e, link: f, priority: g};
 	});
 
+var _user$project$Msgs$RemoveUserFromPicker = function (a) {
+	return {ctor: 'RemoveUserFromPicker', _0: a};
+};
 var _user$project$Msgs$UserSearchSelected = function (a) {
 	return {ctor: 'UserSearchSelected', _0: a};
 };
@@ -10885,6 +10520,7 @@ var _user$project$Msgs$LoadChatEntries = function (a) {
 var _user$project$Msgs$Send = function (a) {
 	return {ctor: 'Send', _0: a};
 };
+var _user$project$Msgs$NoOp = {ctor: 'NoOp'};
 
 var _user$project$Urls$url = F2(
 	function (baseUrl, query) {
@@ -11051,6 +10687,63 @@ var _user$project$Commands$fetchMessagesList = function (offset) {
 				_user$project$Commands$chatRoomsModelDecoder)));
 };
 
+var _user$project$View$userSelectedElement = function (userSearch) {
+	return A2(
+		_elm_lang$html$Html$li,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('userInput'),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$img,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('img-rounded'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$src(userSearch.image),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$height(24),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$width(24),
+								_1: {
+									ctor: '::',
+									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'data-src', 'holder.js/24x24'),
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					}
+				},
+				{ctor: '[]'}),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html$text(userSearch.displayName),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$i,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('fa fa-times-circle'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Events$onClick(
+									_user$project$Msgs$RemoveUserFromPicker(userSearch)),
+								_1: {ctor: '[]'}
+							}
+						},
+						{ctor: '[]'}),
+					_1: {ctor: '[]'}
+				}
+			}
+		});
+};
 var _user$project$View$usersSelectedElement = function (userSearchs) {
 	var _p0 = userSearchs;
 	if (_p0.ctor === 'Just') {
@@ -11058,56 +10751,7 @@ var _user$project$View$usersSelectedElement = function (userSearchs) {
 			A2(
 				_elm_lang$core$List$map,
 				function (u) {
-					return A2(
-						_elm_lang$html$Html$li,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('userInput'),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$img,
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$class('img-rounded'),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$src(u.image),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$height(24),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$width(24),
-												_1: {
-													ctor: '::',
-													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'data-src', 'holder.js/24x24'),
-													_1: {ctor: '[]'}
-												}
-											}
-										}
-									}
-								},
-								{ctor: '[]'}),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html$text(u.displayName),
-								_1: {
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$i,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$class('fa fa-times-circle'),
-											_1: {ctor: '[]'}
-										},
-										{ctor: '[]'}),
-									_1: {ctor: '[]'}
-								}
-							}
-						});
+					return _user$project$View$userSelectedElement(u);
 				},
 				_p0._0));
 	} else {
@@ -11168,36 +10812,6 @@ var _user$project$View$userPickerElement = F2(
 				_1: {ctor: '[]'}
 			});
 	});
-var _user$project$View$dialogConfig = function (model) {
-	return {
-		closeMessage: _elm_lang$core$Maybe$Nothing,
-		containerClass: _elm_lang$core$Maybe$Nothing,
-		header: _elm_lang$core$Maybe$Just(
-			A2(
-				_elm_lang$html$Html$h3,
-				{ctor: '[]'},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text('1 Up!'),
-					_1: {ctor: '[]'}
-				})),
-		body: _elm_lang$core$Maybe$Just(
-			_elm_lang$html$Html$text('The counter ticks up to ')),
-		footer: _elm_lang$core$Maybe$Just(
-			A2(
-				_elm_lang$html$Html$button,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('btn btn-success'),
-					_1: {ctor: '[]'}
-				},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text('OK'),
-					_1: {ctor: '[]'}
-				}))
-	};
-};
 var _user$project$View$loader = A2(
 	_elm_lang$html$Html$div,
 	{
@@ -11397,28 +11011,32 @@ var _user$project$View$userPicker = function (model) {
 														_0: _elm_lang$html$Html_Attributes$class('tag_input_field'),
 														_1: {
 															ctor: '::',
-															_0: _elm_lang$html$Html_Attributes$id('notifyUserInput_tag_input_field'),
+															_0: _elm_lang$html$Html_Attributes$id('user-picker-search'),
 															_1: {
 																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$placeholder('Type the name of a user or group'),
+																_0: _elm_lang$html$Html_Attributes$autofocus(true),
 																_1: {
 																	ctor: '::',
-																	_0: _elm_lang$html$Html_Attributes$type_('text'),
+																	_0: _elm_lang$html$Html_Attributes$placeholder('Type the name of a user or group'),
 																	_1: {
 																		ctor: '::',
-																		_0: _elm_lang$html$Html_Attributes$value(
-																			function () {
-																				var _p4 = model.userPickerSearch;
-																				if (_p4.ctor === 'Just') {
-																					return _p4._0.input;
-																				} else {
-																					return '';
-																				}
-																			}()),
+																		_0: _elm_lang$html$Html_Attributes$type_('text'),
 																		_1: {
 																			ctor: '::',
-																			_0: _elm_lang$html$Html_Events$onInput(_user$project$Msgs$SearchUsers),
-																			_1: {ctor: '[]'}
+																			_0: _elm_lang$html$Html_Attributes$value(
+																				function () {
+																					var _p4 = model.userPickerSearch;
+																					if (_p4.ctor === 'Just') {
+																						return _p4._0.input;
+																					} else {
+																						return '';
+																					}
+																				}()),
+																			_1: {
+																				ctor: '::',
+																				_0: _elm_lang$html$Html_Events$onInput(_user$project$Msgs$SearchUsers),
+																				_1: {ctor: '[]'}
+																			}
 																		}
 																	}
 																}
@@ -12814,10 +12432,26 @@ var _user$project$Ports$sendChatMessage = _elm_lang$core$Native_Platform.outgoin
 		};
 	});
 
+var _user$project$Update$removeFromUserSearchList = F2(
+	function (user, mUsers) {
+		return A2(
+			_elm_lang$core$Maybe$map,
+			function (users) {
+				return A2(
+					_elm_lang$core$List$filter,
+					function (u) {
+						return !_elm_lang$core$Native_Utils.eq(u.id, user.id);
+					},
+					users);
+			},
+			mUsers);
+	});
 var _user$project$Update$update = F2(
 	function (msg, model) {
 		var _p0 = msg;
 		switch (_p0.ctor) {
+			case 'NoOp':
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'Send':
 				return {
 					ctor: '_Tuple2',
@@ -12917,6 +12551,28 @@ var _user$project$Update$update = F2(
 											}(),
 											input: '',
 											users: _elm_lang$core$Maybe$Nothing
+										});
+								},
+								model.userPickerSearch)
+						}),
+					_1: A2(
+						_elm_lang$core$Task$attempt,
+						_elm_lang$core$Basics$always(_user$project$Msgs$NoOp),
+						_elm_lang$dom$Dom$focus('user-picker-search'))
+				};
+			case 'RemoveUserFromPicker':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							userPickerSearch: A2(
+								_elm_lang$core$Maybe$map,
+								function (a) {
+									return _elm_lang$core$Native_Utils.update(
+										a,
+										{
+											selectedUsers: A2(_user$project$Update$removeFromUserSearchList, _p0._0, a.selectedUsers)
 										});
 								},
 								model.userPickerSearch)

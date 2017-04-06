@@ -5,7 +5,8 @@ import RemoteData exposing (..)
 
 
 type Msg
-    = Send ChatEntryModel
+    = NoOp
+    | Send ChatEntryModel
     | LoadChatEntries ChatRoom
     | OnFetchChatRooms (WebData (List ChatRoomModel))
     | OnFetchChatEntries (WebData (List ChatEntry))
@@ -14,3 +15,4 @@ type Msg
     | OnFetchUserSearch (WebData (List UserSearch))
     | SearchUsers String
     | UserSearchSelected UserSearch
+    | RemoveUserFromPicker UserSearch

@@ -1,3 +1,4 @@
+
 module Update exposing (..)
 
 import Msgs exposing (..)
@@ -5,11 +6,15 @@ import Models exposing (..)
 import Commands exposing (..)
 import RemoteData exposing (..)
 import Ports exposing (..)
-
+import Dom exposing (focus)
+import Task
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        NoOp -> 
+            (model, Cmd.none)
+
         Send chatEntryModel ->
             ( model, sendChatMessage chatEntryModel )
 
@@ -55,9 +60,12 @@ update msg model =
                             }
                         )
                         model.userPickerSearch
-              }
-            , Cmd.none
+            }
+            , Task.attempt (always NoOp) (Dom.focus "user-picker-search")
             )
+
+        RemoveUserFromPicker userSearch -> 
+            ( { model | userPickerSearch = Maybe.map (\a -> { a | selectedUsers = removeFromUserSearchList userSearch a.selectedUsers }) model.userPickerSearch }, Cmd.none )            
 
         _ ->
             ( model, Cmd.none )
@@ -91,3 +99,7 @@ update msg model =
 --                     Failure e -> Loading
 --                     Success msg -> Success (msg :: msgs)
 --      ) msgEntries msgEntry
+
+removeFromUserSearchList : UserSearch -> Maybe (List UserSearch) -> Maybe (List UserSearch)
+removeFromUserSearchList user mUsers = 
+    Maybe.map (\users -> List.filter (\u -> u.id /= user.id ) users ) mUsers
