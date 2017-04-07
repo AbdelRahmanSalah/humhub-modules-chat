@@ -12434,102 +12434,24 @@ var _user$project$Ports$sendChatMessage = _elm_lang$core$Native_Platform.outgoin
 
 var _user$project$Update$diff2List = F2(
 	function (xs, ys) {
-		diff2List:
-		while (true) {
-			var _p0 = {ctor: '_Tuple2', _0: xs, _1: ys};
-			if (_p0._0.ctor === '[]') {
-				if (_p0._1.ctor === '[]') {
-					return {ctor: '[]'};
-				} else {
-					return {ctor: '[]'};
-				}
-			} else {
-				if (_p0._1.ctor === '[]') {
-					return _p0._0;
-				} else {
-					if (_p0._0._1.ctor === '[]') {
-						if (_p0._1._1.ctor === '[]') {
-							var _p1 = _p0._0._0;
-							return (!_elm_lang$core$Native_Utils.eq(_p1, _p0._1._0)) ? {
-								ctor: '::',
-								_0: _p1,
-								_1: {ctor: '[]'}
-							} : {ctor: '[]'};
-						} else {
-							var _p5 = _p0._0._0;
-							if (!_elm_lang$core$Native_Utils.eq(_p5, _p0._1._0)) {
-								var _v1 = {
-									ctor: '::',
-									_0: _p5,
-									_1: {ctor: '[]'}
-								},
-									_v2 = _p0._1._1;
-								xs = _v1;
-								ys = _v2;
-								continue diff2List;
-							} else {
-								return {ctor: '[]'};
-							}
-						}
-					} else {
-						if (_p0._1._1.ctor === '[]') {
-							var _p4 = _p0._1._0;
-							var _p3 = _p0._0._1;
-							var _p2 = _p0._0._0;
-							if (!_elm_lang$core$Native_Utils.eq(_p2, _p4)) {
-								return {
-									ctor: '::',
-									_0: _p2,
-									_1: A2(
-										_user$project$Update$diff2List,
-										_p3,
-										{
-											ctor: '::',
-											_0: _p4,
-											_1: {ctor: '[]'}
-										})
-								};
-							} else {
-								var _v3 = _p3,
-									_v4 = {
-									ctor: '::',
-									_0: _p4,
-									_1: {ctor: '[]'}
-								};
-								xs = _v3;
-								ys = _v4;
-								continue diff2List;
-							}
-						} else {
-							var _p6 = _p0._1;
-							return A2(
-								_elm_lang$core$Basics_ops['++'],
-								A2(
-									_user$project$Update$diff2List,
-									{
-										ctor: '::',
-										_0: _p0._0._0,
-										_1: {ctor: '[]'}
-									},
-									_p6),
-								A2(_user$project$Update$diff2List, _p0._0._1, _p6));
-						}
-					}
-				}
-			}
-		}
+		return A2(
+			_elm_lang$core$List$filter,
+			function (_p0) {
+				return !A3(_elm_lang$core$Basics$flip, _elm_lang$core$List$member, ys, _p0);
+			},
+			xs);
 	});
 var _user$project$Update$filterSearchUserResultBySelectedUser = F2(
 	function (mUsers, mWUsers) {
-		var _p7 = mUsers;
-		if (_p7.ctor === 'Just') {
+		var _p1 = mUsers;
+		if (_p1.ctor === 'Just') {
 			return A2(
 				_elm_lang$core$Maybe$map,
 				function (wUsers) {
 					return A2(
 						_krisajenkins$remotedata$RemoteData$map,
 						function (usersSearch) {
-							return A2(_user$project$Update$diff2List, usersSearch, _p7._0);
+							return A2(_user$project$Update$diff2List, usersSearch, _p1._0);
 						},
 						wUsers);
 				},
@@ -12554,15 +12476,15 @@ var _user$project$Update$removeFromUserSelectedSearchList = F2(
 	});
 var _user$project$Update$update = F2(
 	function (msg, model) {
-		var _p8 = msg;
-		switch (_p8.ctor) {
+		var _p2 = msg;
+		switch (_p2.ctor) {
 			case 'NoOp':
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'Send':
 				return {
 					ctor: '_Tuple2',
 					_0: model,
-					_1: _user$project$Ports$sendChatMessage(_p8._0)
+					_1: _user$project$Ports$sendChatMessage(_p2._0)
 				};
 			case 'CreateNewChatRoom':
 				return {
@@ -12577,30 +12499,30 @@ var _user$project$Update$update = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{chatRoomList: _p8._0}),
+						{chatRoomList: _p2._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'SearchUsers':
-				var _p10 = _p8._0;
+				var _p4 = _p2._0;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
 							userPickerSearch: function () {
-								var _p9 = model.userPickerSearch;
-								if (_p9.ctor === 'Just') {
+								var _p3 = model.userPickerSearch;
+								if (_p3.ctor === 'Just') {
 									return _elm_lang$core$Maybe$Just(
 										_elm_lang$core$Native_Utils.update(
-											_p9._0,
-											{input: _p10, users: _elm_lang$core$Maybe$Nothing}));
+											_p3._0,
+											{input: _p4, users: _elm_lang$core$Maybe$Nothing}));
 								} else {
 									return _elm_lang$core$Maybe$Just(
-										{input: _p10, users: _elm_lang$core$Maybe$Nothing, selectedUsers: _elm_lang$core$Maybe$Nothing});
+										{input: _p4, users: _elm_lang$core$Maybe$Nothing, selectedUsers: _elm_lang$core$Maybe$Nothing});
 								}
 							}()
 						}),
-					_1: _user$project$Commands$userSearch(_p10)
+					_1: _user$project$Commands$userSearch(_p4)
 				};
 			case 'OnFetchUserSearch':
 				return {
@@ -12617,7 +12539,7 @@ var _user$project$Update$update = F2(
 											users: A2(
 												_user$project$Update$filterSearchUserResultBySelectedUser,
 												a.selectedUsers,
-												_elm_lang$core$Maybe$Just(_p8._0))
+												_elm_lang$core$Maybe$Just(_p2._0))
 										});
 								},
 								model.userPickerSearch)
@@ -12625,7 +12547,7 @@ var _user$project$Update$update = F2(
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'UserSearchSelected':
-				var _p12 = _p8._0;
+				var _p6 = _p2._0;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -12638,22 +12560,22 @@ var _user$project$Update$update = F2(
 										a,
 										{
 											selectedUsers: function () {
-												var _p11 = a.selectedUsers;
-												if (_p11.ctor === 'Just') {
+												var _p5 = a.selectedUsers;
+												if (_p5.ctor === 'Just') {
 													return _elm_lang$core$Maybe$Just(
 														A2(
 															_elm_lang$core$Basics_ops['++'],
-															_p11._0,
+															_p5._0,
 															{
 																ctor: '::',
-																_0: _p12,
+																_0: _p6,
 																_1: {ctor: '[]'}
 															}));
 												} else {
 													return _elm_lang$core$Maybe$Just(
 														{
 															ctor: '::',
-															_0: _p12,
+															_0: _p6,
 															_1: {ctor: '[]'}
 														});
 												}
@@ -12681,7 +12603,7 @@ var _user$project$Update$update = F2(
 									return _elm_lang$core$Native_Utils.update(
 										a,
 										{
-											selectedUsers: A2(_user$project$Update$removeFromUserSelectedSearchList, _p8._0, a.selectedUsers)
+											selectedUsers: A2(_user$project$Update$removeFromUserSelectedSearchList, _p2._0, a.selectedUsers)
 										});
 								},
 								model.userPickerSearch)

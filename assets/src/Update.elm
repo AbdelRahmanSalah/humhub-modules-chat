@@ -117,15 +117,17 @@ filterSearchUserResultBySelectedUser mUsers mWUsers =
         ) mWUsers    
       Nothing ->
         mWUsers
-    
+
 
 diff2List : List a -> List a -> List a
-diff2List xs ys = 
-    case (xs, ys) of
-        ([], []) -> []
-        (xs, []) -> xs
-        ([], ys) -> []
-        ([x], [y]) -> if x /= y then [x] else []
-        ((x::xs), [y]) -> if x /= y then x :: (diff2List xs [y])  else diff2List xs [y]
-        ([x], (y::ys)) -> if x /= y then diff2List [x] ys  else []
-        ((x::xs), ys) -> (diff2List [x] ys) ++ (diff2List xs ys)  
+diff2List xs ys = List.filter (not << flip List.member ys) xs
+
+-- old implementation
+    -- case (xs, ys) of
+    --     ([], []) -> []
+    --     (xs, []) -> xs
+    --     ([], ys) -> []
+    --     ([x], [y]) -> if x /= y then [x] else []
+    --     ((x::xs), [y]) -> if x /= y then x :: (diff2List xs [y])  else diff2List xs [y]
+    --     ([x], (y::ys)) -> if x /= y then diff2List [x] ys  else []
+    --     ((x::xs), ys) -> (diff2List [x] ys) ++ (diff2List xs ys)  
