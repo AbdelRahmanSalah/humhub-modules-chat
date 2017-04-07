@@ -8,6 +8,7 @@ import Msgs exposing (..)
 import RemoteData exposing (..)
 import Http
 
+
 view : Model -> Html Msg
 view model =
     div
@@ -241,6 +242,7 @@ loader =
             ]
         ]
 
+
 newChatRoom : Model -> Html Msg
 newChatRoom model =
     div [ class "col-md-8 messages" ]
@@ -421,8 +423,9 @@ usersSelectedElement userSearchs =
         Nothing ->
             Nothing
 
+
 userSelectedElement : UserSearch -> Html Msg
-userSelectedElement userSearch = 
+userSelectedElement userSearch =
     li
         [ class "userInput" ]
         [ img

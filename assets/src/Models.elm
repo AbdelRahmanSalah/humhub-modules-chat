@@ -161,3 +161,85 @@ type alias UserSearch =
     , link : String
     , priority : Int
     }
+
+
+setSearchInput : String -> Model -> Model
+setSearchInput searchText model =
+    { model
+        | userPickerSearch =
+            (case model.userPickerSearch of
+                Just picker ->
+                    Just { picker | input = searchText, users = Nothing }
+
+                Nothing ->
+                    Just { input = searchText, users = Nothing, selectedUsers = Nothing }
+            )
+    }
+
+
+setNewSelectedUser : UserSearch -> Model -> Model
+setNewSelectedUser selectedUser model =
+    { model
+        | userPickerSearch =
+            Maybe.map
+                (\a ->
+                    { a
+                        | selectedUsers =
+                            (case a.selectedUsers of
+                                Just users ->
+                                    Just (users ++ [ selectedUser ])
+
+                                Nothing ->
+                                    Just ([ selectedUser ])
+                            )
+                        , input = ""
+                        , users = Nothing
+                    }
+                )
+                model.userPickerSearch
+    }
+
+
+setTypeAheadUsers : WebData (List UserSearch) -> Model -> Model
+setTypeAheadUsers userSearchResult model =
+    { model
+        | userPickerSearch =
+            Maybe.map
+                (\a -> { a | users = filterSearchUserResultBySelectedUser a.selectedUsers (Just userSearchResult) })
+                model.userPickerSearch
+    }
+
+
+filterSearchUserResultBySelectedUser : Maybe (List UserSearch) -> Maybe (WebData (List UserSearch)) -> Maybe (WebData (List UserSearch))
+filterSearchUserResultBySelectedUser mUsers mWUsers =
+    case mUsers of
+        Just users ->
+            Maybe.map
+                (\wUsers ->
+                    RemoteData.map
+                        (\usersSearch ->
+                            diff2List usersSearch users
+                        )
+                        wUsers
+                )
+                mWUsers
+
+        Nothing ->
+            mWUsers
+
+
+diff2List : List a -> List a -> List a
+diff2List xs ys =
+    List.filter (not << flip List.member ys) xs
+
+
+
+-- old implementation
+-- case (xs, ys) of
+--     ([], []) -> []
+--     (xs, []) -> xs
+--     ([], ys) -> []
+--     ([x], [y]) -> if x /= y then [x] else []
+--     ((x::xs), [y]) -> if x /= y then x :: (diff2List xs [y])  else diff2List xs [y]
+--     ([x], (y::ys)) -> if x /= y then diff2List [x] ys  else []
+--     ((x::xs), ys) -> (diff2List [x] ys) ++ (diff2List xs ys)

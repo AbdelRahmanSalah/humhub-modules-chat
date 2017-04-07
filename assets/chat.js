@@ -10381,6 +10381,112 @@ var _krisajenkins$remotedata$RemoteData$update = F2(
 		}
 	});
 
+var _user$project$Models$diff2List = F2(
+	function (xs, ys) {
+		return A2(
+			_elm_lang$core$List$filter,
+			function (_p0) {
+				return !A3(_elm_lang$core$Basics$flip, _elm_lang$core$List$member, ys, _p0);
+			},
+			xs);
+	});
+var _user$project$Models$filterSearchUserResultBySelectedUser = F2(
+	function (mUsers, mWUsers) {
+		var _p1 = mUsers;
+		if (_p1.ctor === 'Just') {
+			return A2(
+				_elm_lang$core$Maybe$map,
+				function (wUsers) {
+					return A2(
+						_krisajenkins$remotedata$RemoteData$map,
+						function (usersSearch) {
+							return A2(_user$project$Models$diff2List, usersSearch, _p1._0);
+						},
+						wUsers);
+				},
+				mWUsers);
+		} else {
+			return mWUsers;
+		}
+	});
+var _user$project$Models$setTypeAheadUsers = F2(
+	function (userSearchResult, model) {
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				userPickerSearch: A2(
+					_elm_lang$core$Maybe$map,
+					function (a) {
+						return _elm_lang$core$Native_Utils.update(
+							a,
+							{
+								users: A2(
+									_user$project$Models$filterSearchUserResultBySelectedUser,
+									a.selectedUsers,
+									_elm_lang$core$Maybe$Just(userSearchResult))
+							});
+					},
+					model.userPickerSearch)
+			});
+	});
+var _user$project$Models$setNewSelectedUser = F2(
+	function (selectedUser, model) {
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				userPickerSearch: A2(
+					_elm_lang$core$Maybe$map,
+					function (a) {
+						return _elm_lang$core$Native_Utils.update(
+							a,
+							{
+								selectedUsers: function () {
+									var _p2 = a.selectedUsers;
+									if (_p2.ctor === 'Just') {
+										return _elm_lang$core$Maybe$Just(
+											A2(
+												_elm_lang$core$Basics_ops['++'],
+												_p2._0,
+												{
+													ctor: '::',
+													_0: selectedUser,
+													_1: {ctor: '[]'}
+												}));
+									} else {
+										return _elm_lang$core$Maybe$Just(
+											{
+												ctor: '::',
+												_0: selectedUser,
+												_1: {ctor: '[]'}
+											});
+									}
+								}(),
+								input: '',
+								users: _elm_lang$core$Maybe$Nothing
+							});
+					},
+					model.userPickerSearch)
+			});
+	});
+var _user$project$Models$setSearchInput = F2(
+	function (searchText, model) {
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				userPickerSearch: function () {
+					var _p3 = model.userPickerSearch;
+					if (_p3.ctor === 'Just') {
+						return _elm_lang$core$Maybe$Just(
+							_elm_lang$core$Native_Utils.update(
+								_p3._0,
+								{input: searchText, users: _elm_lang$core$Maybe$Nothing}));
+					} else {
+						return _elm_lang$core$Maybe$Just(
+							{input: searchText, users: _elm_lang$core$Maybe$Nothing, selectedUsers: _elm_lang$core$Maybe$Nothing});
+					}
+				}()
+			});
+	});
 var _user$project$Models$setChatEntry = F2(
 	function (chatEntry, chatEntryModel) {
 		return _elm_lang$core$Native_Utils.update(
@@ -10394,16 +10500,16 @@ var _user$project$Models$setUser = F2(
 			{user: user});
 	});
 var _user$project$Models$getChatEntryModel = function (mayWebChatEntryModel) {
-	var _p0 = mayWebChatEntryModel;
-	if (_p0.ctor === 'Just') {
-		var _p1 = _p0._0;
-		switch (_p1.ctor) {
+	var _p4 = mayWebChatEntryModel;
+	if (_p4.ctor === 'Just') {
+		var _p5 = _p4._0;
+		switch (_p5.ctor) {
 			case 'NotAsked':
 				return _elm_lang$core$Maybe$Nothing;
 			case 'Loading':
 				return _elm_lang$core$Maybe$Nothing;
 			case 'Success':
-				return _elm_lang$core$Maybe$Just(_p1._0);
+				return _elm_lang$core$Maybe$Just(_p5._0);
 			default:
 				return _elm_lang$core$Maybe$Nothing;
 		}
@@ -10428,17 +10534,17 @@ var _user$project$Models$setChatEntryInList = F2(
 					_elm_lang$core$Maybe$map2,
 					F2(
 						function (a, b) {
-							var _p2 = a;
-							if (_p2.ctor === 'Success') {
-								var _p3 = b;
-								if (_p3.ctor === 'Success') {
+							var _p6 = a;
+							if (_p6.ctor === 'Success') {
+								var _p7 = b;
+								if (_p7.ctor === 'Success') {
 									return _krisajenkins$remotedata$RemoteData$Success(
 										A2(
 											_elm_lang$core$Basics_ops['++'],
-											_p2._0,
+											_p6._0,
 											{
 												ctor: '::',
-												_0: _p3._0,
+												_0: _p7._0,
 												_1: {ctor: '[]'}
 											}));
 								} else {
@@ -12432,34 +12538,6 @@ var _user$project$Ports$sendChatMessage = _elm_lang$core$Native_Platform.outgoin
 		};
 	});
 
-var _user$project$Update$diff2List = F2(
-	function (xs, ys) {
-		return A2(
-			_elm_lang$core$List$filter,
-			function (_p0) {
-				return !A3(_elm_lang$core$Basics$flip, _elm_lang$core$List$member, ys, _p0);
-			},
-			xs);
-	});
-var _user$project$Update$filterSearchUserResultBySelectedUser = F2(
-	function (mUsers, mWUsers) {
-		var _p1 = mUsers;
-		if (_p1.ctor === 'Just') {
-			return A2(
-				_elm_lang$core$Maybe$map,
-				function (wUsers) {
-					return A2(
-						_krisajenkins$remotedata$RemoteData$map,
-						function (usersSearch) {
-							return A2(_user$project$Update$diff2List, usersSearch, _p1._0);
-						},
-						wUsers);
-				},
-				mWUsers);
-		} else {
-			return mWUsers;
-		}
-	});
 var _user$project$Update$removeFromUserSelectedSearchList = F2(
 	function (user, mUsers) {
 		return A2(
@@ -12476,15 +12554,15 @@ var _user$project$Update$removeFromUserSelectedSearchList = F2(
 	});
 var _user$project$Update$update = F2(
 	function (msg, model) {
-		var _p2 = msg;
-		switch (_p2.ctor) {
+		var _p0 = msg;
+		switch (_p0.ctor) {
 			case 'NoOp':
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'Send':
 				return {
 					ctor: '_Tuple2',
 					_0: model,
-					_1: _user$project$Ports$sendChatMessage(_p2._0)
+					_1: _user$project$Ports$sendChatMessage(_p0._0)
 				};
 			case 'CreateNewChatRoom':
 				return {
@@ -12499,93 +12577,26 @@ var _user$project$Update$update = F2(
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{chatRoomList: _p2._0}),
+						{chatRoomList: _p0._0}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'SearchUsers':
-				var _p4 = _p2._0;
+				var _p1 = _p0._0;
 				return {
 					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							userPickerSearch: function () {
-								var _p3 = model.userPickerSearch;
-								if (_p3.ctor === 'Just') {
-									return _elm_lang$core$Maybe$Just(
-										_elm_lang$core$Native_Utils.update(
-											_p3._0,
-											{input: _p4, users: _elm_lang$core$Maybe$Nothing}));
-								} else {
-									return _elm_lang$core$Maybe$Just(
-										{input: _p4, users: _elm_lang$core$Maybe$Nothing, selectedUsers: _elm_lang$core$Maybe$Nothing});
-								}
-							}()
-						}),
-					_1: _user$project$Commands$userSearch(_p4)
+					_0: A2(_user$project$Models$setSearchInput, _p1, model),
+					_1: _user$project$Commands$userSearch(_p1)
 				};
 			case 'OnFetchUserSearch':
 				return {
 					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							userPickerSearch: A2(
-								_elm_lang$core$Maybe$map,
-								function (a) {
-									return _elm_lang$core$Native_Utils.update(
-										a,
-										{
-											users: A2(
-												_user$project$Update$filterSearchUserResultBySelectedUser,
-												a.selectedUsers,
-												_elm_lang$core$Maybe$Just(_p2._0))
-										});
-								},
-								model.userPickerSearch)
-						}),
+					_0: A2(_user$project$Models$setTypeAheadUsers, _p0._0, model),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'UserSearchSelected':
-				var _p6 = _p2._0;
 				return {
 					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							userPickerSearch: A2(
-								_elm_lang$core$Maybe$map,
-								function (a) {
-									return _elm_lang$core$Native_Utils.update(
-										a,
-										{
-											selectedUsers: function () {
-												var _p5 = a.selectedUsers;
-												if (_p5.ctor === 'Just') {
-													return _elm_lang$core$Maybe$Just(
-														A2(
-															_elm_lang$core$Basics_ops['++'],
-															_p5._0,
-															{
-																ctor: '::',
-																_0: _p6,
-																_1: {ctor: '[]'}
-															}));
-												} else {
-													return _elm_lang$core$Maybe$Just(
-														{
-															ctor: '::',
-															_0: _p6,
-															_1: {ctor: '[]'}
-														});
-												}
-											}(),
-											input: '',
-											users: _elm_lang$core$Maybe$Nothing
-										});
-								},
-								model.userPickerSearch)
-						}),
+					_0: A2(_user$project$Models$setNewSelectedUser, _p0._0, model),
 					_1: A2(
 						_elm_lang$core$Task$attempt,
 						_elm_lang$core$Basics$always(_user$project$Msgs$NoOp),
@@ -12603,7 +12614,7 @@ var _user$project$Update$update = F2(
 									return _elm_lang$core$Native_Utils.update(
 										a,
 										{
-											selectedUsers: A2(_user$project$Update$removeFromUserSelectedSearchList, _p2._0, a.selectedUsers)
+											selectedUsers: A2(_user$project$Update$removeFromUserSelectedSearchList, _p0._0, a.selectedUsers)
 										});
 								},
 								model.userPickerSearch)
