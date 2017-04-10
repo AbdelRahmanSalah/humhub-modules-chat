@@ -11,14 +11,14 @@ import Json.Decode.Pipeline exposing (decode, required, hardcoded)
 
 fetchMessagesList : Int -> Cmd Msg
 fetchMessagesList offset =
-    Http.get (allRoomsUrl offset) chatRoomsModelDecoder
+    Http.get (allRoomsPrettyUrl offset) chatRoomsModelDecoder
         |> RemoteData.sendRequest
         |> Cmd.map OnFetchChatRooms
 
 
 userSearch : String -> Cmd Msg
 userSearch keyword =
-    Http.get (userSearchUrl keyword) usersSearchDecoder
+    Http.get (userSearchPrettyUrl keyword) usersSearchDecoder
         |> RemoteData.sendRequest
         |> Cmd.map OnFetchUserSearch
 

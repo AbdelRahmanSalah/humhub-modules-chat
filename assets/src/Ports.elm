@@ -28,3 +28,7 @@ port fetchRoomEntryList : ChatRoomGuid -> Cmd msg
 
 
 port sendChatMessage : ChatEntryModel -> Cmd msg
+
+
+-- should use decoder with ports
+-- https://medium.com/@_rchaves_/elm-how-to-use-decoders-for-ports-how-to-not-use-decoders-for-json-a4f95b51473a

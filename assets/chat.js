@@ -10654,6 +10654,16 @@ var _user$project$Urls$url = F2(
 				A2(_elm_lang$core$Basics_ops['++'], '?', queryString));
 		}
 	});
+var _user$project$Urls$userSearchPrettyUrl = function (keyword) {
+	return A2(
+		_user$project$Urls$url,
+		'/user/search/json',
+		{
+			ctor: '::',
+			_0: {ctor: '_Tuple2', _0: 'keyword', _1: keyword},
+			_1: {ctor: '[]'}
+		});
+};
 var _user$project$Urls$userSearchUrl = function (keyword) {
 	return A2(
 		_user$project$Urls$url,
@@ -10666,6 +10676,20 @@ var _user$project$Urls$userSearchUrl = function (keyword) {
 				_0: {ctor: '_Tuple2', _0: 'keyword', _1: keyword},
 				_1: {ctor: '[]'}
 			}
+		});
+};
+var _user$project$Urls$allRoomsPrettyUrl = function (offset) {
+	return A2(
+		_user$project$Urls$url,
+		'/chat/index/get-rooms',
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'offset',
+				_1: _elm_lang$core$Basics$toString(offset)
+			},
+			_1: {ctor: '[]'}
 		});
 };
 var _user$project$Urls$allRoomsUrl = function (offset) {
@@ -10779,7 +10803,7 @@ var _user$project$Commands$userSearch = function (keyword) {
 		_krisajenkins$remotedata$RemoteData$sendRequest(
 			A2(
 				_elm_lang$http$Http$get,
-				_user$project$Urls$userSearchUrl(keyword),
+				_user$project$Urls$userSearchPrettyUrl(keyword),
 				_user$project$Commands$usersSearchDecoder)));
 };
 var _user$project$Commands$fetchMessagesList = function (offset) {
@@ -10789,7 +10813,7 @@ var _user$project$Commands$fetchMessagesList = function (offset) {
 		_krisajenkins$remotedata$RemoteData$sendRequest(
 			A2(
 				_elm_lang$http$Http$get,
-				_user$project$Urls$allRoomsUrl(offset),
+				_user$project$Urls$allRoomsPrettyUrl(offset),
 				_user$project$Commands$chatRoomsModelDecoder)));
 };
 
