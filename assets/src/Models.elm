@@ -9,6 +9,7 @@ type alias Model =
     , currentChatRoom : Maybe ChatRoomModel
     , showNewMessage : Bool
     , userPickerSearch : Maybe UserTypeAhead
+    , route : Route
     }
 
 
@@ -18,13 +19,19 @@ type alias UserTypeAhead =
     , selectedUsers : Maybe (List UserSearch)
     }
 
+type Route
+    = NewChatRoomRoute
+    | ChatRoomRoute String
+    | NotFoundRoute
 
-initModel : Model
-initModel =
+
+initModel : Route -> Model
+initModel route =
     { chatRoomList = RemoteData.Loading
     , currentChatRoom = Nothing
     , showNewMessage = False
     , userPickerSearch = Nothing
+    , route = route
     }
 
 
@@ -231,15 +238,3 @@ filterSearchUserResultBySelectedUser mUsers mWUsers =
 diff2List : List a -> List a -> List a
 diff2List xs ys =
     List.filter (not << flip List.member ys) xs
-
-
-
--- old implementation
--- case (xs, ys) of
---     ([], []) -> []
---     (xs, []) -> xs
---     ([], ys) -> []
---     ([x], [y]) -> if x /= y then [x] else []
---     ((x::xs), [y]) -> if x /= y then x :: (diff2List xs [y])  else diff2List xs [y]
---     ([x], (y::ys)) -> if x /= y then diff2List [x] ys  else []
---     ((x::xs), ys) -> (diff2List [x] ys) ++ (diff2List xs ys)

@@ -3,10 +3,11 @@ module Update exposing (..)
 import Msgs exposing (..)
 import Models exposing (..)
 import Commands exposing (..)
-import RemoteData exposing (..)
 import Ports exposing (..)
+import Routing exposing (..)
 import Dom exposing (focus)
 import Task
+import Navigation
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -14,6 +15,16 @@ update msg model =
     case msg of
         NoOp ->
             ( model, Cmd.none )
+
+        OnLocationChange location ->
+            let
+                newRoute =
+                    parseLocation location
+            in
+                ( { model | route = newRoute }, Cmd.none )
+        
+        NewRoute route ->
+                ( model, Navigation.newUrl (getUrl route) )
 
         Send chatEntryModel ->
             ( model, sendChatMessage chatEntryModel )

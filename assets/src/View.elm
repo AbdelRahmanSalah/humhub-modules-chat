@@ -6,8 +6,8 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Msgs exposing (..)
 import RemoteData exposing (..)
-import Http
-
+import Routing exposing (getUrl)
+import Json.Decode as Decode
 
 view : Model -> Html Msg
 view model =
@@ -21,7 +21,7 @@ view model =
                     [ class "panel-heading" ]
                     [ text "Conversations"
                     , a
-                        [ href "#", class "btn btn-info pull-right", onClick CreateNewChatRoom ]
+                        (onClickPage (NewChatRoomRoute))
                         [ i [ class "fa fa-pencil-square-o", attribute "aria-hidden" "true" ] []
                         ]
                     ]
@@ -29,23 +29,26 @@ view model =
                 , chatRoomsPreview model
                 ]
             ]
-        , case model.currentChatRoom of
-            Just chatRoom ->
-                messagesStream chatRoom
+           , page model
+        -- , case model.currentChatRoom of
+        --     Just chatRoom ->
+        --         messagesStream chatRoom
 
-            Nothing ->
-                if model.showNewMessage then
-                    newChatRoom model
-                else
-                    loader
-
-        -- , Dialog.view
-        --     (if model.showDialog then
-        --         Just (dialogConfig model)
-        --      else
-        --         Nothing
-        --     )
+        --     Nothing ->
+        --         if model.showNewMessage then
+        --             newChatRoom model
+        --         else
+        --             loader
         ]
+
+page : Model -> Html Msg
+page model =
+    case model.route of
+        NewChatRoomRoute ->
+            newChatRoom model
+
+        _ ->
+            notFoundView
 
 
 chatRoomsPreview : Model -> Html Msg
@@ -436,3 +439,49 @@ userSelectedElement userSearch =
             [ class "fa fa-times-circle", onClick (RemoveUserFromPicker userSearch) ]
             []
         ]
+
+notFoundView : Html msg
+notFoundView =
+    div []
+        [ text "Not found"
+        ]
+
+-- Prevent default by click and not prevent default when click ctrl :D 
+
+onClickPage : Route -> List (Attribute Msg)
+onClickPage route =
+    [ href (getUrl route)
+    , class "btn btn-info pull-right"
+    , onPreventDefaultClick (NewRoute route)
+    ]
+
+onPreventDefaultClick : msg -> Attribute msg
+onPreventDefaultClick message =
+    onWithOptions "click"
+        { defaultOptions | preventDefault = True }
+        (preventDefault2
+            |> Decode.andThen (maybePreventDefault message)
+        )
+
+
+preventDefault2 : Decode.Decoder Bool
+preventDefault2 =
+    Decode.map2
+        (invertedOr)
+        (Decode.field "ctrlKey" Decode.bool)
+        (Decode.field "metaKey" Decode.bool)
+
+
+maybePreventDefault : msg -> Bool -> Decode.Decoder msg
+maybePreventDefault msg preventDefault =
+    case preventDefault of
+        True ->
+            Decode.succeed msg
+
+        False ->
+            Decode.fail "Normal link"
+
+
+invertedOr : Bool -> Bool -> Bool
+invertedOr x y =
+    not (x || y)

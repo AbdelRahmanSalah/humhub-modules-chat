@@ -1,5 +1,7 @@
+
 module Msgs exposing (..)
 
+import Navigation exposing (Location)
 import Models exposing (..)
 import RemoteData exposing (..)
 
@@ -16,3 +18,5 @@ type Msg
     | SearchUsers String
     | UserSearchSelected UserSearch
     | RemoveUserFromPicker UserSearch
+    | OnLocationChange Location
+    | NewRoute Route
