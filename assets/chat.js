@@ -11524,9 +11524,7 @@ var _user$project$Routing$matchers = _evancz$url_parser$UrlParser$oneOf(
 var _user$project$Routing$parseLocation = function (location) {
 	var _p0 = A2(_evancz$url_parser$UrlParser$parsePath, _user$project$Routing$matchers, location);
 	if (_p0.ctor === 'Just') {
-		var _p1 = _p0._0;
-		var x = A2(_elm_lang$core$Debug$log, 'test', _p1);
-		return _p1;
+		return _p0._0;
 	} else {
 		return _user$project$Models$NotFoundRoute;
 	}
@@ -11540,12 +11538,12 @@ var _user$project$Routing$chatRoomPath = function (chatRoom) {
 		A2(_elm_lang$core$Basics_ops['++'], '/u/', chatRoom));
 };
 var _user$project$Routing$getUrl = function (route) {
-	var _p2 = route;
-	switch (_p2.ctor) {
+	var _p1 = route;
+	switch (_p1.ctor) {
 		case 'NewChatRoomRoute':
 			return _user$project$Routing$newChatRoomPath;
 		case 'ChatRoomRoute':
-			return _user$project$Routing$chatRoomPath(_p2._0);
+			return _user$project$Routing$chatRoomPath(_p1._0);
 		default:
 			return 'not-found';
 	}

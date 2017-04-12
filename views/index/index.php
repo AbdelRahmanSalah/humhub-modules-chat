@@ -29,12 +29,10 @@ $(document).ready(function () {
     }
     // var messageEntry =  
     // {
-    //     id : 2
-    // ,   content : "hello world Testinginging"
-    // ,   created_at : ''
-    // ,   file_id : ''
-    // ,   message_id :1
-    // ,   user :  {"name":"abdo salah","profileImg":"/img/default_user.jpg","profileLink":"/index.php?r=user%2Fprofile&uguid=2205359c-7fdc-4ea3-a724-539b8f284c8b"}
+    //     entryGuid : Uuid
+    // ,   message : "hello world Testinginging"
+    // ,   chatRoomGuid : Uuid
+    // ,   sender :  {"name":"abdo salah","profileImg":"/img/default_user.jpg","profileLink":"/index.php?r=user%2Fprofile&uguid=2205359c-7fdc-4ea3-a724-539b8f284c8b"}
     // }
     
    

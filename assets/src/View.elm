@@ -205,7 +205,7 @@ messagesStream chatRoomModel =
                                 ]
                             , hr []
                                 []
-                            , button [ class "btn btn-primary", id "h975204w2" ]
+                            , button [ class "btn btn-primary"]
                                 [ text "Send" ]
                             ]
                         ]

@@ -18,10 +18,6 @@ chatRoomPath : String -> String
 chatRoomPath chatRoom =
     baseUrl ++ "/u/" ++ chatRoom
 
--- matchers : Parser (String -> a) a
--- matchers =
---     (s baseUrl </> string)
-
 matchers : Parser (Route -> a) a
 matchers =
     oneOf
@@ -33,10 +29,7 @@ parseLocation : Location -> Route
 parseLocation location =
     case (parsePath matchers location) of
         Just route ->
-            let 
-                x = Debug.log "test" route
-            in
-                route
+            route
         Nothing ->
             NotFoundRoute
 
