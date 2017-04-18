@@ -1,13 +1,14 @@
 module View exposing (..)
 
 import Models exposing (..)
+import UserPicker exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Msgs exposing (..)
 import RemoteData exposing (..)
 import Routing exposing (getUrl)
 import Json.Decode as Decode
+
 
 view : Model -> Html Msg
 view model =
@@ -29,11 +30,11 @@ view model =
                 , chatRoomsPreview model
                 ]
             ]
-           , page model
+        , page model
+
         -- , case model.currentChatRoom of
         --     Just chatRoom ->
         --         messagesStream chatRoom
-
         --     Nothing ->
         --         if model.showNewMessage then
         --             newChatRoom model
@@ -41,11 +42,17 @@ view model =
         --             loader
         ]
 
+
 page : Model -> Html Msg
 page model =
     case model.route of
         NewChatRoomRoute ->
-            newChatRoom model
+            case model.userPickerModel of
+                Just userPickerModel ->
+                    newChatRoom model
+
+                Nothing ->
+                    newChatRoom { model | userPickerModel = Just Models.initUserPickerModel }
 
         _ ->
             notFoundView
@@ -157,7 +164,7 @@ messageEntryView chatEntryModel =
         ]
 
 
-messagesStream : ChatRoomModel -> Html msg
+messagesStream : ChatRoomModel -> Html Msg
 messagesStream chatRoomModel =
     div [ class "col-md-8 messages" ]
         [ div [ id "mail_message_details" ]
@@ -166,7 +173,7 @@ messagesStream chatRoomModel =
                     [ text chatRoomModel.chatRoom.title
                     , div [ class "pull-right" ]
                         [ text ""
-                        , text "    "
+                        , text ""
                         , a [ class "btn btn-primary btn-sm tt", attribute "data-original-title" "Leave conversation", attribute "data-placement" "top", attribute "data-target" "#confirmModal_modal_leave_conversation_1", attribute "data-toggle" "modal", href "#", id "deleteLinkPost_modal_leave_conversation_1", attribute "style" "" ]
                             [ i [ class "fa fa-sign-out" ]
                                 []
@@ -205,7 +212,7 @@ messagesStream chatRoomModel =
                                 ]
                             , hr []
                                 []
-                            , button [ class "btn btn-primary"]
+                            , button [ class "btn btn-primary" ]
                                 [ text "Send" ]
                             ]
                         ]
@@ -215,7 +222,7 @@ messagesStream chatRoomModel =
         ]
 
 
-displayEntries : Maybe (WebData (List ChatEntryModel)) -> List (Html msg)
+displayEntries : Maybe (WebData (List ChatEntryModel)) -> List (Html Msg)
 displayEntries msgEntries =
     case msgEntries of
         Just webDataMsgEntries ->
@@ -252,7 +259,17 @@ newChatRoom model =
         [ div [ id "mail_message_details" ]
             [ div [ class "panel panel-default" ]
                 [ div [ class "panel-heading" ]
-                    [ userPicker model
+                    [ (case model.userPickerModel of
+                        Just userPickerModel ->
+                            let
+                                x =
+                                    Debug.log " new chat room " userPickerModel
+                            in
+                                userPicker userPickerModel
+
+                        Nothing ->
+                            text "Nothing"
+                      )
                     ]
                 , div [ class "panel-body" ]
                     [ hr [ attribute "style" "margin-top: 0;" ]
@@ -288,165 +305,16 @@ newChatRoom model =
         ]
 
 
-userPicker : Model -> Html Msg
-userPicker model =
-    div [ class "form-group", id "notifyUserContainer", attribute "style" "margin-top: 15px;" ]
-        [ input [ id "notifyUserInput", name "notifyUserInput", attribute "style" "display: none;", type_ "text", value "" ]
-            []
-        , div [ class "notifyUserInput_user_picker_container", style [ ( "position", "relative" ) ] ]
-            [ ul [ class "tag_input", id "notifyUserInput_invite_tags" ]
-                ((case model.userPickerSearch of
-                    Just typeAhead ->
-                        case (usersSelectedElement typeAhead.selectedUsers) of
-                            Just searchUsersElements ->
-                                searchUsersElements
-
-                            Nothing ->
-                                []
-
-                    Nothing ->
-                        []
-                 )
-                    ++ [ li [ id "notifyUserInput_tag_input" ]
-                            [ input
-                                [ attribute "autocomplete" "off"
-                                , class "tag_input_field"
-                                , id "user-picker-search"
-                                , autofocus True
-                                , placeholder "Type the name of a user or group"
-                                , type_ "text"
-                                , value
-                                    (case model.userPickerSearch of
-                                        Just val ->
-                                            val.input
-
-                                        Nothing ->
-                                            ""
-                                    )
-                                , onInput SearchUsers
-                                ]
-                                []
-                            ]
-                       ]
-                )
-            , ul
-                [ attribute "aria-labelledby" "dropdownMenu"
-                , class
-                    ("dropdown-menu "
-                        ++ (case model.userPickerSearch of
-                                Just typeAhead ->
-                                    case typeAhead.users of
-                                        Just searchUsers ->
-                                            ""
-
-                                        Nothing ->
-                                            "hidden"
-
-                                Nothing ->
-                                    "hidden"
-                           )
-                    )
-                , id "notifyUserInput_userpicker"
-                , attribute "role" "menu"
-                , style [ ( "position", "absolute" ), ( "display", "block" ) ]
-                ]
-                (case model.userPickerSearch of
-                    Just typeAhead ->
-                        case typeAhead.users of
-                            Just searchUsers ->
-                                case userPickerList searchUsers of
-                                    Just usersHtmlList ->
-                                        usersHtmlList
-
-                                    Nothing ->
-                                        []
-
-                            Nothing ->
-                                []
-
-                    Nothing ->
-                        []
-                )
-            ]
-        ]
-
-
-userPickerList : WebData (List UserSearch) -> Maybe (List (Html Msg))
-userPickerList userSearch =
-    case userSearch of
-        NotAsked ->
-            Nothing
-
-        Loading ->
-            Just ([ li [] [ loader ] ])
-
-        Success [] ->
-            Nothing
-
-        Success [ user ] ->
-            Just ([ userPickerElement user "selected" ])
-
-        Success (user :: users) ->
-            Just
-                (userPickerElement user "selected"
-                    :: List.map
-                        (\u -> userPickerElement u "")
-                        users
-                )
-
-        Failure err ->
-            Just [ li [] [ text ":( Sorry there is an error happen" ] ]
-
-
-userPickerElement : UserSearch -> String -> Html Msg
-userPickerElement userSearch selectedClass =
-    li
-        [ class selectedClass, onClick (UserSearchSelected userSearch) ]
-        [ a [ href "#" ]
-            [ img
-                [ class "img-rounded", src userSearch.image, height 20, width 20 ]
-                []
-            , text userSearch.displayName
-            ]
-        ]
-
-
-usersSelectedElement : Maybe (List UserSearch) -> Maybe (List (Html Msg))
-usersSelectedElement userSearchs =
-    case userSearchs of
-        Just users ->
-            Just
-                (List.map
-                    (\u ->
-                        userSelectedElement u
-                    )
-                    users
-                )
-
-        Nothing ->
-            Nothing
-
-
-userSelectedElement : UserSearch -> Html Msg
-userSelectedElement userSearch =
-    li
-        [ class "userInput" ]
-        [ img
-            [ class "img-rounded", src userSearch.image, height 24, width 24, attribute "data-src" "holder.js/24x24" ]
-            []
-        , text userSearch.displayName
-        , i
-            [ class "fa fa-times-circle", onClick (RemoveUserFromPicker userSearch) ]
-            []
-        ]
-
 notFoundView : Html msg
 notFoundView =
     div []
         [ text "Not found"
         ]
 
--- Prevent default by click and not prevent default when click ctrl :D 
+
+
+-- Prevent default by click and not prevent default when click ctrl :D
+
 
 onClickPage : Route -> List (Attribute Msg)
 onClickPage route =
@@ -454,6 +322,7 @@ onClickPage route =
     , class "btn btn-info pull-right"
     , onPreventDefaultClick (NewRoute route)
     ]
+
 
 onPreventDefaultClick : msg -> Attribute msg
 onPreventDefaultClick message =

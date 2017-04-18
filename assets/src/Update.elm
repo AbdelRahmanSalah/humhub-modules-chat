@@ -1,7 +1,7 @@
 module Update exposing (..)
 
-import Msgs exposing (..)
 import Models exposing (..)
+import UserPicker exposing (..)
 import Commands exposing (..)
 import Ports exposing (..)
 import Routing exposing (..)
@@ -17,14 +17,10 @@ update msg model =
             ( model, Cmd.none )
 
         OnLocationChange location ->
-            let
-                newRoute =
-                    parseLocation location
-            in
-                ( { model | route = newRoute }, Cmd.none )
-        
+            ( { model | route = (parseLocation location) }, Cmd.none )
+
         NewRoute route ->
-                ( model, Navigation.newUrl (getUrl route) )
+            ( model, Navigation.newUrl (getUrl route) )
 
         Send chatEntryModel ->
             ( model, sendChatMessage chatEntryModel )
@@ -35,6 +31,16 @@ update msg model =
         OnFetchChatRooms rooms ->
             ( { model | chatRoomList = rooms }, Cmd.none )
 
+        UserPickerMsg userPickerMsg ->
+            userPickerUpdate userPickerMsg model
+
+        _ ->
+            ( model, Cmd.none )
+
+
+userPickerUpdate : UserPickerMsg -> Model -> ( Model, Cmd Msg )
+userPickerUpdate msg model =
+    case msg of
         SearchUsers searchInput ->
             ( model
                 |> setSearchInput searchInput
@@ -54,42 +60,4 @@ update msg model =
             )
 
         RemoveUserFromPicker userSearch ->
-            ( { model | userPickerSearch = Maybe.map (\a -> { a | selectedUsers = removeFromUserSelectedSearchList userSearch a.selectedUsers }) model.userPickerSearch }, Cmd.none )
-
-        _ ->
-            ( model, Cmd.none )
-
-
-
--- OnFetchChatEntries message ->
---     ({ model | currentMessage = Just message }, fetchMessageEntryList message)
--- OnFetchChatEntries chatEntries ->
---     ({model | currentMessage = Maybe.map (\a -> { a | messageEntries = Just msgEntries }) model.currentMessage }, Cmd.none)
--- NewPubNubEntry msgEntry ->
---     let
---         x = Debug.log "newentry" (toString msgEntry)
---         y = Debug.log "model" (toString model.currentMessage)
---     in
---         ({model |
---         currentMessage =
---             Maybe.map (\a ->
---                 { a | messageEntries = convert a.messageEntries (Just (Success msgEntry)) }) model.currentMessage }, Cmd.none)
--- convert: Maybe (WebData (List MessageEntry)) -> Maybe (WebData (MessageEntry)) -> Maybe (WebData (List MessageEntry))
--- convert msgEntries msgEntry =
---     Maybe.map2 (\a b ->
---         case a of
---             NotAsked -> Loading
---             Loading ->  Loading
---             Failure e -> Loading
---             Success msgs ->
---                 case b of
---                     NotAsked -> Loading
---                     Loading -> Loading
---                     Failure e -> Loading
---                     Success msg -> Success (msg :: msgs)
---      ) msgEntries msgEntry
-
-
-removeFromUserSelectedSearchList : UserSearch -> Maybe (List UserSearch) -> Maybe (List UserSearch)
-removeFromUserSelectedSearchList user mUsers =
-    Maybe.map (\users -> List.filter (\u -> u.id /= user.id) users) mUsers
+            ( { model | userPickerModel = Maybe.map (\a -> { a | selectedUsers = removeFromUserSelectedSearchList userSearch a.selectedUsers }) model.userPickerModel }, Cmd.none )

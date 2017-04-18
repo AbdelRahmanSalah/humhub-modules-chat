@@ -1,8 +1,8 @@
 module Commands exposing (..)
 
 import RemoteData exposing (..)
-import Msgs exposing (..)
 import Models exposing (..)
+import UserPicker exposing (..)
 import Urls exposing (..)
 import Http
 import Json.Decode as Decode
@@ -20,7 +20,15 @@ userSearch : String -> Cmd Msg
 userSearch keyword =
     Http.get (userSearchPrettyUrl keyword) usersSearchDecoder
         |> RemoteData.sendRequest
-        |> Cmd.map OnFetchUserSearch
+        |> Cmd.map (UserPickerMsg << OnFetchUserSearch)
+
+
+
+-- getChatRoom : List Models.UserGuid -> Cmd Msg
+-- getChatRoom usersGuid =
+--     Http.post getChatRoomPrettyUrl chatRoomDecoder
+--         |> RemoteData.sendRequest
+--         |> Cmd.map OnFetchChatRoomSearch
 
 
 chatRoomsDecoder : Decode.Decoder (List ChatRoom)
@@ -33,7 +41,7 @@ chatRoomsModelDecoder =
     Decode.list chatRoomModelDecoder
 
 
-usersSearchDecoder : Decode.Decoder (List UserSearch)
+usersSearchDecoder : Decode.Decoder (List UserPicker.UserSearch)
 usersSearchDecoder =
     Decode.list userSearchDecoder
 
@@ -71,9 +79,9 @@ chatRoomModelDecoder =
         |> hardcoded Nothing
 
 
-userSearchDecoder : Decode.Decoder UserSearch
+userSearchDecoder : Decode.Decoder UserPicker.UserSearch
 userSearchDecoder =
-    decode UserSearch
+    decode UserPicker.UserSearch
         |> required "id" Decode.int
         |> required "guid" Decode.string
         |> required "disabled" Decode.bool

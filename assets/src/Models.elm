@@ -1,23 +1,56 @@
 module Models exposing (..)
 
 import RemoteData exposing (..)
+import Navigation exposing (Location)
 import Uuid exposing (..)
+import Html exposing (..)
+import UserPicker exposing (..)
+
+
+type Msg
+    = NoOp
+    | Send ChatEntryModel
+    | LoadChatEntries ChatRoom
+    | OnFetchChatRooms (WebData (List ChatRoomModel))
+    | OnFetchChatEntries (WebData (List ChatEntry))
+    | NewPubNubEntry ChatEntry
+    | CreateNewChatRoom
+    | UserPickerMsg UserPickerMsg
+    | OnLocationChange Location
+    | NewRoute Route
+    | OnFetchChatRoomSearch (Maybe ChatRoom)
+
+
+type UserPickerMsg
+    = SearchUsers String
+    | UserSearchSelected UserSearch
+    | RemoveUserFromPicker UserSearch
+    | OnFetchUserSearch (WebData (List UserSearch))
 
 
 type alias Model =
     { chatRoomList : WebData (List ChatRoomModel)
     , currentChatRoom : Maybe ChatRoomModel
     , showNewMessage : Bool
-    , userPickerSearch : Maybe UserTypeAhead
+    , userPickerModel : Maybe (UserPickerModel Msg)
     , route : Route
     }
 
 
-type alias UserTypeAhead =
-    { input : String
-    , users : Maybe (WebData (List UserSearch)) -- The data you want to list and filter
-    , selectedUsers : Maybe (List UserSearch)
+type alias ChatRoom =
+    { guid : ChatRoomGuid
+    , title : String
+    , lastEntry : Maybe (WebData ChatEntryModel)
     }
+
+
+
+-- type alias ChatRoomGuid = Uuid
+
+
+type alias ChatRoomGuid =
+    String
+
 
 type Route
     = NewChatRoomRoute
@@ -25,20 +58,71 @@ type Route
     | NotFoundRoute
 
 
+type alias ChatRoomModel =
+    { chatRoom : ChatRoom
+    , chatEntries : Maybe (WebData (List ChatEntryModel))
+    , chatInput : Maybe String
+    }
+
+
+type alias User =
+    { name : String
+    , guid : UserGuid
+    , profileImg : String
+    , profileLink : String
+    }
+
+
+
+-- type alias UserGuid = Uuid
+
+
+type alias UserGuid =
+    String
+
+
+type alias ChatEntryModel =
+    { chatEntry : ChatEntry
+    , user : User
+    , chatRoomGuid : ChatRoomGuid
+    }
+
+
+type alias ChatEntry =
+    { guid : ChatEntryGuid
+    , message : String
+    , createdAt : String
+    }
+
+
+
+-- type alias ChatEntryGuid = Uuid
+
+
+type alias ChatEntryGuid =
+    String
+
+
 initModel : Route -> Model
 initModel route =
     { chatRoomList = RemoteData.Loading
     , currentChatRoom = Nothing
     , showNewMessage = False
-    , userPickerSearch = Nothing
+    , userPickerModel = Nothing
     , route = route
     }
 
 
-type alias ChatRoomModel =
-    { chatRoom : ChatRoom
-    , chatEntries : Maybe (WebData (List ChatEntryModel))
-    , chatInput : Maybe String
+initUserPickerModel : UserPickerModel Msg
+initUserPickerModel =
+    { input = Nothing
+    , users = Nothing -- The data you want to list and filter
+    , selectedUsers = Nothing
+    , onType = (UserPickerMsg << SearchUsers)
+    , onSelect = (UserPickerMsg << UserSearchSelected)
+    , onRemoveUser = (UserPickerMsg << RemoveUserFromPicker)
+    , loader = text "Hello"
+    , placeHolder = Nothing
     }
 
 
@@ -70,47 +154,9 @@ setChatEntryInList chatEntry chatRoomModel =
     }
 
 
-type alias ChatRoom =
-    { guid : ChatRoomGuid
-    , title : String
-    , lastEntry : Maybe (WebData ChatEntryModel)
-    }
-
-
-
--- type alias ChatRoomGuid = Uuid
-
-
-type alias ChatRoomGuid =
-    String
-
-
 setLastEntry : WebData ChatEntryModel -> ChatRoom -> ChatRoom
 setLastEntry chatEntryModel chatRoom =
     { chatRoom | lastEntry = Just chatEntryModel }
-
-
-type alias User =
-    { name : String
-    , guid : UserGuid
-    , profileImg : String
-    , profileLink : String
-    }
-
-
-
--- type alias UserGuid = Uuid
-
-
-type alias UserGuid =
-    String
-
-
-type alias ChatEntryModel =
-    { chatEntry : ChatEntry
-    , user : User
-    , chatRoomGuid : ChatRoomGuid
-    }
 
 
 getChatEntryModel : Maybe (WebData ChatEntryModel) -> Maybe ChatEntryModel
@@ -144,42 +190,20 @@ setChatEntry chatEntry chatEntryModel =
     { chatEntryModel | chatEntry = chatEntry }
 
 
-type alias ChatEntry =
-    { guid : ChatEntryGuid
-    , message : String
-    , createdAt : String
-    }
-
-
-
--- type alias ChatEntryGuid = Uuid
-
-
-type alias ChatEntryGuid =
-    String
-
-
-type alias UserSearch =
-    { id : Int
-    , guid : UserGuid
-    , disabled : Bool
-    , displayName : String
-    , image : String
-    , link : String
-    , priority : Int
-    }
-
-
 setSearchInput : String -> Model -> Model
 setSearchInput searchText model =
     { model
-        | userPickerSearch =
-            (case model.userPickerSearch of
+        | userPickerModel =
+            (case model.userPickerModel of
                 Just picker ->
-                    Just { picker | input = searchText, users = Nothing }
+                    let
+                        x =
+                            Debug.log "pikcer" picker
+                    in
+                        Just { picker | input = Just searchText, users = Nothing }
 
                 Nothing ->
-                    Just { input = searchText, users = Nothing, selectedUsers = Nothing }
+                    Just { initUserPickerModel | input = Just searchText }
             )
     }
 
@@ -187,7 +211,7 @@ setSearchInput searchText model =
 setNewSelectedUser : UserSearch -> Model -> Model
 setNewSelectedUser selectedUser model =
     { model
-        | userPickerSearch =
+        | userPickerModel =
             Maybe.map
                 (\a ->
                     { a
@@ -199,26 +223,26 @@ setNewSelectedUser selectedUser model =
                                 Nothing ->
                                     Just ([ selectedUser ])
                             )
-                        , input = ""
                         , users = Nothing
+                        , input = Nothing
                     }
                 )
-                model.userPickerSearch
+                model.userPickerModel
     }
 
 
 setTypeAheadUsers : WebData (List UserSearch) -> Model -> Model
 setTypeAheadUsers userSearchResult model =
     { model
-        | userPickerSearch =
+        | userPickerModel =
             Maybe.map
-                (\a -> { a | users = filterSearchUserResultBySelectedUser a.selectedUsers (Just userSearchResult) })
-                model.userPickerSearch
+                (\a -> { a | users = filterSelectedUsers a.selectedUsers (Just userSearchResult) })
+                model.userPickerModel
     }
 
 
-filterSearchUserResultBySelectedUser : Maybe (List UserSearch) -> Maybe (WebData (List UserSearch)) -> Maybe (WebData (List UserSearch))
-filterSearchUserResultBySelectedUser mUsers mWUsers =
+filterSelectedUsers : Maybe (List UserSearch) -> Maybe (WebData (List UserSearch)) -> Maybe (WebData (List UserSearch))
+filterSelectedUsers mUsers mWUsers =
     case mUsers of
         Just users ->
             Maybe.map

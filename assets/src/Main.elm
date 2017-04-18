@@ -3,21 +3,15 @@ port module Main exposing (..)
 import Models exposing (..)
 import Commands exposing (fetchMessagesList)
 import View exposing (view)
-import Msgs exposing (..)
 import Update exposing (..)
 import Ports exposing (..)
 import Navigation exposing (Location)
 import Routing exposing (..)
-import Debug
+
 
 init : Location -> ( Model, Cmd Msg )
 init location =
-    let
-        currentRoute =
-            parseLocation location
-        x = Debug.log "location" location
-    in
-        ( initModel currentRoute, fetchMessagesList 0 )
+    ( initModel (parseLocation location), fetchMessagesList 0 )
 
 
 main : Program Never Model Msg
@@ -32,7 +26,7 @@ main =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    newChatEntry Msgs.NewPubNubEntry
+    newChatEntry NewPubNubEntry
 
 
 

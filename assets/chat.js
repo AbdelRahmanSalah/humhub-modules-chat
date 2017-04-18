@@ -11041,6 +11041,431 @@ var _krisajenkins$remotedata$RemoteData$update = F2(
 		}
 	});
 
+var _user$project$UserPicker$removeFromUserSelectedSearchList = F2(
+	function (user, mUsers) {
+		return A2(
+			_elm_lang$core$Maybe$map,
+			function (users) {
+				return A2(
+					_elm_lang$core$List$filter,
+					function (u) {
+						return !_elm_lang$core$Native_Utils.eq(u.id, user.id);
+					},
+					users);
+			},
+			mUsers);
+	});
+var _user$project$UserPicker$userSelectedElement = F2(
+	function (model, userSearch) {
+		return A2(
+			_elm_lang$html$Html$li,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class('userInput'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$img,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('img-rounded'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$src(userSearch.image),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$height(24),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$width(24),
+									_1: {
+										ctor: '::',
+										_0: A2(_elm_lang$html$Html_Attributes$attribute, 'data-src', 'holder.js/24x24'),
+										_1: {ctor: '[]'}
+									}
+								}
+							}
+						}
+					},
+					{ctor: '[]'}),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html$text(userSearch.displayName),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$i,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('fa fa-times-circle'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Events$onClick(
+										model.onRemoveUser(userSearch)),
+									_1: {ctor: '[]'}
+								}
+							},
+							{ctor: '[]'}),
+						_1: {ctor: '[]'}
+					}
+				}
+			});
+	});
+var _user$project$UserPicker$usersSelectedElement = F2(
+	function (model, userSearchs) {
+		var _p0 = userSearchs;
+		if (_p0.ctor === 'Just') {
+			return _elm_lang$core$Maybe$Just(
+				A2(
+					_elm_lang$core$List$map,
+					function (u) {
+						return A2(_user$project$UserPicker$userSelectedElement, model, u);
+					},
+					_p0._0));
+		} else {
+			return _elm_lang$core$Maybe$Nothing;
+		}
+	});
+var _user$project$UserPicker$userPickerElement = F3(
+	function (model, userSearch, selectedClass) {
+		return A2(
+			_elm_lang$html$Html$li,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$class(selectedClass),
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$html$Html_Events$onClick(
+						model.onSelect(userSearch)),
+					_1: {ctor: '[]'}
+				}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$a,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$href('#'),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$img,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('img-rounded'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$src(userSearch.image),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$height(20),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$width(20),
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							},
+							{ctor: '[]'}),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(userSearch.displayName),
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			});
+	});
+var _user$project$UserPicker$userPickerList = function (model) {
+	var _p1 = model.users;
+	if (_p1.ctor === 'Just') {
+		var _p2 = _p1._0;
+		switch (_p2.ctor) {
+			case 'NotAsked':
+				return _elm_lang$core$Maybe$Nothing;
+			case 'Loading':
+				return _elm_lang$core$Maybe$Just(
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$li,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: model.loader,
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					});
+			case 'Success':
+				if (_p2._0.ctor === '[]') {
+					return _elm_lang$core$Maybe$Nothing;
+				} else {
+					if (_p2._0._1.ctor === '[]') {
+						return _elm_lang$core$Maybe$Just(
+							{
+								ctor: '::',
+								_0: A3(_user$project$UserPicker$userPickerElement, model, _p2._0._0, 'selected'),
+								_1: {ctor: '[]'}
+							});
+					} else {
+						return _elm_lang$core$Maybe$Just(
+							{
+								ctor: '::',
+								_0: A3(_user$project$UserPicker$userPickerElement, model, _p2._0._0, 'selected'),
+								_1: A2(
+									_elm_lang$core$List$map,
+									function (u) {
+										return A3(_user$project$UserPicker$userPickerElement, model, u, '');
+									},
+									_p2._0._1)
+							});
+					}
+				}
+			default:
+				return _elm_lang$core$Maybe$Just(
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$li,
+							{ctor: '[]'},
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html$text(':( Sorry there is an error happen'),
+								_1: {ctor: '[]'}
+							}),
+						_1: {ctor: '[]'}
+					});
+		}
+	} else {
+		return _elm_lang$core$Maybe$Nothing;
+	}
+};
+var _user$project$UserPicker$userPicker = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('form-group'),
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$id('notifyUserContainer'),
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'style', 'margin-top: 15px;'),
+					_1: {ctor: '[]'}
+				}
+			}
+		},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$input,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$id('notifyUserInput'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$name('notifyUserInput'),
+						_1: {
+							ctor: '::',
+							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'style', 'display: none;'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$type_('text'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$value(''),
+									_1: {ctor: '[]'}
+								}
+							}
+						}
+					}
+				},
+				{ctor: '[]'}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('notifyUserInput_user_picker_container'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$style(
+								{
+									ctor: '::',
+									_0: {ctor: '_Tuple2', _0: 'position', _1: 'relative'},
+									_1: {ctor: '[]'}
+								}),
+							_1: {ctor: '[]'}
+						}
+					},
+					{
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$ul,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$class('tag_input'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$id('notifyUserInput_invite_tags'),
+									_1: {ctor: '[]'}
+								}
+							},
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								function () {
+									var _p3 = A2(_user$project$UserPicker$usersSelectedElement, model, model.selectedUsers);
+									if (_p3.ctor === 'Just') {
+										return _p3._0;
+									} else {
+										return {ctor: '[]'};
+									}
+								}(),
+								{
+									ctor: '::',
+									_0: A2(
+										_elm_lang$html$Html$li,
+										{
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$id('notifyUserInput_tag_input'),
+											_1: {ctor: '[]'}
+										},
+										{
+											ctor: '::',
+											_0: A2(
+												_elm_lang$html$Html$input,
+												{
+													ctor: '::',
+													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'autocomplete', 'off'),
+													_1: {
+														ctor: '::',
+														_0: _elm_lang$html$Html_Attributes$class('tag_input_field'),
+														_1: {
+															ctor: '::',
+															_0: _elm_lang$html$Html_Attributes$id('user-picker-search'),
+															_1: {
+																ctor: '::',
+																_0: _elm_lang$html$Html_Attributes$autofocus(true),
+																_1: {
+																	ctor: '::',
+																	_0: _elm_lang$html$Html_Attributes$placeholder('Type the name of a user or group'),
+																	_1: {
+																		ctor: '::',
+																		_0: _elm_lang$html$Html_Attributes$type_('text'),
+																		_1: {
+																			ctor: '::',
+																			_0: _elm_lang$html$Html_Attributes$value(
+																				function () {
+																					var _p4 = model.input;
+																					if (_p4.ctor === 'Just') {
+																						var _p5 = _p4._0;
+																						var x = A2(_elm_lang$core$Debug$log, 'input', _p5);
+																						return _p5;
+																					} else {
+																						var x = A2(_elm_lang$core$Debug$log, 'from noting input', model);
+																						return '';
+																					}
+																				}()),
+																			_1: {
+																				ctor: '::',
+																				_0: _elm_lang$html$Html_Events$onInput(model.onType),
+																				_1: {ctor: '[]'}
+																			}
+																		}
+																	}
+																}
+															}
+														}
+													}
+												},
+												{ctor: '[]'}),
+											_1: {ctor: '[]'}
+										}),
+									_1: {ctor: '[]'}
+								})),
+						_1: {
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$ul,
+								{
+									ctor: '::',
+									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-labelledby', 'dropdownMenu'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$class(
+											A2(
+												_elm_lang$core$Basics_ops['++'],
+												'dropdown-menu ',
+												function () {
+													var _p6 = model.users;
+													if (_p6.ctor === 'Just') {
+														return '';
+													} else {
+														return 'hidden';
+													}
+												}())),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$id('notifyUserInput_userpicker'),
+											_1: {
+												ctor: '::',
+												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'role', 'menu'),
+												_1: {
+													ctor: '::',
+													_0: _elm_lang$html$Html_Attributes$style(
+														{
+															ctor: '::',
+															_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
+															_1: {
+																ctor: '::',
+																_0: {ctor: '_Tuple2', _0: 'display', _1: 'block'},
+																_1: {ctor: '[]'}
+															}
+														}),
+													_1: {ctor: '[]'}
+												}
+											}
+										}
+									}
+								},
+								function () {
+									var _p7 = model.users;
+									if (_p7.ctor === 'Just') {
+										var _p8 = _user$project$UserPicker$userPickerList(model);
+										if (_p8.ctor === 'Just') {
+											return _p8._0;
+										} else {
+											return {ctor: '[]'};
+										}
+									} else {
+										return {ctor: '[]'};
+									}
+								}()),
+							_1: {ctor: '[]'}
+						}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$UserPicker$UserPickerModel = F8(
+	function (a, b, c, d, e, f, g, h) {
+		return {input: a, users: b, selectedUsers: c, onType: d, onSelect: e, onRemoveUser: f, loader: g, placeHolder: h};
+	});
+var _user$project$UserPicker$UserSearch = F7(
+	function (a, b, c, d, e, f, g) {
+		return {id: a, guid: b, disabled: c, displayName: d, image: e, link: f, priority: g};
+	});
+
 var _user$project$Models$diff2List = F2(
 	function (xs, ys) {
 		return A2(
@@ -11050,7 +11475,7 @@ var _user$project$Models$diff2List = F2(
 			},
 			xs);
 	});
-var _user$project$Models$filterSearchUserResultBySelectedUser = F2(
+var _user$project$Models$filterSelectedUsers = F2(
 	function (mUsers, mWUsers) {
 		var _p1 = mUsers;
 		if (_p1.ctor === 'Just') {
@@ -11074,19 +11499,19 @@ var _user$project$Models$setTypeAheadUsers = F2(
 		return _elm_lang$core$Native_Utils.update(
 			model,
 			{
-				userPickerSearch: A2(
+				userPickerModel: A2(
 					_elm_lang$core$Maybe$map,
 					function (a) {
 						return _elm_lang$core$Native_Utils.update(
 							a,
 							{
 								users: A2(
-									_user$project$Models$filterSearchUserResultBySelectedUser,
+									_user$project$Models$filterSelectedUsers,
 									a.selectedUsers,
 									_elm_lang$core$Maybe$Just(userSearchResult))
 							});
 					},
-					model.userPickerSearch)
+					model.userPickerModel)
 			});
 	});
 var _user$project$Models$setNewSelectedUser = F2(
@@ -11094,7 +11519,7 @@ var _user$project$Models$setNewSelectedUser = F2(
 		return _elm_lang$core$Native_Utils.update(
 			model,
 			{
-				userPickerSearch: A2(
+				userPickerModel: A2(
 					_elm_lang$core$Maybe$map,
 					function (a) {
 						return _elm_lang$core$Native_Utils.update(
@@ -11121,30 +11546,11 @@ var _user$project$Models$setNewSelectedUser = F2(
 											});
 									}
 								}(),
-								input: '',
-								users: _elm_lang$core$Maybe$Nothing
+								users: _elm_lang$core$Maybe$Nothing,
+								input: _elm_lang$core$Maybe$Nothing
 							});
 					},
-					model.userPickerSearch)
-			});
-	});
-var _user$project$Models$setSearchInput = F2(
-	function (searchText, model) {
-		return _elm_lang$core$Native_Utils.update(
-			model,
-			{
-				userPickerSearch: function () {
-					var _p3 = model.userPickerSearch;
-					if (_p3.ctor === 'Just') {
-						return _elm_lang$core$Maybe$Just(
-							_elm_lang$core$Native_Utils.update(
-								_p3._0,
-								{input: searchText, users: _elm_lang$core$Maybe$Nothing}));
-					} else {
-						return _elm_lang$core$Maybe$Just(
-							{input: searchText, users: _elm_lang$core$Maybe$Nothing, selectedUsers: _elm_lang$core$Maybe$Nothing});
-					}
-				}()
+					model.userPickerModel)
 			});
 	});
 var _user$project$Models$setChatEntry = F2(
@@ -11160,16 +11566,16 @@ var _user$project$Models$setUser = F2(
 			{user: user});
 	});
 var _user$project$Models$getChatEntryModel = function (mayWebChatEntryModel) {
-	var _p4 = mayWebChatEntryModel;
-	if (_p4.ctor === 'Just') {
-		var _p5 = _p4._0;
-		switch (_p5.ctor) {
+	var _p3 = mayWebChatEntryModel;
+	if (_p3.ctor === 'Just') {
+		var _p4 = _p3._0;
+		switch (_p4.ctor) {
 			case 'NotAsked':
 				return _elm_lang$core$Maybe$Nothing;
 			case 'Loading':
 				return _elm_lang$core$Maybe$Nothing;
 			case 'Success':
-				return _elm_lang$core$Maybe$Just(_p5._0);
+				return _elm_lang$core$Maybe$Just(_p4._0);
 			default:
 				return _elm_lang$core$Maybe$Nothing;
 		}
@@ -11194,17 +11600,17 @@ var _user$project$Models$setChatEntryInList = F2(
 					_elm_lang$core$Maybe$map2,
 					F2(
 						function (a, b) {
-							var _p6 = a;
-							if (_p6.ctor === 'Success') {
-								var _p7 = b;
-								if (_p7.ctor === 'Success') {
+							var _p5 = a;
+							if (_p5.ctor === 'Success') {
+								var _p6 = b;
+								if (_p6.ctor === 'Success') {
 									return _krisajenkins$remotedata$RemoteData$Success(
 										A2(
 											_elm_lang$core$Basics_ops['++'],
-											_p6._0,
+											_p5._0,
 											{
 												ctor: '::',
-												_0: _p7._0,
+												_0: _p6._0,
 												_1: {ctor: '[]'}
 											}));
 								} else {
@@ -11225,23 +11631,19 @@ var _user$project$Models$setChatEntries = F2(
 			{chatEntries: chatEntries});
 	});
 var _user$project$Models$initModel = function (route) {
-	return {chatRoomList: _krisajenkins$remotedata$RemoteData$Loading, currentChatRoom: _elm_lang$core$Maybe$Nothing, showNewMessage: false, userPickerSearch: _elm_lang$core$Maybe$Nothing, route: route};
+	return {chatRoomList: _krisajenkins$remotedata$RemoteData$Loading, currentChatRoom: _elm_lang$core$Maybe$Nothing, showNewMessage: false, userPickerModel: _elm_lang$core$Maybe$Nothing, route: route};
 };
 var _user$project$Models$Model = F5(
 	function (a, b, c, d, e) {
-		return {chatRoomList: a, currentChatRoom: b, showNewMessage: c, userPickerSearch: d, route: e};
-	});
-var _user$project$Models$UserTypeAhead = F3(
-	function (a, b, c) {
-		return {input: a, users: b, selectedUsers: c};
-	});
-var _user$project$Models$ChatRoomModel = F3(
-	function (a, b, c) {
-		return {chatRoom: a, chatEntries: b, chatInput: c};
+		return {chatRoomList: a, currentChatRoom: b, showNewMessage: c, userPickerModel: d, route: e};
 	});
 var _user$project$Models$ChatRoom = F3(
 	function (a, b, c) {
 		return {guid: a, title: b, lastEntry: c};
+	});
+var _user$project$Models$ChatRoomModel = F3(
+	function (a, b, c) {
+		return {chatRoom: a, chatEntries: b, chatInput: c};
 	});
 var _user$project$Models$User = F4(
 	function (a, b, c, d) {
@@ -11255,51 +11657,99 @@ var _user$project$Models$ChatEntry = F3(
 	function (a, b, c) {
 		return {guid: a, message: b, createdAt: c};
 	});
-var _user$project$Models$UserSearch = F7(
-	function (a, b, c, d, e, f, g) {
-		return {id: a, guid: b, disabled: c, displayName: d, image: e, link: f, priority: g};
+var _user$project$Models$OnFetchChatRoomSearch = function (a) {
+	return {ctor: 'OnFetchChatRoomSearch', _0: a};
+};
+var _user$project$Models$NewRoute = function (a) {
+	return {ctor: 'NewRoute', _0: a};
+};
+var _user$project$Models$OnLocationChange = function (a) {
+	return {ctor: 'OnLocationChange', _0: a};
+};
+var _user$project$Models$UserPickerMsg = function (a) {
+	return {ctor: 'UserPickerMsg', _0: a};
+};
+var _user$project$Models$CreateNewChatRoom = {ctor: 'CreateNewChatRoom'};
+var _user$project$Models$NewPubNubEntry = function (a) {
+	return {ctor: 'NewPubNubEntry', _0: a};
+};
+var _user$project$Models$OnFetchChatEntries = function (a) {
+	return {ctor: 'OnFetchChatEntries', _0: a};
+};
+var _user$project$Models$OnFetchChatRooms = function (a) {
+	return {ctor: 'OnFetchChatRooms', _0: a};
+};
+var _user$project$Models$LoadChatEntries = function (a) {
+	return {ctor: 'LoadChatEntries', _0: a};
+};
+var _user$project$Models$Send = function (a) {
+	return {ctor: 'Send', _0: a};
+};
+var _user$project$Models$NoOp = {ctor: 'NoOp'};
+var _user$project$Models$OnFetchUserSearch = function (a) {
+	return {ctor: 'OnFetchUserSearch', _0: a};
+};
+var _user$project$Models$RemoveUserFromPicker = function (a) {
+	return {ctor: 'RemoveUserFromPicker', _0: a};
+};
+var _user$project$Models$UserSearchSelected = function (a) {
+	return {ctor: 'UserSearchSelected', _0: a};
+};
+var _user$project$Models$SearchUsers = function (a) {
+	return {ctor: 'SearchUsers', _0: a};
+};
+var _user$project$Models$initUserPickerModel = {
+	input: _elm_lang$core$Maybe$Nothing,
+	users: _elm_lang$core$Maybe$Nothing,
+	selectedUsers: _elm_lang$core$Maybe$Nothing,
+	onType: function (_p7) {
+		return _user$project$Models$UserPickerMsg(
+			_user$project$Models$SearchUsers(_p7));
+	},
+	onSelect: function (_p8) {
+		return _user$project$Models$UserPickerMsg(
+			_user$project$Models$UserSearchSelected(_p8));
+	},
+	onRemoveUser: function (_p9) {
+		return _user$project$Models$UserPickerMsg(
+			_user$project$Models$RemoveUserFromPicker(_p9));
+	},
+	loader: _elm_lang$html$Html$text('Hello'),
+	placeHolder: _elm_lang$core$Maybe$Nothing
+};
+var _user$project$Models$setSearchInput = F2(
+	function (searchText, model) {
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				userPickerModel: function () {
+					var _p10 = model.userPickerModel;
+					if (_p10.ctor === 'Just') {
+						var _p11 = _p10._0;
+						var x = A2(_elm_lang$core$Debug$log, 'pikcer', _p11);
+						return _elm_lang$core$Maybe$Just(
+							_elm_lang$core$Native_Utils.update(
+								_p11,
+								{
+									input: _elm_lang$core$Maybe$Just(searchText),
+									users: _elm_lang$core$Maybe$Nothing
+								}));
+					} else {
+						return _elm_lang$core$Maybe$Just(
+							_elm_lang$core$Native_Utils.update(
+								_user$project$Models$initUserPickerModel,
+								{
+									input: _elm_lang$core$Maybe$Just(searchText)
+								}));
+					}
+				}()
+			});
 	});
 var _user$project$Models$NotFoundRoute = {ctor: 'NotFoundRoute'};
 var _user$project$Models$ChatRoomRoute = function (a) {
 	return {ctor: 'ChatRoomRoute', _0: a};
 };
 var _user$project$Models$NewChatRoomRoute = {ctor: 'NewChatRoomRoute'};
-
-var _user$project$Msgs$NewRoute = function (a) {
-	return {ctor: 'NewRoute', _0: a};
-};
-var _user$project$Msgs$OnLocationChange = function (a) {
-	return {ctor: 'OnLocationChange', _0: a};
-};
-var _user$project$Msgs$RemoveUserFromPicker = function (a) {
-	return {ctor: 'RemoveUserFromPicker', _0: a};
-};
-var _user$project$Msgs$UserSearchSelected = function (a) {
-	return {ctor: 'UserSearchSelected', _0: a};
-};
-var _user$project$Msgs$SearchUsers = function (a) {
-	return {ctor: 'SearchUsers', _0: a};
-};
-var _user$project$Msgs$OnFetchUserSearch = function (a) {
-	return {ctor: 'OnFetchUserSearch', _0: a};
-};
-var _user$project$Msgs$CreateNewChatRoom = {ctor: 'CreateNewChatRoom'};
-var _user$project$Msgs$NewPubNubEntry = function (a) {
-	return {ctor: 'NewPubNubEntry', _0: a};
-};
-var _user$project$Msgs$OnFetchChatEntries = function (a) {
-	return {ctor: 'OnFetchChatEntries', _0: a};
-};
-var _user$project$Msgs$OnFetchChatRooms = function (a) {
-	return {ctor: 'OnFetchChatRooms', _0: a};
-};
-var _user$project$Msgs$LoadChatEntries = function (a) {
-	return {ctor: 'LoadChatEntries', _0: a};
-};
-var _user$project$Msgs$Send = function (a) {
-	return {ctor: 'Send', _0: a};
-};
-var _user$project$Msgs$NoOp = {ctor: 'NoOp'};
 
 var _user$project$Urls$url = F2(
 	function (baseUrl, query) {
@@ -11351,20 +11801,6 @@ var _user$project$Urls$userSearchUrl = function (keyword) {
 			}
 		});
 };
-var _user$project$Urls$allRoomsPrettyUrl = function (offset) {
-	return A2(
-		_user$project$Urls$url,
-		'/chat/index/get-rooms',
-		{
-			ctor: '::',
-			_0: {
-				ctor: '_Tuple2',
-				_0: 'offset',
-				_1: _elm_lang$core$Basics$toString(offset)
-			},
-			_1: {ctor: '[]'}
-		});
-};
 var _user$project$Urls$allRoomsUrl = function (offset) {
 	return A2(
 		_user$project$Urls$url,
@@ -11383,6 +11819,22 @@ var _user$project$Urls$allRoomsUrl = function (offset) {
 			}
 		});
 };
+var _user$project$Urls$baseUrl = 'chat/index/';
+var _user$project$Urls$allRoomsPrettyUrl = function (offset) {
+	return A2(
+		_user$project$Urls$url,
+		A2(_elm_lang$core$Basics_ops['++'], _user$project$Urls$baseUrl, 'get-rooms'),
+		{
+			ctor: '::',
+			_0: {
+				ctor: '_Tuple2',
+				_0: 'offset',
+				_1: _elm_lang$core$Basics$toString(offset)
+			},
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Urls$getChatRoomPrettyUrl = A2(_elm_lang$core$Basics_ops['++'], _user$project$Urls$baseUrl, 'get-chat-room');
 
 var _user$project$Commands$userSearchDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
@@ -11412,7 +11864,7 @@ var _user$project$Commands$userSearchDecoder = A3(
 							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 							'id',
 							_elm_lang$core$Json_Decode$int,
-							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$Models$UserSearch))))))));
+							_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$decode(_user$project$UserPicker$UserSearch))))))));
 var _user$project$Commands$userDecoder = A3(
 	_NoRedInk$elm_decode_pipeline$Json_Decode_Pipeline$required,
 	'profileLink',
@@ -11472,7 +11924,10 @@ var _user$project$Commands$chatRoomsDecoder = _elm_lang$core$Json_Decode$list(_u
 var _user$project$Commands$userSearch = function (keyword) {
 	return A2(
 		_elm_lang$core$Platform_Cmd$map,
-		_user$project$Msgs$OnFetchUserSearch,
+		function (_p0) {
+			return _user$project$Models$UserPickerMsg(
+				_user$project$Models$OnFetchUserSearch(_p0));
+		},
 		_krisajenkins$remotedata$RemoteData$sendRequest(
 			A2(
 				_elm_lang$http$Http$get,
@@ -11482,7 +11937,7 @@ var _user$project$Commands$userSearch = function (keyword) {
 var _user$project$Commands$fetchMessagesList = function (offset) {
 	return A2(
 		_elm_lang$core$Platform_Cmd$map,
-		_user$project$Msgs$OnFetchChatRooms,
+		_user$project$Models$OnFetchChatRooms,
 		_krisajenkins$remotedata$RemoteData$sendRequest(
 			A2(
 				_elm_lang$http$Http$get,
@@ -11590,7 +12045,7 @@ var _user$project$View$onClickPage = function (route) {
 			_1: {
 				ctor: '::',
 				_0: _user$project$View$onPreventDefaultClick(
-					_user$project$Msgs$NewRoute(route)),
+					_user$project$Models$NewRoute(route)),
 				_1: {ctor: '[]'}
 			}
 		}
@@ -11604,443 +12059,6 @@ var _user$project$View$notFoundView = A2(
 		_0: _elm_lang$html$Html$text('Not found'),
 		_1: {ctor: '[]'}
 	});
-var _user$project$View$userSelectedElement = function (userSearch) {
-	return A2(
-		_elm_lang$html$Html$li,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('userInput'),
-			_1: {ctor: '[]'}
-		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$img,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('img-rounded'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$src(userSearch.image),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$height(24),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$width(24),
-								_1: {
-									ctor: '::',
-									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'data-src', 'holder.js/24x24'),
-									_1: {ctor: '[]'}
-								}
-							}
-						}
-					}
-				},
-				{ctor: '[]'}),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$html$Html$text(userSearch.displayName),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$i,
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('fa fa-times-circle'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(
-									_user$project$Msgs$RemoveUserFromPicker(userSearch)),
-								_1: {ctor: '[]'}
-							}
-						},
-						{ctor: '[]'}),
-					_1: {ctor: '[]'}
-				}
-			}
-		});
-};
-var _user$project$View$usersSelectedElement = function (userSearchs) {
-	var _p1 = userSearchs;
-	if (_p1.ctor === 'Just') {
-		return _elm_lang$core$Maybe$Just(
-			A2(
-				_elm_lang$core$List$map,
-				function (u) {
-					return _user$project$View$userSelectedElement(u);
-				},
-				_p1._0));
-	} else {
-		return _elm_lang$core$Maybe$Nothing;
-	}
-};
-var _user$project$View$userPickerElement = F2(
-	function (userSearch, selectedClass) {
-		return A2(
-			_elm_lang$html$Html$li,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$class(selectedClass),
-				_1: {
-					ctor: '::',
-					_0: _elm_lang$html$Html_Events$onClick(
-						_user$project$Msgs$UserSearchSelected(userSearch)),
-					_1: {ctor: '[]'}
-				}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$a,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$href('#'),
-						_1: {ctor: '[]'}
-					},
-					{
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$img,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('img-rounded'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$src(userSearch.image),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$height(20),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$width(20),
-											_1: {ctor: '[]'}
-										}
-									}
-								}
-							},
-							{ctor: '[]'}),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html$text(userSearch.displayName),
-							_1: {ctor: '[]'}
-						}
-					}),
-				_1: {ctor: '[]'}
-			});
-	});
-var _user$project$View$loader = A2(
-	_elm_lang$html$Html$div,
-	{
-		ctor: '::',
-		_0: _elm_lang$html$Html_Attributes$class('col-md-8 messages'),
-		_1: {ctor: '[]'}
-	},
-	{
-		ctor: '::',
-		_0: A2(
-			_elm_lang$html$Html$div,
-			{
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$id('mail_message_details'),
-				_1: {ctor: '[]'}
-			},
-			{
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('loader'),
-						_1: {ctor: '[]'}
-					},
-					{ctor: '[]'}),
-				_1: {ctor: '[]'}
-			}),
-		_1: {ctor: '[]'}
-	});
-var _user$project$View$userPickerList = function (userSearch) {
-	var _p2 = userSearch;
-	switch (_p2.ctor) {
-		case 'NotAsked':
-			return _elm_lang$core$Maybe$Nothing;
-		case 'Loading':
-			return _elm_lang$core$Maybe$Just(
-				{
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$li,
-						{ctor: '[]'},
-						{
-							ctor: '::',
-							_0: _user$project$View$loader,
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				});
-		case 'Success':
-			if (_p2._0.ctor === '[]') {
-				return _elm_lang$core$Maybe$Nothing;
-			} else {
-				if (_p2._0._1.ctor === '[]') {
-					return _elm_lang$core$Maybe$Just(
-						{
-							ctor: '::',
-							_0: A2(_user$project$View$userPickerElement, _p2._0._0, 'selected'),
-							_1: {ctor: '[]'}
-						});
-				} else {
-					return _elm_lang$core$Maybe$Just(
-						{
-							ctor: '::',
-							_0: A2(_user$project$View$userPickerElement, _p2._0._0, 'selected'),
-							_1: A2(
-								_elm_lang$core$List$map,
-								function (u) {
-									return A2(_user$project$View$userPickerElement, u, '');
-								},
-								_p2._0._1)
-						});
-				}
-			}
-		default:
-			return _elm_lang$core$Maybe$Just(
-				{
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$li,
-						{ctor: '[]'},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text(':( Sorry there is an error happen'),
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				});
-	}
-};
-var _user$project$View$userPicker = function (model) {
-	return A2(
-		_elm_lang$html$Html$div,
-		{
-			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('form-group'),
-			_1: {
-				ctor: '::',
-				_0: _elm_lang$html$Html_Attributes$id('notifyUserContainer'),
-				_1: {
-					ctor: '::',
-					_0: A2(_elm_lang$html$Html_Attributes$attribute, 'style', 'margin-top: 15px;'),
-					_1: {ctor: '[]'}
-				}
-			}
-		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$input,
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$id('notifyUserInput'),
-					_1: {
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$name('notifyUserInput'),
-						_1: {
-							ctor: '::',
-							_0: A2(_elm_lang$html$Html_Attributes$attribute, 'style', 'display: none;'),
-							_1: {
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$type_('text'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$value(''),
-									_1: {ctor: '[]'}
-								}
-							}
-						}
-					}
-				},
-				{ctor: '[]'}),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$div,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('notifyUserInput_user_picker_container'),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$style(
-								{
-									ctor: '::',
-									_0: {ctor: '_Tuple2', _0: 'position', _1: 'relative'},
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						}
-					},
-					{
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$ul,
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$class('tag_input'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$id('notifyUserInput_invite_tags'),
-									_1: {ctor: '[]'}
-								}
-							},
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								function () {
-									var _p3 = model.userPickerSearch;
-									if (_p3.ctor === 'Just') {
-										var _p4 = _user$project$View$usersSelectedElement(_p3._0.selectedUsers);
-										if (_p4.ctor === 'Just') {
-											return _p4._0;
-										} else {
-											return {ctor: '[]'};
-										}
-									} else {
-										return {ctor: '[]'};
-									}
-								}(),
-								{
-									ctor: '::',
-									_0: A2(
-										_elm_lang$html$Html$li,
-										{
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$id('notifyUserInput_tag_input'),
-											_1: {ctor: '[]'}
-										},
-										{
-											ctor: '::',
-											_0: A2(
-												_elm_lang$html$Html$input,
-												{
-													ctor: '::',
-													_0: A2(_elm_lang$html$Html_Attributes$attribute, 'autocomplete', 'off'),
-													_1: {
-														ctor: '::',
-														_0: _elm_lang$html$Html_Attributes$class('tag_input_field'),
-														_1: {
-															ctor: '::',
-															_0: _elm_lang$html$Html_Attributes$id('user-picker-search'),
-															_1: {
-																ctor: '::',
-																_0: _elm_lang$html$Html_Attributes$autofocus(true),
-																_1: {
-																	ctor: '::',
-																	_0: _elm_lang$html$Html_Attributes$placeholder('Type the name of a user or group'),
-																	_1: {
-																		ctor: '::',
-																		_0: _elm_lang$html$Html_Attributes$type_('text'),
-																		_1: {
-																			ctor: '::',
-																			_0: _elm_lang$html$Html_Attributes$value(
-																				function () {
-																					var _p5 = model.userPickerSearch;
-																					if (_p5.ctor === 'Just') {
-																						return _p5._0.input;
-																					} else {
-																						return '';
-																					}
-																				}()),
-																			_1: {
-																				ctor: '::',
-																				_0: _elm_lang$html$Html_Events$onInput(_user$project$Msgs$SearchUsers),
-																				_1: {ctor: '[]'}
-																			}
-																		}
-																	}
-																}
-															}
-														}
-													}
-												},
-												{ctor: '[]'}),
-											_1: {ctor: '[]'}
-										}),
-									_1: {ctor: '[]'}
-								})),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$ul,
-								{
-									ctor: '::',
-									_0: A2(_elm_lang$html$Html_Attributes$attribute, 'aria-labelledby', 'dropdownMenu'),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$html$Html_Attributes$class(
-											A2(
-												_elm_lang$core$Basics_ops['++'],
-												'dropdown-menu ',
-												function () {
-													var _p6 = model.userPickerSearch;
-													if (_p6.ctor === 'Just') {
-														var _p7 = _p6._0.users;
-														if (_p7.ctor === 'Just') {
-															return '';
-														} else {
-															return 'hidden';
-														}
-													} else {
-														return 'hidden';
-													}
-												}())),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$id('notifyUserInput_userpicker'),
-											_1: {
-												ctor: '::',
-												_0: A2(_elm_lang$html$Html_Attributes$attribute, 'role', 'menu'),
-												_1: {
-													ctor: '::',
-													_0: _elm_lang$html$Html_Attributes$style(
-														{
-															ctor: '::',
-															_0: {ctor: '_Tuple2', _0: 'position', _1: 'absolute'},
-															_1: {
-																ctor: '::',
-																_0: {ctor: '_Tuple2', _0: 'display', _1: 'block'},
-																_1: {ctor: '[]'}
-															}
-														}),
-													_1: {ctor: '[]'}
-												}
-											}
-										}
-									}
-								},
-								function () {
-									var _p8 = model.userPickerSearch;
-									if (_p8.ctor === 'Just') {
-										var _p9 = _p8._0.users;
-										if (_p9.ctor === 'Just') {
-											var _p10 = _user$project$View$userPickerList(_p9._0);
-											if (_p10.ctor === 'Just') {
-												return _p10._0;
-											} else {
-												return {ctor: '[]'};
-											}
-										} else {
-											return {ctor: '[]'};
-										}
-									} else {
-										return {ctor: '[]'};
-									}
-								}()),
-							_1: {ctor: '[]'}
-						}
-					}),
-				_1: {ctor: '[]'}
-			}
-		});
-};
 var _user$project$View$newChatRoom = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -12078,7 +12096,16 @@ var _user$project$View$newChatRoom = function (model) {
 								},
 								{
 									ctor: '::',
-									_0: _user$project$View$userPicker(model),
+									_0: function () {
+										var _p1 = model.userPickerModel;
+										if (_p1.ctor === 'Just') {
+											var _p2 = _p1._0;
+											var x = A2(_elm_lang$core$Debug$log, ' new chat room ', _p2);
+											return _user$project$UserPicker$userPicker(_p2);
+										} else {
+											return _elm_lang$html$Html$text('Nothing');
+										}
+									}(),
 									_1: {ctor: '[]'}
 								}),
 							_1: {
@@ -12309,6 +12336,36 @@ var _user$project$View$newChatRoom = function (model) {
 			_1: {ctor: '[]'}
 		});
 };
+var _user$project$View$loader = A2(
+	_elm_lang$html$Html$div,
+	{
+		ctor: '::',
+		_0: _elm_lang$html$Html_Attributes$class('col-md-8 messages'),
+		_1: {ctor: '[]'}
+	},
+	{
+		ctor: '::',
+		_0: A2(
+			_elm_lang$html$Html$div,
+			{
+				ctor: '::',
+				_0: _elm_lang$html$Html_Attributes$id('mail_message_details'),
+				_1: {ctor: '[]'}
+			},
+			{
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$div,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Attributes$class('loader'),
+						_1: {ctor: '[]'}
+					},
+					{ctor: '[]'}),
+				_1: {ctor: '[]'}
+			}),
+		_1: {ctor: '[]'}
+	});
 var _user$project$View$messageEntryView = function (chatEntryModel) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -12517,10 +12574,10 @@ var _user$project$View$messageEntryView = function (chatEntryModel) {
 		});
 };
 var _user$project$View$displayEntries = function (msgEntries) {
-	var _p11 = msgEntries;
-	if (_p11.ctor === 'Just') {
-		var _p12 = _p11._0;
-		switch (_p12.ctor) {
+	var _p3 = msgEntries;
+	if (_p3.ctor === 'Just') {
+		var _p4 = _p3._0;
+		switch (_p4.ctor) {
 			case 'NotAsked':
 				return {ctor: '[]'};
 			case 'Loading':
@@ -12530,7 +12587,7 @@ var _user$project$View$displayEntries = function (msgEntries) {
 					_1: {ctor: '[]'}
 				};
 			case 'Success':
-				return A2(_elm_lang$core$List$map, _user$project$View$messageEntryView, _p12._0);
+				return A2(_elm_lang$core$List$map, _user$project$View$messageEntryView, _p4._0);
 			default:
 				return {
 					ctor: '::',
@@ -12594,7 +12651,7 @@ var _user$project$View$messagesStream = function (chatRoomModel) {
 												_0: _elm_lang$html$Html$text(''),
 												_1: {
 													ctor: '::',
-													_0: _elm_lang$html$Html$text('    '),
+													_0: _elm_lang$html$Html$text(''),
 													_1: {
 														ctor: '::',
 														_0: A2(
@@ -12948,11 +13005,7 @@ var _user$project$View$messagesStream = function (chatRoomModel) {
 																					{
 																						ctor: '::',
 																						_0: _elm_lang$html$Html_Attributes$class('btn btn-primary'),
-																						_1: {
-																							ctor: '::',
-																							_0: _elm_lang$html$Html_Attributes$id('h975204w2'),
-																							_1: {ctor: '[]'}
-																						}
+																						_1: {ctor: '[]'}
 																					},
 																					{
 																						ctor: '::',
@@ -13038,9 +13091,9 @@ var _user$project$View$chatRoomPreview = function (chatRoomModel) {
 													ctor: '::',
 													_0: _elm_lang$html$Html_Attributes$src(
 														function () {
-															var _p13 = _user$project$Models$getChatEntryModel(chatRoomModel.chatRoom.lastEntry);
-															if (_p13.ctor === 'Just') {
-																return _p13._0.user.profileImg;
+															var _p5 = _user$project$Models$getChatEntryModel(chatRoomModel.chatRoom.lastEntry);
+															if (_p5.ctor === 'Just') {
+																return _p5._0.user.profileImg;
 															} else {
 																return '';
 															}
@@ -13074,9 +13127,9 @@ var _user$project$View$chatRoomPreview = function (chatRoomModel) {
 												ctor: '::',
 												_0: _elm_lang$html$Html$text(
 													function () {
-														var _p14 = _user$project$Models$getChatEntryModel(chatRoomModel.chatRoom.lastEntry);
-														if (_p14.ctor === 'Just') {
-															return _p14._0.user.name;
+														var _p6 = _user$project$Models$getChatEntryModel(chatRoomModel.chatRoom.lastEntry);
+														if (_p6.ctor === 'Just') {
+															return _p6._0.user.name;
 														} else {
 															return '';
 														}
@@ -13097,9 +13150,9 @@ var _user$project$View$chatRoomPreview = function (chatRoomModel) {
 												ctor: '::',
 												_0: _elm_lang$html$Html$text(
 													function () {
-														var _p15 = _user$project$Models$getChatEntryModel(chatRoomModel.chatRoom.lastEntry);
-														if (_p15.ctor === 'Just') {
-															return _p15._0.chatEntry.message;
+														var _p7 = _user$project$Models$getChatEntryModel(chatRoomModel.chatRoom.lastEntry);
+														if (_p7.ctor === 'Just') {
+															return _p7._0.chatEntry.message;
 														} else {
 															return '';
 														}
@@ -13117,8 +13170,8 @@ var _user$project$View$chatRoomPreview = function (chatRoomModel) {
 		});
 };
 var _user$project$View$chatRoomsPreview = function (model) {
-	var _p16 = model.chatRoomList;
-	switch (_p16.ctor) {
+	var _p8 = model.chatRoomList;
+	switch (_p8.ctor) {
 		case 'NotAsked':
 			return A2(
 				_elm_lang$html$Html$ul,
@@ -13146,9 +13199,9 @@ var _user$project$View$chatRoomsPreview = function (model) {
 				},
 				{ctor: '[]'});
 		case 'Success':
-			var _p17 = _p16._0;
+			var _p9 = _p8._0;
 			return (_elm_lang$core$Native_Utils.cmp(
-				_elm_lang$core$List$length(_p17),
+				_elm_lang$core$List$length(_p9),
 				0) > 0) ? A2(
 				_elm_lang$html$Html$ul,
 				{
@@ -13160,7 +13213,7 @@ var _user$project$View$chatRoomsPreview = function (model) {
 						_1: {ctor: '[]'}
 					}
 				},
-				A2(_elm_lang$core$List$map, _user$project$View$chatRoomPreview, _p17)) : A2(
+				A2(_elm_lang$core$List$map, _user$project$View$chatRoomPreview, _p9)) : A2(
 				_elm_lang$html$Html$ul,
 				{
 					ctor: '::',
@@ -13192,9 +13245,19 @@ var _user$project$View$chatRoomsPreview = function (model) {
 	}
 };
 var _user$project$View$page = function (model) {
-	var _p18 = model.route;
-	if (_p18.ctor === 'NewChatRoomRoute') {
-		return _user$project$View$newChatRoom(model);
+	var _p10 = model.route;
+	if (_p10.ctor === 'NewChatRoomRoute') {
+		var _p11 = model.userPickerModel;
+		if (_p11.ctor === 'Just') {
+			return _user$project$View$newChatRoom(model);
+		} else {
+			return _user$project$View$newChatRoom(
+				_elm_lang$core$Native_Utils.update(
+					model,
+					{
+						userPickerModel: _elm_lang$core$Maybe$Just(_user$project$Models$initUserPickerModel)
+					}));
+		}
 	} else {
 		return _user$project$View$notFoundView;
 	}
@@ -13338,64 +13401,10 @@ var _user$project$Ports$sendChatMessage = _elm_lang$core$Native_Platform.outgoin
 		};
 	});
 
-var _user$project$Update$removeFromUserSelectedSearchList = F2(
-	function (user, mUsers) {
-		return A2(
-			_elm_lang$core$Maybe$map,
-			function (users) {
-				return A2(
-					_elm_lang$core$List$filter,
-					function (u) {
-						return !_elm_lang$core$Native_Utils.eq(u.id, user.id);
-					},
-					users);
-			},
-			mUsers);
-	});
-var _user$project$Update$update = F2(
+var _user$project$Update$userPickerUpdate = F2(
 	function (msg, model) {
 		var _p0 = msg;
 		switch (_p0.ctor) {
-			case 'NoOp':
-				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
-			case 'OnLocationChange':
-				var newRoute = _user$project$Routing$parseLocation(_p0._0);
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{route: newRoute}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'NewRoute':
-				return {
-					ctor: '_Tuple2',
-					_0: model,
-					_1: _elm_lang$navigation$Navigation$newUrl(
-						_user$project$Routing$getUrl(_p0._0))
-				};
-			case 'Send':
-				return {
-					ctor: '_Tuple2',
-					_0: model,
-					_1: _user$project$Ports$sendChatMessage(_p0._0)
-				};
-			case 'CreateNewChatRoom':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{showNewMessage: true}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'OnFetchChatRooms':
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{chatRoomList: _p0._0}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
 			case 'SearchUsers':
 				var _p1 = _p0._0;
 				return {
@@ -13415,48 +13424,96 @@ var _user$project$Update$update = F2(
 					_0: A2(_user$project$Models$setNewSelectedUser, _p0._0, model),
 					_1: A2(
 						_elm_lang$core$Task$attempt,
-						_elm_lang$core$Basics$always(_user$project$Msgs$NoOp),
+						_elm_lang$core$Basics$always(_user$project$Models$NoOp),
 						_elm_lang$dom$Dom$focus('user-picker-search'))
 				};
-			case 'RemoveUserFromPicker':
+			default:
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							userPickerSearch: A2(
+							userPickerModel: A2(
 								_elm_lang$core$Maybe$map,
 								function (a) {
 									return _elm_lang$core$Native_Utils.update(
 										a,
 										{
-											selectedUsers: A2(_user$project$Update$removeFromUserSelectedSearchList, _p0._0, a.selectedUsers)
+											selectedUsers: A2(_user$project$UserPicker$removeFromUserSelectedSearchList, _p0._0, a.selectedUsers)
 										});
 								},
-								model.userPickerSearch)
+								model.userPickerModel)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
+		}
+	});
+var _user$project$Update$update = F2(
+	function (msg, model) {
+		var _p2 = msg;
+		switch (_p2.ctor) {
+			case 'NoOp':
+				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'OnLocationChange':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							route: _user$project$Routing$parseLocation(_p2._0)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'NewRoute':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _elm_lang$navigation$Navigation$newUrl(
+						_user$project$Routing$getUrl(_p2._0))
+				};
+			case 'Send':
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _user$project$Ports$sendChatMessage(_p2._0)
+				};
+			case 'CreateNewChatRoom':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{showNewMessage: true}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'OnFetchChatRooms':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{chatRoomList: _p2._0}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'UserPickerMsg':
+				return A2(_user$project$Update$userPickerUpdate, _p2._0, model);
 			default:
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 		}
 	});
 
 var _user$project$Main$subscriptions = function (model) {
-	return _user$project$Ports$newChatEntry(_user$project$Msgs$NewPubNubEntry);
+	return _user$project$Ports$newChatEntry(_user$project$Models$NewPubNubEntry);
 };
 var _user$project$Main$init = function (location) {
-	var x = A2(_elm_lang$core$Debug$log, 'location', location);
-	var currentRoute = _user$project$Routing$parseLocation(location);
 	return {
 		ctor: '_Tuple2',
-		_0: _user$project$Models$initModel(currentRoute),
+		_0: _user$project$Models$initModel(
+			_user$project$Routing$parseLocation(location)),
 		_1: _user$project$Commands$fetchMessagesList(0)
 	};
 };
 var _user$project$Main$main = A2(
 	_elm_lang$navigation$Navigation$program,
-	_user$project$Msgs$OnLocationChange,
+	_user$project$Models$OnLocationChange,
 	{init: _user$project$Main$init, view: _user$project$View$view, update: _user$project$Update$update, subscriptions: _user$project$Main$subscriptions})();
 
 var Elm = {};
